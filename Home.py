@@ -27,15 +27,20 @@ def run():
         inputEstablishment = filterEstablishmentComponent()
 
     #Body
-    tab1, tab2, tab3, tab4 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH ANALÍTICO CORPORATIVO MENSAL"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS"])
     with tab1:
         buildGeneralDash()
     with tab2:
-        buildCorporativeDash1()
+        buildCorporativeDash()
     with tab3:
-        buildCorporativeDash2()
+        buildTemporalDash()
     with tab4:
-        buildCorporativeDash3()
+        buildAnaliticsDash()
+    with tab5:
+        buildByHouseDash()
+    with tab6:
+        buildReleaseControl()
+    
     
     
 
