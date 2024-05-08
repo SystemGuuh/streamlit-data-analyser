@@ -15,7 +15,7 @@ def run():
     # Header
     col1, col2 = st.columns([4,1])
     col2.image("./assets/imgs/eshows-logo.png", width=100)
-    col1.write("# Dash Clientes - <Nome empresa>")
+    col1.write("# <Nome empresa>")
 
     # Nav
     st.divider()
