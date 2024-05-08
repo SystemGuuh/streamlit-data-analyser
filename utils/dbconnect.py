@@ -4,7 +4,6 @@ import pandas as pd
 
 def get_mysql_connection():
     mysql_config = st.secrets["mysql"]
-    
     # Create MySQL connection
     conn = mysql.connector.connect(
         host=mysql_config['host'],
@@ -16,7 +15,8 @@ def get_mysql_connection():
     return conn
 
 def execute_query(query):
-    cursor = get_mysql_connection().cursor()
+    conn = get_mysql_connection()
+    cursor = conn.cursor()
     cursor.execute(query)
     
     # Obter nomes das colunas
@@ -69,3 +69,4 @@ def GET_PROPOSTAS_BY_ID(id):
                                 AND C.ID = {id}         
                             ORDER BY P.DATA_INICIO ASC;
                         """)
+

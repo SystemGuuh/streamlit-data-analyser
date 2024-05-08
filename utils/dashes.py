@@ -1,28 +1,38 @@
 import streamlit as st
+from utils.dbconnect import GET_PROPOSTAS_BY_ID
 
-def buildGeneralDash():
+def buildGeneralDash(id):
     st.header("DASH GERAL")
     container = st.container(border=True)
     with container:
+        # Values
         row1 = st.columns(6)
+        df = GET_PROPOSTAS_BY_ID(id)
+        showNumbers = df.shape[0]
+        trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
+        countEstablishments = df['CASA'].nunique()
+        averageTicket = round(df['VALOR_LIQUIDO'].mean(), 2)
+        meanShowsByHouse = round((showNumbers/countEstablishments) , 2)
+        distinctArtists = df['ARTISTA'].nunique()
 
+        # Page
         tile = row1[0].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Núm. de Shows</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
 
         tile = row1[1].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Valor Transacionado</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado</br>R$ {trasactionValue}</h6>", unsafe_allow_html=True)
 
         tile = row1[2].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Estabelecimentos</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Estabelecimentos</br>{countEstablishments}</h6>", unsafe_allow_html=True)
 
         tile = row1[3].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Ticket Médio</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio</br>R$ {averageTicket}</h6>", unsafe_allow_html=True)
 
         tile = row1[4].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Média de Shows por Casa</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Média de Shows por Casa</br>{meanShowsByHouse}</h6>", unsafe_allow_html=True)
 
         tile = row1[5].container(border=True)
-        tile.markdown("<h6 style='text-align: center;'>Artistas Distintos</h6>", unsafe_allow_html=True)
+        tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
 
 def buildCorporativeDash():
     st.header("DASH ANALÍTICO CORPORATIVO MENSAL")
