@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.pages.dashGeral import buildDashGeral
+from utils.pages.dashAnaliticoCorporativo1 import buildDashAnaliticoCorporativo1
 
 #colocar para printar o horário e dia da ultima atualização do bd
 def run():
@@ -31,8 +32,7 @@ def run():
     with tab1:
         buildDashGeral()
     with tab2:
-        st.header("DASH ANALÍTICO CORPORATIVO MENSAL")
-        st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+        buildDashAnaliticoCorporativo1()
     with tab3:
         st.header("DASH ANALÍTICO CORPORATIVO MENSAL")
         st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
