@@ -29,7 +29,7 @@ def run():
     #Body
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS"])
     with tab1:
-        buildGeneralDash(102)
+        buildGeneralDash(102, inputDate)
     with tab2:
         buildCorporativeDash()
     with tab3:

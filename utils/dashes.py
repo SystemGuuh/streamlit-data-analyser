@@ -1,19 +1,26 @@
 import streamlit as st
 from utils.dbconnect import GET_PROPOSTAS_BY_ID
 
-def buildGeneralDash(id):
+def buildGeneralDash(id, date):
     st.header("DASH GERAL")
     container = st.container(border=True)
     with container:
         # Values
         row1 = st.columns(6)
-        df = GET_PROPOSTAS_BY_ID(id)
+        startDate = date[0]
+        endDate = date[1]
+        df = GET_PROPOSTAS_BY_ID(id, startDate, endDate)
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
         countEstablishments = df['CASA'].nunique()
         averageTicket = round(df['VALOR_LIQUIDO'].mean(), 2)
-        meanShowsByHouse = round((showNumbers/countEstablishments) , 2)
+
+        if showNumbers > 0: meanShowsByHouse = round((showNumbers / countEstablishments), 2)
+        else: meanShowsByHouse=0
+        
         distinctArtists = df['ARTISTA'].nunique()
+        
+        
 
         # Page
         tile = row1[0].container(border=True)

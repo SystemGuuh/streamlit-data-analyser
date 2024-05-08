@@ -32,7 +32,7 @@ def getDfFromQuery(consulta):
     result, column_names = execute_query(consulta)
     return pd.DataFrame(result, columns=column_names)
 
-def GET_PROPOSTAS_BY_ID(id):
+def GET_PROPOSTAS_BY_ID(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
                                 CASE 
@@ -66,7 +66,9 @@ def GET_PROPOSTAS_BY_ID(id):
                                 AND P.FK_CONTRANTE IS NOT NULL 
                                 AND P.FK_CONTRATADO IS NOT NULL 
                                 AND P.DATA_INICIO IS NOT NULL
-                                AND C.ID = {id}         
+                                AND C.ID = {id}  
+                                AND P.DATA_INICIO >= {startDate} 
+                                AND P.DATA_FIM <= {endDate}      
                             ORDER BY P.DATA_INICIO ASC;
                         """)
 
