@@ -11,7 +11,7 @@ def hide_sidebar():
     </style>
     """, unsafe_allow_html=True)
 
-def inputCalendar():
+def filterCalendarComponent():
     today = datetime.datetime.now()
     year = today.year
     jan_1 = datetime.date(year, 1, 1)
@@ -21,7 +21,7 @@ def inputCalendar():
         jan_1, dec_31, format="DD.MM.YYYY")
     return d
 
-def inputEstabelecimento():
+def filterEstablishmentComponent():
     option = st.selectbox("Filtro de estabelecimentos:",("Email", "Home phone", "Mobile phone"),
-            index=None)
+            index=None, placeholder="Escolha um")
     return option

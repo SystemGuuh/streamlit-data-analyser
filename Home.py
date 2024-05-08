@@ -19,10 +19,10 @@ def run():
     st.divider()
     col4, col5, col6 = st.columns([1, 3, 1])
     with col4:
-        inputDate = inputCalendar()
-    col5.markdown("<h3 style='text-align: center;'>Dash <Nome empresa> - Resumo</h3>", unsafe_allow_html=True)
+        inputDate = filterCalendarComponent()
+    col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
     with col6:
-        inputEstabelecimento = inputEstabelecimento()
+        inputEstablishment = filterEstablishmentComponent()
 
 
 if __name__ == "__main__":
