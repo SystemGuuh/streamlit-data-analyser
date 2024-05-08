@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.components import *
 
 #colocar para printar o horário e dia da ultima atualização do bd
 def run():
@@ -8,12 +9,20 @@ def run():
         layout="wide"
     )
 
-    with st.sidebar:
-        st.write("Dash Clientes")
-        
+    hide_sidebar()
+    
+    # Header
     col1, col2 = st.columns([4,1])
     col2.image("./assets/imgs/eshows-logo.png", width=100)
-    col1.write("# Dash Clientes -")
+    col1.write("# Dash Clientes - <Nome empresa>")
+
+    st.divider()
+    col4, col5, col6 = st.columns([1, 3, 1])
+    with col4:
+        inputDate = inputCalendar()
+    col5.markdown("<h3 style='text-align: center;'>Dash <Nome empresa> - Resumo</h3>", unsafe_allow_html=True)
+    with col6:
+        inputEstabelecimento = inputEstabelecimento()
 
 
 if __name__ == "__main__":
