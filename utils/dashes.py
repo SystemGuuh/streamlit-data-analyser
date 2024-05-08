@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.dbconnect import GET_PROPOSTAS_BY_ID
+from utils.dbconnect import GET_PROPOSTAS_BY_ID_AND_DATE
 
 def buildGeneralDash(id, date):
     st.header("DASH GERAL")
@@ -9,7 +9,8 @@ def buildGeneralDash(id, date):
         row1 = st.columns(6)
         startDate = date[0]
         endDate = date[1]
-        df = GET_PROPOSTAS_BY_ID(id, startDate, endDate)
+        #ver questao do filtro de data
+        df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
         countEstablishments = df['CASA'].nunique()

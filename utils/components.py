@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+from utils.dbconnect import GET_PROPOSTAS_BY_ID
 
 # Tira a sidebar
 def hide_sidebar():
@@ -20,7 +21,8 @@ def filterCalendarComponent():
     return d
 
 
-def filterEstablishmentComponent():
-    option = st.selectbox("Filtro de estabelecimentos:",("Email", "Home phone", "Mobile phone"),
+def filterEstablishmentComponent(id):
+    df = GET_PROPOSTAS_BY_ID(id)
+    option = st.selectbox("Filtro de estabelecimentos:",(df['CASA'].unique()),
             index=None, placeholder="Escolha um")
     return option
