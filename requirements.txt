@@ -1,0 +1,8 @@
+altair
+numpy
+pandas
+pydeck
+streamlit
+matplotlib
+monday
+mysql-connector-python
