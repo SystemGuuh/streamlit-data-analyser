@@ -32,20 +32,22 @@ def run():
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
 
+
+    df = getDataframe(id, inputDate) 
     #Body
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS"])
     with tab1:
-        buildGeneralDash(id, inputDate)
+        buildGeneralDash(df)
     with tab2:
-        buildCorporativeDash()
+        buildCorporativeDash(df)
     with tab3:
-        buildTemporalDash()
+        buildTemporalDash(df)
     with tab4:
-        buildAnaliticsDash()
+        buildAnaliticsDash(df)
     with tab5:
-        buildByHouseDash()
+        buildByHouseDash(df)
     with tab6:
-        buildReleaseControl(id)
+        buildReleaseControl(df)
     
     
     

@@ -34,7 +34,6 @@ def getDfFromQuery(consulta):
     return pd.DataFrame(result, columns=column_names)
 
 # query para retornar propostas por data
-@st.cache_data
 def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
@@ -114,3 +113,13 @@ def GET_PROPOSTAS_BY_ID(id):
                                 AND C.ID = {id}        
                             ORDER BY P.DATA_INICIO ASC;
                         """)
+
+
+def getDataframe(id, date):
+    if len(date) > 1 and date[0] is not None and date[1] is not None:
+        startDate = str(date[0])
+        endDate = str(date[1])
+        df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
+    else:
+        df = GET_PROPOSTAS_BY_ID(id)
+    return df
