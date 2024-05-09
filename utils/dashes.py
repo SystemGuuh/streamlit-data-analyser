@@ -142,11 +142,12 @@ def buildByHouseDash(df):
 def buildReleaseControl(df):
     col1, col2, col3 = st.columns([1,2,1])
     with col1:
-        filterProposalComponent()
+        filterProposal = filterProposalComponent()
     with col3:
         st.info('⚠️ Filtro de data não será aplicado!')
     
     # Fazer filtro de proposta
     container = st.container(border=True)
     with container:
-        plotDataframe(df, "Controle Lançamentos da semana corrente")
+        df_filtrado = df[df['STATUS_PROPOSTA'].str.contains('|'.join(filterProposal))]
+        plotDataframe(df_filtrado, "Controle Lançamentos da semana corrente")

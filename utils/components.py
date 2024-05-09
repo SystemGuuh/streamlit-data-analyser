@@ -30,7 +30,7 @@ def filterEstablishmentComponent(id):
     return option
 
 def filterProposalComponent():
-    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Buraco','Checkin Realizado','Chekout Relaziado', 'Pedente'], ['Aceita'])
+    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita'])
     return option
 
 def plotDataframe(df, name):
