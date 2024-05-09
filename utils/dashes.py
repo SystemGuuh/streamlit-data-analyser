@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 
 from utils.components import *
-from utils.dbconnect import getDataframe
 
 def buildGeneralDash(df):
     container = st.container(border=True)
@@ -96,15 +95,13 @@ def buildByHouseDash(df):
         container = st.container(border=True)
         with container:
             # Values
-            row1 = st.columns(6)
+            row1 = st.columns(5)
 
             showNumbers = df.shape[0]
-            trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
-            countEstablishments = df['CASA'].nunique()
+            transactionValue = round(df['VALOR_BRUTO'].sum(), 2)
             averageTicket = round(df['VALOR_LIQUIDO'].mean(), 2)
+            musicalStyles = 1 #calcular com query
 
-            if showNumbers > 0: meanShowsByHouse = round((showNumbers / countEstablishments), 2)
-            else: meanShowsByHouse=0
             
             distinctArtists = df['ARTISTA'].nunique()
             
@@ -113,19 +110,16 @@ def buildByHouseDash(df):
             tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
 
             tile = row1[1].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado</br>R$ {trasactionValue}</h6>", unsafe_allow_html=True)
+            tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
 
             tile = row1[2].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Estabelecimentos</br>{countEstablishments}</h6>", unsafe_allow_html=True)
+            tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado</br>R$ {transactionValue}</h6>", unsafe_allow_html=True)
 
             tile = row1[3].container(border=True)
             tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio</br>R$ {averageTicket}</h6>", unsafe_allow_html=True)
 
             tile = row1[4].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Média de Shows por Casa</br>{meanShowsByHouse}</h6>", unsafe_allow_html=True)
-
-            tile = row1[5].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
+            tile.markdown(f"<h6 style='text-align: center;'>Estilos Musicais</br>{musicalStyles}</h6>", unsafe_allow_html=True)
 
             col1, col2 = st.columns(2)
             with col1:
@@ -136,8 +130,7 @@ def buildByHouseDash(df):
     with tab2:
         container = st.container(border=True)
         with container:
-            plotDataframe(df, "Extrato de Shows")
-            
+            plotDataframe(df, "Extrato de Shows")  
 
 def buildReleaseControl(df):
     col1, col2, col3 = st.columns([1,2,1])

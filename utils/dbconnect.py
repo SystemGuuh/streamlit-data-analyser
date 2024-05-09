@@ -115,13 +115,38 @@ def GET_PROPOSTAS_BY_ID(id):
                         """)
 
 # problema de requisação
-def getDataframe(id, date, establishment):
+# def getDataframe(id, date, establishment):
+#     if len(date) > 1 and date[0] is not None and date[1] is not None:
+#         startDate = str(date[0])
+#         endDate = str(date[1])
+#         df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
+#     else:
+#         df = GET_PROPOSTAS_BY_ID(id)
+
+#     if establishment is not None:
+#         df = df[df['CASA'] == establishment]
+    
+#     return df
+
+def convert_date(row):
+    try:
+        row['DATA_INICIO'] = datetime.strptime(row['DATA_INICIO'], '%d/%m/%y').date()
+        row['DATA_FIM'] = datetime.strptime(row['DATA_FIM'], '%d/%m/%y').date()
+    except ValueError:
+        row['DATA_INICIO'] = None
+        row['DATA_FIM'] = None 
+    return row
+
+def getDataframeDashGeral(id, date, establishment):
+    df = GET_PROPOSTAS_BY_ID(id)
     if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = str(date[0])
-        endDate = str(date[1])
-        df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
-    else:
-        df = GET_PROPOSTAS_BY_ID(id)
+        startDate = date[0]
+        endDate = date[1]
+        df = df.apply(convert_date, axis=1)
+        df = df.dropna(subset=['DATA_INICIO'])
+        
+        df = df[df['DATA_INICIO'] >= startDate]
+        df = df[df['DATA_FIM'] <= endDate]
 
     if establishment is not None:
         df = df[df['CASA'] == establishment]

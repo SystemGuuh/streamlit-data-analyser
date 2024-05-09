@@ -38,13 +38,13 @@ def plotDataframe(df, name):
 
 # build after query
 def plotLineChart(df, xValue, yValue,name):
-    st.markdown(f"<h5 style='text-align: center; background-color: #434343; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
 
     st.line_chart(df, x=xValue, y=yValue)
 
 # build after query
 def plotBarChart(name):
-    st.markdown(f"<h5 style='text-align: center; background-color: #434343; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     chart_data = pd.DataFrame({"col1": list(range(20)), "col2": np.random.randn(20), "col3": np.random.randn(20)})
     st.bar_chart(chart_data, x="col1", y=["col2", "col3"], color=["#FFB131", "#FF6600"])
 
