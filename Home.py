@@ -45,7 +45,7 @@ def run():
     with tab5:
         buildByHouseDash()
     with tab6:
-        buildReleaseControl()
+        buildReleaseControl(id)
     
     
     

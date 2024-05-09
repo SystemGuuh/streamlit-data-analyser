@@ -26,3 +26,8 @@ def filterEstablishmentComponent(id):
     option = st.selectbox("Estabelecimentos:",(df['CASA'].unique()),
             index=None, placeholder="Escolha um")
     return option
+
+def filterProposalComponent(id):
+    df = GET_PROPOSTAS_BY_ID(id)
+    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Buraco','Checkin Realizado','Chekout Relaziado', 'Pedente'], ['Aceita'])
+    return option

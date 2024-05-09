@@ -1,8 +1,8 @@
 import streamlit as st
 from utils.dbconnect import GET_PROPOSTAS_BY_ID_AND_DATE, GET_PROPOSTAS_BY_ID
+from utils.components import *
 
 def buildGeneralDash(id, date):
-    st.header("DASH GERAL")
     container = st.container(border=True)
     with container:
         # Values
@@ -14,9 +14,6 @@ def buildGeneralDash(id, date):
             df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
         else:
             df = GET_PROPOSTAS_BY_ID(id)
-        
-        st.write(startDate, endDate)
-        st.write(df)
 
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
@@ -28,8 +25,6 @@ def buildGeneralDash(id, date):
         
         distinctArtists = df['ARTISTA'].nunique()
         
-        
-
         # Page
         tile = row1[0].container(border=True)
         tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
@@ -48,6 +43,9 @@ def buildGeneralDash(id, date):
 
         tile = row1[5].container(border=True)
         tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
+
+        st.dataframe(df, hide_index=1)
+
 
 def buildCorporativeDash():
     st.header("DASH ANALÍTICO CORPORATIVO MENSAL")
@@ -80,5 +78,9 @@ def buildByHouseDash():
     with tab2:
         st.header("2 - Dash por casa")
 
-def buildReleaseControl():
-    st.header("DASH TEMPORAL")
+def buildReleaseControl(id):
+    col1, col2, col3 = st.columns([1,2,1])
+    with col1:
+        filterProposalComponent(id)
+    with col3:
+        st.info('⚠️ Filtro de data não será aplicado!')

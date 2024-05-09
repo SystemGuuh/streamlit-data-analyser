@@ -1,6 +1,7 @@
 import mysql.connector
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 def get_mysql_connection():
     mysql_config = st.secrets["mysql"]
@@ -33,6 +34,7 @@ def getDfFromQuery(consulta):
     return pd.DataFrame(result, columns=column_names)
 
 # query para retornar propostas por data
+@st.cache_data
 def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
@@ -74,6 +76,7 @@ def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
                         """)
 
 # query para retornar propostas por id
+@st.cache_data
 def GET_PROPOSTAS_BY_ID(id):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
