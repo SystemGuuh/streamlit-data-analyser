@@ -22,7 +22,6 @@ def filterCalendarComponent():
                       format="DD/MM/YYYY")
     return d
 
-
 def filterEstablishmentComponent(id):
     df = GET_PROPOSTAS_BY_ID(id)
     option = st.selectbox("Estabelecimentos:",(df['CASA'].unique()),

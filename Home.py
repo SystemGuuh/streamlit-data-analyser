@@ -31,9 +31,7 @@ def run():
     col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
-
-
-    df = getDataframe(id, inputDate) 
+    df = getDataframe(id, inputDate, inputEstablishment) 
     #Body
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS"])
     with tab1:

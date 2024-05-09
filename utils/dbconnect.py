@@ -114,12 +114,16 @@ def GET_PROPOSTAS_BY_ID(id):
                             ORDER BY P.DATA_INICIO ASC;
                         """)
 
-
-def getDataframe(id, date):
+# problema de requisação
+def getDataframe(id, date, establishment):
     if len(date) > 1 and date[0] is not None and date[1] is not None:
         startDate = str(date[0])
         endDate = str(date[1])
         df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
     else:
         df = GET_PROPOSTAS_BY_ID(id)
+
+    if establishment is not None:
+        df = df[df['CASA'] == establishment]
+    
     return df
