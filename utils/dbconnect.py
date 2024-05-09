@@ -32,6 +32,7 @@ def getDfFromQuery(consulta):
     result, column_names = execute_query(consulta)
     return pd.DataFrame(result, columns=column_names)
 
+# query para retornar propostas por data
 def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
@@ -67,11 +68,12 @@ def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
                                 AND P.FK_CONTRATADO IS NOT NULL 
                                 AND P.DATA_INICIO IS NOT NULL
                                 AND C.ID = {id}  
-                                AND P.DATA_INICIO >= {startDate} 
-                                AND P.DATA_FIM <= {endDate}      
+                                AND P.DATA_INICIO >= '{startDate}'
+                                AND P.DATA_FIM <= '{endDate}'      
                             ORDER BY P.DATA_INICIO ASC;
                         """)
 
+# query para retornar propostas por id
 def GET_PROPOSTAS_BY_ID(id):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
@@ -109,4 +111,3 @@ def GET_PROPOSTAS_BY_ID(id):
                                 AND C.ID = {id}        
                             ORDER BY P.DATA_INICIO ASC;
                         """)
-

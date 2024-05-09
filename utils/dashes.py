@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.dbconnect import GET_PROPOSTAS_BY_ID_AND_DATE
+from utils.dbconnect import GET_PROPOSTAS_BY_ID_AND_DATE, GET_PROPOSTAS_BY_ID
 
 def buildGeneralDash(id, date):
     st.header("DASH GERAL")
@@ -7,10 +7,17 @@ def buildGeneralDash(id, date):
     with container:
         # Values
         row1 = st.columns(6)
-        startDate = date[0]
-        endDate = date[1]
-        #ver questao do filtro de data
-        df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
+        
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = str(date[0])
+            endDate = str(date[1])
+            df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
+        else:
+            df = GET_PROPOSTAS_BY_ID(id)
+        
+        st.write(startDate, endDate)
+        st.write(df)
+
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
         countEstablishments = df['CASA'].nunique()

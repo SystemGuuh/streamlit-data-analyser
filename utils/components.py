@@ -14,15 +14,15 @@ def hide_sidebar():
 
 def filterCalendarComponent():
     today = datetime.date.today()
-    thirty_days_ago = today - datetime.timedelta(days=30)
+    thirty_days_ago = today - datetime.timedelta(days=90)
 
     d = st.date_input("Filtro de data:", (thirty_days_ago, today),
-                      format="DD.MM.YYYY")
+                      format="DD/MM/YYYY")
     return d
 
 
 def filterEstablishmentComponent(id):
     df = GET_PROPOSTAS_BY_ID(id)
-    option = st.selectbox("Filtro de estabelecimentos:",(df['CASA'].unique()),
+    option = st.selectbox("Estabelecimentos:",(df['CASA'].unique()),
             index=None, placeholder="Escolha um")
     return option
