@@ -20,12 +20,16 @@ try:
     
         # Define ID
         id = 31582
-        username = GET_USER_NAME(id)
 
         # Header
         col1, col2 = st.columns([4,1])
-        
-        col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
+
+        # Caso não ache o ID de usuário
+        username = GET_USER_NAME(id)
+        if username.empty:
+            col1.error('ID de usuário não encontrado')
+        else:
+            col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
         col2.image("./assets/imgs/eshows-logo.png", width=100)
         col2.button('Logout', key='Logout', on_click=logout())
         
@@ -35,11 +39,15 @@ try:
         col4, col5, col6 = st.columns([1, 3, 1])
         with col4:
             inputDate = filterCalendarComponent()
-        # colocar nome da empresa
         col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
         with col6:
             inputEstablishment = filterEstablishmentComponent(id)
         df = getDataframeDashGeral(id, inputDate, inputEstablishment) 
+
+        # Dataframe vazio
+        if df.empty:
+            col1.warning('Parace que você não permissão para visualizar dados de casas.')
+
         #Body
         tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS"])
         with tab1:

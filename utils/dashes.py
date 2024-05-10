@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-
 from utils.components import *
 
 def buildGeneralDash(df):
