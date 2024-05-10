@@ -37,10 +37,10 @@ def getDfFromQuery(consulta):
 def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
-                                CASE 
-                                    WHEN S.DESCRICAO IS NULL THEN "Cancelada"
-                                    ELSE S.DESCRICAO
-                                END AS STATUS_PROPOSTA,
+                            CASE 
+                                WHEN S.DESCRICAO IS NULL THEN "Cancelada"
+                                ELSE S.DESCRICAO
+                            END AS STATUS_PROPOSTA,
                             C.NAME AS CASA,
                             A.NOME AS ARTISTA,
                             DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO, 
@@ -57,21 +57,25 @@ def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
                             P.B2C,
                             P.ADIANTAMENTO,
                             C.ID AS ID_CASA,
-                            A.ID AS ID_ARTISTA
-                            FROM T_PROPOSTAS P
-                                LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-                                LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-                                LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                                LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
-                                LEFT JOIN T_FONTE F ON (F.ID = P.FK_FONTE)
-                            WHERE P.TESTE = 0 
-                                AND P.FK_CONTRANTE IS NOT NULL 
-                                AND P.FK_CONTRATADO IS NOT NULL 
-                                AND P.DATA_INICIO IS NOT NULL
-                                AND C.ID = {id}  
-                                AND P.DATA_INICIO >= '{startDate}'
-                                AND P.DATA_FIM <= '{endDate}'      
-                            ORDER BY P.DATA_INICIO ASC;
+                            A.ID AS ID_ARTISTA,
+                            P.FK_USUARIO,
+                            GU.FK_USUARIO
+                        FROM T_PROPOSTAS P
+                        LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                        LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+                        LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+                        LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
+                        LEFT JOIN T_FONTE F ON (F.ID = P.FK_FONTE)
+                        INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO
+                        WHERE P.TESTE = 0 
+                            AND P.FK_CONTRANTE IS NOT NULL 
+                            AND P.FK_CONTRATADO IS NOT NULL 
+                            AND P.DATA_INICIO IS NOT NULL 
+                            AND P.FK_USUARIO = {id}
+                            AND P.DATA_INICIO >= '{startDate}'
+                            AND P.DATA_FIM <= '{endDate}'
+                            AND GU.STATUS = 1
+                            AND GU.FK_PERFIL IN (100,101)
                         """)
 
 # query para retornar propostas por id
@@ -79,10 +83,10 @@ def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
 def GET_PROPOSTAS_BY_ID(id):
     return getDfFromQuery(f"""SELECT
                             P.ID AS ID_PROPOSTA,
-                                CASE 
-                                    WHEN S.DESCRICAO IS NULL THEN "Cancelada"
-                                    ELSE S.DESCRICAO
-                                END AS STATUS_PROPOSTA,
+                            CASE 
+                                WHEN S.DESCRICAO IS NULL THEN "Cancelada"
+                                ELSE S.DESCRICAO
+                            END AS STATUS_PROPOSTA,
                             C.NAME AS CASA,
                             A.NOME AS ARTISTA,
                             DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO, 
@@ -100,33 +104,21 @@ def GET_PROPOSTAS_BY_ID(id):
                             P.ADIANTAMENTO,
                             C.ID AS ID_CASA,
                             A.ID AS ID_ARTISTA
-                            FROM T_PROPOSTAS P
-                                LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-                                LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-                                LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                                LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
-                                LEFT JOIN T_FONTE F ON (F.ID = P.FK_FONTE)
-                            WHERE P.TESTE = 0 
-                                AND P.FK_CONTRANTE IS NOT NULL 
-                                AND P.FK_CONTRATADO IS NOT NULL 
-                                AND P.DATA_INICIO IS NOT NULL
-                                AND C.ID = {id}        
-                            ORDER BY P.DATA_INICIO ASC;
+                        FROM T_PROPOSTAS P
+                        LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                        LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+                        LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+                        LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
+                        LEFT JOIN T_FONTE F ON (F.ID = P.FK_FONTE)
+                        INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO
+                        WHERE P.TESTE = 0 
+                            AND P.FK_CONTRANTE IS NOT NULL 
+                            AND P.FK_CONTRATADO IS NOT NULL 
+                            AND P.DATA_INICIO IS NOT NULL 
+                            AND P.FK_USUARIO = {id}
+                            AND GU.STATUS = 1
+                            AND GU.FK_PERFIL IN (100,101)
                         """)
-
-# problema de requisação
-# def getDataframe(id, date, establishment):
-#     if len(date) > 1 and date[0] is not None and date[1] is not None:
-#         startDate = str(date[0])
-#         endDate = str(date[1])
-#         df = GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate)
-#     else:
-#         df = GET_PROPOSTAS_BY_ID(id)
-
-#     if establishment is not None:
-#         df = df[df['CASA'] == establishment]
-    
-#     return df
 
 def convert_date(row):
     try:
