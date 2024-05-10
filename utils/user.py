@@ -19,7 +19,7 @@ def login(userName: str, password: str) -> bool:
 
     else:
         if login['data']['success'] == True:
-            return True
+            return login
         else:
             return False
 

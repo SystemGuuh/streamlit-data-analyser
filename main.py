@@ -4,7 +4,8 @@ from utils.components import hide_sidebar
 
 
 def handle_login(userName, password):
-    if login(userName, password):
+    #user data deve conter o usuario
+    if user_data := login(userName, password):
         st.session_state['loggedIn'] = True
     else:
         # mudar pra falso depois
