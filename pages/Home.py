@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.dashes import *
-from utils.dbconnect import getDataframeDashGeral
+from utils.dbconnect import getDataframeDashGeral, GET_USER_NAME
 from utils.user import logout
 
 st.set_page_config(
@@ -20,11 +20,12 @@ try:
     
         # Define ID
         id = 31582
+        username = GET_USER_NAME(id)
 
         # Header
         col1, col2 = st.columns([4,1])
-        # colocar nome da empresa
-        col1.write("# <Nome empresa>")
+        
+        col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
         col2.image("./assets/imgs/eshows-logo.png", width=100)
         col2.button('Logout', key='Logout', on_click=logout())
         

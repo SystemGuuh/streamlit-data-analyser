@@ -120,6 +120,18 @@ def GET_PROPOSTAS_BY_ID(id):
                             AND GU.FK_PERFIL IN (100,101)
                         """)
 
+@st.cache_data
+def GET_USER_NAME(id):
+    return getDfFromQuery(f"""SELECT 
+                            TGU.FK_USUARIO,
+                            AU.FULL_NAME
+                            FROM T_GRUPO_USUARIO TGU
+                            INNER JOIN ADMIN_USERS AU ON TGU.FK_USUARIO = AU.ID
+                            WHERE
+                                TGU.FK_USUARIO = {id}
+                            GROUP BY AU.ID
+                          """)
+
 def convert_date(row):
     try:
         row['DATA_INICIO'] = datetime.strptime(row['DATA_INICIO'], '%d/%m/%y').date()
@@ -144,3 +156,4 @@ def getDataframeDashGeral(id, date, establishment):
         df = df[df['CASA'] == establishment]
     
     return df
+
