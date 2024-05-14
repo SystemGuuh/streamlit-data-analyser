@@ -63,16 +63,25 @@ def buildComparativeDash(df):
             plotDataframe(df, "Dados por establecimento/mês")
         
 def buildReview(df):
-    container = st.container(border=True)
-    with container:
-        chart_data = df[["ARTISTA", "VALOR_BRUTO", "VALOR_LIQUIDO"]]
-        plotLineChart(chart_data, "ARTISTA", ["VALOR_BRUTO", "VALOR_LIQUIDO"], "Número de shows e custo total")
-
-        col1, col2 = st.columns(2)
-        with col1:
-            plotBarChart("Estilos principais dos artistas")
-        with col2:
-            st.dataframe(df)
+    tab1, tab2= st.tabs(["Rancking", "Avaliações de casas e artistas"])
+    with tab1:
+        plotDataframe(df, "Ranking")
+    with tab2:
+        container = st.container(border=True)
+        with container:
+            with st.expander("Avaliações sobre artistas", expanded=True):
+                row1 = st.columns(2)
+                with row1[0]:
+                    plotDataframe(df, "Avaliações das Casas Sobre os Artistas")
+                with row1[1]:
+                    plotDataframe(df, "Médias de Avaliações das Casas Sobre os Artistas")
+            
+            with st.expander("Avaliações sobre casas"):
+                row2 = st.columns(2)
+                with row2[0]:
+                    plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
+                with row2[1]:
+                    plotDataframe(df, "Médias de Avaliações dos Artistas Sobre as Casas")
 
 def buildOperationalPerformace(df):
     container = st.container(border=True)
