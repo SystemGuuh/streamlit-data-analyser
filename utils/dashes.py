@@ -62,7 +62,7 @@ def buildComparativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
         
-def buildReview(df):
+def buildReview(df, reviewHouseByArtirst):
     tab1, tab2= st.tabs(["Rancking", "Avaliações de casas e artistas"])
     with tab1:
         plotDataframe(df, "Ranking")
@@ -79,7 +79,7 @@ def buildReview(df):
             with st.expander("Avaliações sobre casas"):
                 row2 = st.columns(2)
                 with row2[0]:
-                    plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
+                    plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas Sobre as Casas")
                 with row2[1]:
                     plotDataframe(df, "Médias de Avaliações dos Artistas Sobre as Casas")
 

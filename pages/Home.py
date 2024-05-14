@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.dashes import *
-from utils.dbconnect import getDataframeDashGeral, GET_USER_NAME
+from utils.dbconnect import *
 from utils.user import logout
 
 st.set_page_config(
@@ -56,7 +56,9 @@ if st.session_state['loggedIn']:
     with tab2:
         buildComparativeDash(df)
     with tab3:
-        buildReview(df)
+        reviewArtirtsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
+        reviewHouseByArtirst = GET_REVIEW_HOUSE_BY_ARTIST(id, inputDate, inputEstablishment)
+        buildReview(reviewArtirtsByHouse, reviewHouseByArtirst)
     with tab4:
         buildOperationalPerformace(df)
     with tab5:
