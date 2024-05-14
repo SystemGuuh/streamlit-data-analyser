@@ -142,3 +142,45 @@ def buildReleaseControl(df):
     with container:
         df_filtrado = df[df['STATUS_PROPOSTA'].str.contains('|'.join(filterProposal))]
         plotDataframe(df_filtrado, "Controle Lançamentos da semana corrente")
+
+def buildCompleteView(df):
+    row1 = st.columns(4)
+    row2 = st.columns(4)
+
+    tile = row1[0].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row1[1].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row1[2].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row1[3].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row2[0].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row2[1].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row2[2].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+
+    tile = row2[3].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+    
+    container = st.container(border=True)
+    with container:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            plotDataframe(df, "Ranking - Experiência da Casa")
+        with col2:
+            plotDataframe(df, "Ranking - Experiência do Artista")
+        with col3:
+            plotDataframe(df, "Histórico por Semana - Experiência do Artistas")
+        plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
+        plotDataframe(df, "Avaliações dos Gestores das Casas Sobre os Artistas")
+        
+        
