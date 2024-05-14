@@ -50,20 +50,18 @@ if st.session_state['loggedIn']:
         col1.warning('Parace que você não permissão para visualizar dados de casas.')
 
     #Body
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["DASH GERAL", "DASH ANALÍTICO CORPORATIVO MENSAL", "DASH TEMPORAL", "DASH ANALÍTICO", "DASH POR CASA", "CONTROLE DE LANÇAMENTOS", "VISÃO COMPLETA"])
+    tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["DASH GERAL", "COMPARATIVO MENSAL", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "FINANCEIRO", "EXTRATO DE SHOWS"])
     with tab1:
         buildGeneralDash(df)
     with tab2:
-        buildCorporativeDash(df)
+        buildComparativeDash(df)
     with tab3:
-        buildTemporalDash(df)
+        buildReview(df)
     with tab4:
-        buildAnaliticsDash(df)
+        buildOperationalPerformace(df)
     with tab5:
-        buildByHouseDash(df)
+        buildFinances(df)
     with tab6:
-        buildReleaseControl(df)
-    with tab7:
-        buildCompleteView(df)
+        buildShowStatement(df)
 else:
     st.switch_page("main.py")

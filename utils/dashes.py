@@ -39,8 +39,8 @@ def buildGeneralDash(df):
         # Body
         plotDataframe(df, "Dash Geral")
 
-def buildCorporativeDash(df):
-    st.header("DASH ANALÍTICO CORPORATIVO MENSAL")
+def buildComparativeDash(df):
+    st.header("DASH ANALÍTICO COMPARATIVO MENSAL")
 
     tab1, tab2, tab3 = st.tabs(["CORPORATIVO MENSAL 1", "CORPORATIVO MENSAL 2", "CORPORATIVO MENSAL 3"])
     with tab1:
@@ -62,7 +62,7 @@ def buildCorporativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
         
-def buildTemporalDash(df):
+def buildReview(df):
     container = st.container(border=True)
     with container:
         chart_data = df[["ARTISTA", "VALOR_BRUTO", "VALOR_LIQUIDO"]]
@@ -74,7 +74,7 @@ def buildTemporalDash(df):
         with col2:
             st.dataframe(df)
 
-def buildAnaliticsDash(df):
+def buildOperationalPerformace(df):
     container = st.container(border=True)
     with container:
         col1, col2 = st.columns([3, 1])
@@ -85,7 +85,7 @@ def buildAnaliticsDash(df):
 
         st.dataframe(df)
 
-def buildByHouseDash(df):
+def buildFinances(df):
     st.header("DASH POR CASA")
 
     tab1, tab2 = st.tabs(["CASA 1", "CASA 2"])
@@ -130,7 +130,7 @@ def buildByHouseDash(df):
         with container:
             plotDataframe(df, "Extrato de Shows")  
 
-def buildReleaseControl(df):
+def buildShowStatement(df):
     col1, col2, col3 = st.columns([1,2,1])
     with col1:
         filterProposal = filterProposalComponent()
@@ -180,7 +180,9 @@ def buildCompleteView(df):
             plotDataframe(df, "Ranking - Experiência do Artista")
         with col3:
             plotDataframe(df, "Histórico por Semana - Experiência do Artistas")
-        plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
-        plotDataframe(df, "Avaliações dos Gestores das Casas Sobre os Artistas")
         
-        
+        with st.expander("Ver Avaliações dos Artistas Sobre as Casas"):
+            plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
+        with st.expander("Ver Avaliações dos Gestores das Casas Sobre os Artistas"):
+            plotDataframe(df, "Avaliações dos Gestores das Casas Sobre os Artistas")
+             
