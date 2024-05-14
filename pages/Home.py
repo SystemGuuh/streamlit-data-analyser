@@ -30,7 +30,9 @@ if st.session_state['loggedIn']:
     else:
         col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
     col2.image("./assets/imgs/eshows-logo.png", width=100)
-    col2.button('Logout', key='Logout', on_click=logout())
+    if col2.button("Logout"):
+        logout()
+        st.switch_page("main.py")
     
 
     # Nav
