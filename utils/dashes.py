@@ -74,8 +74,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, reviewHouseByArtirst):
     tab1, tab2= st.tabs(["Rancking", "Avaliações de casas e artistas"])
     with tab1:
         center = st.columns([1.5,2,1])
-        with center[0]:
-            
+        with center[0]: 
             plotDataframe(artistRanking, "Ranking")
     with tab2:
         container = st.container(border=True)
@@ -106,49 +105,24 @@ def buildOperationalPerformace(df):
         st.dataframe(df)
 
 def buildFinances(df):
-    st.header("DASH POR CASA")
+    #formating tables
+    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
+    df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
+    df = df.drop(columns=['ID_PROPOSTA', 'ID_CASA', 'ID_ARTISTA'])
 
-    tab1, tab2 = st.tabs(["CASA 1", "CASA 2"])
+
+    st.header("DASH FINANCEIRO")
+    tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
     with tab1:
+        printFinanceData(df)
         container = st.container(border=True)
         with container:
-            # Values
-            row1 = st.columns(5)
-
-            showNumbers = df.shape[0]
-            transactionValue = round(df['VALOR_BRUTO'].sum(), 2)
-            averageTicket = round(df['VALOR_LIQUIDO'].mean(), 2)
-            musicalStyles = 1 #calcular com query
-
-            
-            distinctArtists = df['ARTISTA'].nunique()
-            
-            # Page
-            tile = row1[0].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
-
-            tile = row1[1].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
-
-            tile = row1[2].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado</br>R$ {transactionValue}</h6>", unsafe_allow_html=True)
-
-            tile = row1[3].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio</br>R$ {averageTicket}</h6>", unsafe_allow_html=True)
-
-            tile = row1[4].container(border=True)
-            tile.markdown(f"<h6 style='text-align: center;'>Estilos Musicais</br>{musicalStyles}</h6>", unsafe_allow_html=True)
-
-            col1, col2 = st.columns(2)
-            with col1:
-                plotDataframe(df, "Primeira Quinzena")
-            with col2:
-                plotDataframe(df, "Segunda Quinzena")
+          plotDataframe(df, "Dados Financeiros Semanais")
 
     with tab2:
         container = st.container(border=True)
         with container:
-            plotDataframe(df, "Extrato de Shows")  
+            st.dataframe(df)  
 
 def buildShowStatement(df):
     col1, col2, col3 = st.columns([1,2,1])

@@ -56,6 +56,20 @@ def apply_filter_in_dataframe(df, date, establishment):
 
     return df
 
+def apply_filter_in_finance_dataframe(df, date, establishment):
+    if len(date) > 1 and date[0] is not None and date[1] is not None:
+        startDate = pd.Timestamp(date[0])
+        endDate = pd.Timestamp(date[1])
+        df = df.dropna(subset=['DATA_INICIO'])
+    
+        df = df[df['DATA_INICIO'] >= startDate]
+        df = df[df['DATA_FIM'] <= endDate]
+
+    if establishment is not None:
+        df = df[df['CASA'] == establishment]
+
+    return df
+
 def getDataframeDashGeral(id, date, establishment):
     df = GET_PROPOSTAS_BY_ID(id)
     if len(date) > 1 and date[0] is not None and date[1] is not None:
@@ -252,7 +266,7 @@ def GET_ARTIST_RANKING(id):
                         T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
                     WHERE
                         GU.STATUS = 1
-                        AND GU.FK_USUARIO = 34804
+                        AND GU.FK_USUARIO = {id}
                         AND A.ID NOT IN (12166)
                     GROUP BY
                         A.ID, A.NOME
@@ -260,5 +274,36 @@ def GET_ARTIST_RANKING(id):
                         MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
                         """)
     
+# Verificar filtro
+@st.cache_data
+def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
+    df =getDfFromQuery(f"""# BASE GERAL DE SHOWS COM FECHAMENTO FINANCEIRO
+SELECT
+P.ID AS ID_PROPOSTA,
+S.DESCRICAO AS STATUS_PROPOSTA,
+C.NAME AS CASA,
+A.NOME AS ARTISTA,
+P.DATA_INICIO AS DATA_INICIO,
+P.DATA_FIM AS DATA_FIM,
+TIMEDIFF(P.DATA_FIM, P.DATA_INICIO) AS DURACAO,
+DAYNAME(P.DATA_INICIO) AS DIA_DA_SEMANA,
+P.VALOR_BRUTO,
+C.ID AS ID_CASA,
+A.ID AS ID_ARTISTA,
+F.ID AS ID_FECHAMENTO,
+F.DATA_INICIO AS INICIO_FECHAMENTO,
+F.DATA_FIM AS FIM_FECHAMENTO
 
+FROM T_PROPOSTAS P
+INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+INNER JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+INNER JOIN T_FECHAMENTOS F ON F.ID = P.FK_FECHAMENTO
 
+WHERE 
+P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+AND GU.FK_USUARIO = {id}
+AND VALOR_TOTAL = 'SIM'
+""")
+    return apply_filter_in_finance_dataframe(df, date, establishment)

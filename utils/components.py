@@ -54,3 +54,5 @@ def plotMapChart(df):
     columns=['lat', 'lon'])
     st.map(df)
     
+def printFinanceData(df):
+    st.write('')
