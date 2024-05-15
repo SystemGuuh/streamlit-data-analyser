@@ -56,9 +56,10 @@ if st.session_state['loggedIn']:
     with tab2:
         buildComparativeDash(df)
     with tab3:
+        artistRanking = GET_ARTIST_RANKING(id)
         reviewArtirtsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
         reviewHouseByArtirst = GET_REVIEW_HOUSE_BY_ARTIST(id, inputDate, inputEstablishment)
-        buildReview(reviewArtirtsByHouse, reviewHouseByArtirst)
+        buildReview(artistRanking, reviewArtirtsByHouse, reviewHouseByArtirst)
     with tab4:
         buildOperationalPerformace(df)
     with tab5:

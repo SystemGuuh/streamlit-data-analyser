@@ -230,3 +230,35 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id, date, establishment):
                         """)
     
     return apply_filter_in_dataframe(df, date, establishment)
+
+@st.cache_data
+def GET_ARTIST_RANKING(id):
+    return  getDfFromQuery(f"""#RANCKIG DE ARTISTAS
+                        SELECT
+                        A.ID,
+                        A.NOME AS ARTISTA,
+                        ROUND(AVG(AV.NOTA), 2) AS MEDIA_NOTAS,
+                        COUNT(DISTINCT AV.ID) AS QUANTIDADE_AVALIACOES,
+                        COUNT(P.FK_CONTRATADO) AS NUM_SHOWS_ARTISTA
+                    FROM
+                        T_AVALIACAO_ATRACOES AV
+                    INNER JOIN
+                        T_PROPOSTAS P ON P.ID = AV.FK_PROPOSTA
+                    INNER JOIN
+                        T_COMPANIES C ON C.ID = P.FK_CONTRANTE
+                    INNER JOIN
+                        T_ATRACOES A ON A.ID = P.FK_CONTRATADO
+                    LEFT JOIN
+                        T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+                    WHERE
+                        GU.STATUS = 1
+                        AND GU.FK_USUARIO = 34804
+                        AND A.ID NOT IN (12166)
+                    GROUP BY
+                        A.ID, A.NOME
+                    ORDER BY
+                        MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
+                        """)
+    
+
+

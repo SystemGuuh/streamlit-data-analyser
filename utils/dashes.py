@@ -62,26 +62,37 @@ def buildComparativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
         
-def buildReview(df, reviewHouseByArtirst):
+def buildReview(artistRanking, reviewArtirtsByHouse, reviewHouseByArtirst):
+    #formating tables
+    artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
+    artistRanking = artistRanking.rename(columns={'NUM_SHOWS_ARTISTA': 'NÚMERO DE SHOWS', 'MEDIA_NOTAS': 'NOTAS', 'QUANTIDADE_AVALIACOES': 'AVALIAÇÕES'})
+    artistRanking = artistRanking.drop(columns=['ID'])
+    reviewArtirtsByHouse = reviewArtirtsByHouse.drop(columns=['ID_AVALIACAO', 'ID_PROPOSTA', 'GRUPO'])
+    reviewHouseByArtirst = reviewHouseByArtirst.drop(columns=['ID_AVALIACAO', 'ID_PROPOSTA', 'GRUPO'])
+
+
     tab1, tab2= st.tabs(["Rancking", "Avaliações de casas e artistas"])
     with tab1:
-        plotDataframe(df, "Ranking")
+        center = st.columns([1.5,2,1])
+        with center[0]:
+            
+            plotDataframe(artistRanking, "Ranking")
     with tab2:
         container = st.container(border=True)
         with container:
             with st.expander("Avaliações sobre artistas", expanded=True):
                 row1 = st.columns(2)
                 with row1[0]:
-                    plotDataframe(df, "Avaliações das Casas Sobre os Artistas")
+                    plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas Sobre os Artistas")
                 with row1[1]:
-                    plotDataframe(df, "Médias de Avaliações das Casas Sobre os Artistas")
+                    plotDataframe(reviewArtirtsByHouse, "Médias de Avaliações das Casas Sobre os Artistas")
             
             with st.expander("Avaliações sobre casas"):
                 row2 = st.columns(2)
                 with row2[0]:
                     plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas Sobre as Casas")
                 with row2[1]:
-                    plotDataframe(df, "Médias de Avaliações dos Artistas Sobre as Casas")
+                    plotDataframe(reviewHouseByArtirst, "Médias de Avaliações dos Artistas Sobre as Casas")
 
 def buildOperationalPerformace(df):
     container = st.container(border=True)
