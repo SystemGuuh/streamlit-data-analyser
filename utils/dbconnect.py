@@ -42,19 +42,10 @@ def convert_date(row):
         row['DATA_FIM'] = None 
     return row
 
-def convert_date_propostal(row):
-    try:
-        row['DATA_AVALIACAO'] = datetime.strptime(row['DATA_AVALIACAO'], '%d/%m/%y').date()
-    except ValueError:
-        row['DATA_AVALIACAO'] = None
-    return row
-
-#não ta aplicando os filtros
 def apply_filter_in_dataframe(df, date, establishment):
     if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = date[0]
-        endDate = date[1]
-        df = df.apply(convert_date_propostal, axis=1)
+        startDate = pd.Timestamp(date[0])
+        endDate = pd.Timestamp(date[1])
         df = df.dropna(subset=['DATA_AVALIACAO'])
     
         df = df[df['DATA_AVALIACAO'] >= startDate]
