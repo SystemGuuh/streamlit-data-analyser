@@ -40,6 +40,12 @@ def buildGeneralDash(df):
         # Body
         plotDataframe(df, "Dash Geral")
 
+# GMV total
+# Lista de shows
+# Shows por artista
+# Investimento por dia da semana
+# Ticket médio por artista
+# Compativo por casa
 def buildComparativeDash(df):
     st.header("DASH ANALÍTICO COMPARATIVO MENSAL")
 
@@ -149,6 +155,7 @@ def buildShowStatement(df):
     with container:
         plotDataframe(df, "Controle Lançamentos da semana corrente")
 
+# Extrato de shows
 def buildCompleteView(df):
     row1 = st.columns(4)
     row2 = st.columns(4)
