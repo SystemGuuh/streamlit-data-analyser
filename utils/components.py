@@ -4,8 +4,6 @@ from utils.dbconnect import GET_PROPOSTAS_BY_ID, GET_WEEKLY_FINANCES
 import pandas as pd
 import numpy as np
 from datetime import date
-import altair as alt
-
 
 def hide_sidebar():
     st.markdown("""

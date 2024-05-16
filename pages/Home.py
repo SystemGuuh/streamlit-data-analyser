@@ -34,7 +34,6 @@ if st.session_state['loggedIn']:
         logout()
         st.switch_page("main.py")
     
-
     # Nav
     st.divider()
     col4, col5, col6 = st.columns([1, 3, 1])
