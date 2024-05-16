@@ -62,7 +62,6 @@ def buildComparativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
 
-# ver média
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables
     artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
@@ -70,7 +69,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
     artistRanking = artistRanking.drop(columns=['ID'])
 
 
-    tab1, tab2= st.tabs(["Rancking", "Avaliações de casas e artistas"])
+    tab1, tab2= st.tabs(["Ranking", "Avaliações de casas e artistas"])
     with tab1:
         center = st.columns([1.5,2,1])
         with center[0]: 
@@ -104,26 +103,32 @@ def buildOperationalPerformace(df):
         st.dataframe(df)
 
 def buildFinances(df):
-    #formating tables
-    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
-    df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
-    df = df.drop(columns=['ID_PROPOSTA', 'ID_CASA', 'ID_ARTISTA'])
-
+    row1 = st.columns(6)
+    with row1[0]:
+        status = filterFinanceStatus(df)
+    with row1[1]:
+        proposal = filterFinanceProposal(df)
 
     st.header("DASH FINANCEIRO")
     tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
     with tab1:
-        printFinanceData(df)
         container = st.container(border=True)
         with container:
-          plotDataframe(df, "Dados Financeiros Semanais")
+            if status is not None:
+                df = df[df['STATUS_FINANCEIRO'] == status]
+            if proposal is not None:
+                df = df[df['STATUS_PROPOSTA'] == proposal]
+
+            printFinanceData(df)
+            df = formatFinancesDataframe(df)
+            plotDataframe(df, "Dados Financeiros Semanais")
+    
 
     with tab2:
         container = st.container(border=True)
         with container:
             plotDataframe(df, "Dados Financeiros Mensais") 
 
-#adicionar indicadores de status
 def buildShowStatement(df):
     col1, col2, col3 = st.columns([1,2,1])
     with col1:

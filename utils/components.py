@@ -56,4 +56,55 @@ def plotMapChart(df):
     
 # criar métricas para páginas de financas
 def printFinanceData(df):
-    st.write('')
+    row2 = st.columns(4)
+    tile = row2[0].container(border=True)
+    
+
+    tile.markdown(f"<h6 style='text-align: center;'>Shows Aceitos</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</h6>", unsafe_allow_html=True)
+
+    tile = row2[1].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Shows Cancelados</br>{(df['STATUS_PROPOSTA'] == 'Cancelada').sum()}</h6>", unsafe_allow_html=True)
+
+    tile = row2[2].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Bruto Total</br>R$ {'{:.2f}'.format(df['VALOR_BRUTO'].sum())}</h6>", unsafe_allow_html=True)
+
+    tile = row2[3].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Líquido Total</br>R$ {'{:.2f}'.format(df['VALOR_LIQUIDO'].sum())}</h6>", unsafe_allow_html=True)
+
+def filterFinanceStatus(df):
+    option = st.selectbox("Status Financeiro:",(df['STATUS_FINANCEIRO'].unique()),
+            index=None, placeholder="Escolha um")
+    return option
+
+def filterFinanceProposal(df):
+    option = st.selectbox("Status da Proposta:",(df['STATUS_PROPOSTA'].unique()),
+            index=None, placeholder="Escolha um")
+    return option
+
+def tranlate_day(dia):
+    dias_da_semana = {
+    'Monday': 'Segunda-feira',
+    'Tuesday': 'Terça-feira',
+    'Wednesday': 'Quarta-feira',
+    'Thursday': 'Quinta-feira',
+    'Friday': 'Sexta-feira',
+    'Saturday': 'Sábado',
+    'Sunday': 'Domingo'
+    }
+
+    return dias_da_semana[dia]
+
+def formatFinancesDataframe(df):
+    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(tranlate_day)
+    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
+    df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
+    
+    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA', 'HORARIO_INICIO': 'HORÁRIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
+                     'VALOR_LIQUIDO': 'VALOR LÍQUIDO', 'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+
+    df = df.drop(columns=['ID_PROPOSTA', 'ID_CASA', 'ID_ARTISTA', 'HORARIO_FIM', 'DATA_FIM'])
+
+    return df
+
+
+

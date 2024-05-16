@@ -314,35 +314,33 @@ def GET_ARTIST_RANKING(id):
 
 @st.cache_data # Financeiro
 def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
-    df =getDfFromQuery(f"""# BASE GERAL DE SHOWS COM FECHAMENTO FINANCEIRO
-SELECT
-P.ID AS ID_PROPOSTA,
-S.DESCRICAO AS STATUS_PROPOSTA,
-C.NAME AS CASA,
-A.NOME AS ARTISTA,
-P.DATA_INICIO AS DATA_INICIO,
-P.DATA_FIM AS DATA_FIM,
-TIMEDIFF(P.DATA_FIM, P.DATA_INICIO) AS DURACAO,
-DAYNAME(P.DATA_INICIO) AS DIA_DA_SEMANA,
-P.VALOR_BRUTO,
-C.ID AS ID_CASA,
-A.ID AS ID_ARTISTA,
-F.ID AS ID_FECHAMENTO,
-F.DATA_INICIO AS INICIO_FECHAMENTO,
-F.DATA_FIM AS FIM_FECHAMENTO
+    df =getDfFromQuery(f"""
+                        SELECT
+                        S.DESCRICAO AS STATUS_PROPOSTA,
+                        C.NAME AS CASA,
+                        A.NOME AS ARTISTA,
+                        P.DATA_INICIO AS DATA_INICIO,
+                        P.DATA_FIM AS DATA_FIM,
+                        TIMEDIFF(P.DATA_FIM, P.DATA_INICIO) AS DURACAO,
+                        DAYNAME(P.DATA_INICIO) AS DIA_DA_SEMANA,
+                        P.VALOR_BRUTO,
+                        F.ID AS ID_FECHAMENTO,
+                        F.DATA_INICIO AS INICIO_FECHAMENTO,
+                        F.DATA_FIM AS FIM_FECHAMENTO
 
-FROM T_PROPOSTAS P
-INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-INNER JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
-INNER JOIN T_FECHAMENTOS F ON F.ID = P.FK_FECHAMENTO
+                        FROM T_PROPOSTAS P
+                        INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                        INNER JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+                        LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+                        INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+                        INNER JOIN T_FECHAMENTOS F ON F.ID = P.FK_FECHAMENTO
 
-WHERE 
-P.FK_STATUS_PROPOSTA IN (100,101,103,104)
-AND GU.FK_USUARIO = {id}
-AND VALOR_TOTAL = 'SIM'
-""")
+                        WHERE 
+                        P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                        AND GU.FK_USUARIO = {id}
+                        AND VALOR_TOTAL = 'SIM'
+                        """)
+    
     return apply_filter_in_finance_dataframe(df, date, establishment)
 
 
