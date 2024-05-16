@@ -31,7 +31,7 @@ def filterEstablishmentComponent(id):
     return option
 
 def filterProposalComponent():
-    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Cancelada','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita'])
+    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Cancelada','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita', 'Cancelada'])
     return option
 
 def filterYearChartFinances():
