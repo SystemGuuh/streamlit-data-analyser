@@ -92,16 +92,22 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 with row2[1]:
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
+# Ranking por tipo de ocorrência
+# Rank de artistas com mais ocorrências
+# Lista detalhada
+# Histórico por semana
+# Taxa de checking e confirmação
 def buildOperationalPerformace(df):
+    row1 = st.columns(6)
+    with row1[0]:
+        type = filterReportType(df)
+
     container = st.container(border=True)
     with container:
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.dataframe(df)
-        with col2:
-            plotMapChart(df)
-
-        st.dataframe(df)
+        if type is not None:
+            plotDataframe(df[df['TIPO']==type], "Relatório de ocorrências com artistas")
+        else:
+            plotDataframe(df, "Relatório de ocorrências com artistas")
 
 def buildFinances(df, id):
     row1 = st.columns(6)

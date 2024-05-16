@@ -41,6 +41,11 @@ def filterYearChartFinances():
     option = st.selectbox("Escolha um ano:", years, index=years.index(2024))
     return option
 
+def filterReportType(df):
+    option = st.selectbox("Tipo de ocorrência:",(df['TIPO'].unique()),
+            index=None, placeholder="Escolha um")
+    return option
+
 def plotDataframe(df, name):
     st.markdown(f"<h4 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h4>", unsafe_allow_html=True)
     st.dataframe(df, hide_index=True, use_container_width=True)

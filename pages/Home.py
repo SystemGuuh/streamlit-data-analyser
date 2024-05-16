@@ -63,7 +63,8 @@ if st.session_state['loggedIn']:
         averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
-        buildOperationalPerformace(df)
+        operationalPerformace = GET_REPORT_ARTIST(id)
+        buildOperationalPerformace(operationalPerformace)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)
