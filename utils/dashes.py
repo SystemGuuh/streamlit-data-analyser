@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.components import *
+from utils.dbconnect import GET_WEEKLY_FINANCES
 
 def buildGeneralDash(df):
     container = st.container(border=True)
@@ -102,39 +103,42 @@ def buildOperationalPerformace(df):
 
         st.dataframe(df)
 
-def buildFinances(df):
+def buildFinances(df, id):
     row1 = st.columns(6)
     with row1[0]:
         proposal = filterProposalComponent()
     with row1[1]:
         status = filterFinanceStatus(df)
-
-    st.header("DASH FINANCEIRO")
-    tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
-    with tab1:
-        container = st.container(border=True)
-        with container:
-            if status is not None:
-                df = df[df['STATUS_FINANCEIRO'] == status]
-            if proposal is not None:
-                df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
-
-            printFinanceData(df)
-            df = formatFinancesDataframe(df)
-            plotDataframe(df, "Dados Financeiros Semanais")
+    with row1[2]:
+        year = filterYearChartFinances()
+    with row1[5]:
+        st.write("")
+        with st.popover("Consultar semana"):
+            weeklyeDaysNumber(id, year)
     
+    st.header("DASH FINANCEIRO")
+    container = st.container(border=True)
+    with container:
+        if status is not None:
+            df = df[df['STATUS_FINANCEIRO'] == status]
+        if proposal is not None:
+            df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
 
-    with tab2:
-        container = st.container(border=True)
-        with container:
-            plotDataframe(df, "Dados Financeiros Mensais") 
+        printFinanceData(df)
+        tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
+        with tab1:
+            plotFinanceWeeklyChart(id, year)
+        with tab2:
+            plotFinanceMonthlyChart(id, year)
+
+        df = formatFinancesDataframe(df)
+        plotDataframe(df, "Dados Financeiros Semanais")
 
 def buildShowStatement(df):
     col1, col2, col3 = st.columns([1,2,1])
     with col3:
         st.info('⚠️ Filtro de data não será aplicado!')
     
-    # Fazer filtro de proposta
     container = st.container(border=True)
     with container:
         plotDataframe(df, "Controle Lançamentos da semana corrente")

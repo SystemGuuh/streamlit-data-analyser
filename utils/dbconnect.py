@@ -170,7 +170,6 @@ def GET_PROPOSTAS_BY_ID(id):
                         AND P.FK_USUARIO = {id}
                         """)
 
-@st.cache_data
 def GET_USER_NAME(id):
     return getDfFromQuery(f"""SELECT 
                             TGU.FK_USUARIO,
@@ -283,7 +282,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
                             MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
     """)
 
-@st.cache_data # Avaliações - Rancking
+# Avaliações - Rancking
 def GET_ARTIST_RANKING(id):
     return  getDfFromQuery(f"""#RANCKIG DE ARTISTAS
                         SELECT
@@ -317,6 +316,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
     df =getDfFromQuery(f"""
                         SELECT
                         S.DESCRICAO AS STATUS_PROPOSTA,
+                        SF.DESCRICAO AS STATUS_FINANCEIRO,
                         C.NAME AS CASA,
                         A.NOME AS ARTISTA,
                         P.DATA_INICIO AS DATA_INICIO,
@@ -324,6 +324,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
                         TIMEDIFF(P.DATA_FIM, P.DATA_INICIO) AS DURACAO,
                         DAYNAME(P.DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
+                        P.VALOR_LIQUIDO,
                         F.ID AS ID_FECHAMENTO,
                         F.DATA_INICIO AS INICIO_FECHAMENTO,
                         F.DATA_FIM AS FIM_FECHAMENTO
@@ -334,16 +335,38 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
                         LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
                         INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
                         INNER JOIN T_FECHAMENTOS F ON F.ID = P.FK_FECHAMENTO
+                        LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
 
                         WHERE 
                         P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                         AND GU.FK_USUARIO = {id}
-                        AND VALOR_TOTAL = 'SIM'
                         """)
     
     return apply_filter_in_finance_dataframe(df, date, establishment)
 
-
+@st.cache_data # Financeiro
+def GET_WEEKLY_FINANCES(id, year):
+    return getDfFromQuery(f"""
+                        SELECT
+                            MONTHNAME(P.DATA_INICIO) AS MES,
+                            MONTH(P.DATA_INICIO) AS NUMERO_MES,
+                            WEEK(P.DATA_INICIO) AS NUMERO_SEMANA,
+                            DATE_FORMAT(DATE_ADD(P.DATA_INICIO, INTERVAL(1-DAYOFWEEK(P.DATA_INICIO)) DAY), '%d-%m-%Y') AS DIA,
+                            SUM(P.VALOR_BRUTO) AS VALOR_GANHO_BRUTO,
+                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO   
+                        FROM 
+                            T_PROPOSTAS P
+                            INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                            INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+                        WHERE 
+                            P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                            AND GU.FK_USUARIO = {id}
+                            AND YEAR(P.DATA_INICIO) = {year}
+                        GROUP BY 
+                            YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO)
+                        ORDER BY
+                            YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO) ASC
+                          """)
 
 
 

@@ -1,8 +1,11 @@
 import streamlit as st
 import datetime
-from utils.dbconnect import GET_PROPOSTAS_BY_ID
+from utils.dbconnect import GET_PROPOSTAS_BY_ID, GET_WEEKLY_FINANCES
 import pandas as pd
 import numpy as np
+from datetime import date
+import altair as alt
+
 
 def hide_sidebar():
     st.markdown("""
@@ -29,6 +32,13 @@ def filterEstablishmentComponent(id):
 
 def filterProposalComponent():
     option = st.multiselect("Proposta da semana recorrente:",['Aceita','Cancelada','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita'])
+    return option
+
+def filterYearChartFinances():
+    current_year = date.today().year
+    years = list(range(2015, current_year + 1))
+    years.insert(0, "Escolha um ano:")
+    option = st.selectbox("Escolha um ano:", years, index=years.index(2024))
     return option
 
 def plotDataframe(df, name):
@@ -93,9 +103,26 @@ def formatFinancesDataframe(df):
     df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA', 'HORARIO_INICIO': 'HORÁRIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
                      'VALOR_LIQUIDO': 'VALOR LÍQUIDO', 'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
 
-    df = df.drop(columns=['ID_PROPOSTA', 'ID_CASA', 'ID_ARTISTA', 'HORARIO_FIM', 'DATA_FIM'])
-
     return df
 
+def plotFinanceWeeklyChart(id, year):
+    df = GET_WEEKLY_FINANCES(id, year)
+    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
 
+    with st.expander("Gráfico de barras", expanded=True):
+        st.bar_chart(df[['NUMERO_SEMANA','VALOR_GANHO_BRUTO']], x='NUMERO_SEMANA', y='VALOR_GANHO_BRUTO', color=["#ff6600"])
+    with st.expander("Gráfico de linhas"):
+        st.line_chart(df[['NUMERO_SEMANA','VALOR_GANHO_BRUTO']], x='NUMERO_SEMANA', y='VALOR_GANHO_BRUTO', color=["#ff6600"])
+    
+def plotFinanceMonthlyChart(id, year):
+    df = GET_WEEKLY_FINANCES(id, year)
+    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
+    df = df.groupby('NUMERO_MES').sum().reset_index()
+    with st.expander("Gráfico de barras", expanded=True):
+        st.bar_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
+    with st.expander("Gráfico de linhas"):
+        st.line_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
 
+def weeklyeDaysNumber(id, year):
+    df = GET_WEEKLY_FINANCES(id, year)
+    st.dataframe(df[['NUMERO_SEMANA', 'DIA']], hide_index=True, use_container_width=True)

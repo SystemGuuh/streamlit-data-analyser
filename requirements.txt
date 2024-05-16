@@ -7,3 +7,4 @@ matplotlib
 monday
 mysql-connector-python
 streamlit-cookies-controller
+plotly.express

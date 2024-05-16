@@ -66,7 +66,7 @@ if st.session_state['loggedIn']:
         buildOperationalPerformace(df)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
-        buildFinances(df)
+        buildFinances(financeDash, id)
     with tab6:
         buildShowStatement(df)
 else:
