@@ -105,9 +105,9 @@ def buildOperationalPerformace(df):
 def buildFinances(df):
     row1 = st.columns(6)
     with row1[0]:
-        status = filterFinanceStatus(df)
+        proposal = filterProposalComponent()
     with row1[1]:
-        proposal = filterFinanceProposal(df)
+        status = filterFinanceStatus(df)
 
     st.header("DASH FINANCEIRO")
     tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
@@ -117,7 +117,7 @@ def buildFinances(df):
             if status is not None:
                 df = df[df['STATUS_FINANCEIRO'] == status]
             if proposal is not None:
-                df = df[df['STATUS_PROPOSTA'] == proposal]
+                df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
 
             printFinanceData(df)
             df = formatFinancesDataframe(df)
@@ -131,16 +131,13 @@ def buildFinances(df):
 
 def buildShowStatement(df):
     col1, col2, col3 = st.columns([1,2,1])
-    with col1:
-        filterProposal = filterProposalComponent()
     with col3:
         st.info('⚠️ Filtro de data não será aplicado!')
     
     # Fazer filtro de proposta
     container = st.container(border=True)
     with container:
-        df_filtrado = df[df['STATUS_PROPOSTA'].str.contains('|'.join(filterProposal))]
-        plotDataframe(df_filtrado, "Controle Lançamentos da semana corrente")
+        plotDataframe(df, "Controle Lançamentos da semana corrente")
 
 def buildCompleteView(df):
     row1 = st.columns(4)

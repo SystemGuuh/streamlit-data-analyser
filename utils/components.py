@@ -4,7 +4,6 @@ from utils.dbconnect import GET_PROPOSTAS_BY_ID
 import pandas as pd
 import numpy as np
 
-# Tira a sidebar
 def hide_sidebar():
     st.markdown("""
     <style>
@@ -29,20 +28,18 @@ def filterEstablishmentComponent(id):
     return option
 
 def filterProposalComponent():
-    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita'])
+    option = st.multiselect("Proposta da semana recorrente:",['Aceita','Cancelada','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita'])
     return option
 
 def plotDataframe(df, name):
     st.markdown(f"<h4 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h4>", unsafe_allow_html=True)
     st.dataframe(df, hide_index=True, use_container_width=True)
 
-# build after query
 def plotLineChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
 
     st.line_chart(df, x=xValue, y=yValue)
 
-# build after query
 def plotBarChart(name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     chart_data = pd.DataFrame({"col1": list(range(20)), "col2": np.random.randn(20), "col3": np.random.randn(20)})
@@ -54,7 +51,6 @@ def plotMapChart(df):
     columns=['lat', 'lon'])
     st.map(df)
     
-# criar métricas para páginas de financas
 def printFinanceData(df):
     row2 = st.columns(4)
     tile = row2[0].container(border=True)
@@ -73,11 +69,6 @@ def printFinanceData(df):
 
 def filterFinanceStatus(df):
     option = st.selectbox("Status Financeiro:",(df['STATUS_FINANCEIRO'].unique()),
-            index=None, placeholder="Escolha um")
-    return option
-
-def filterFinanceProposal(df):
-    option = st.selectbox("Status da Proposta:",(df['STATUS_PROPOSTA'].unique()),
             index=None, placeholder="Escolha um")
     return option
 
