@@ -57,9 +57,11 @@ if st.session_state['loggedIn']:
         buildComparativeDash(df)
     with tab3:
         artistRanking = GET_ARTIST_RANKING(id)
-        reviewArtirtsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
-        reviewHouseByArtirst = GET_REVIEW_HOUSE_BY_ARTIST(id, inputDate, inputEstablishment)
-        buildReview(artistRanking, reviewArtirtsByHouse, reviewHouseByArtirst)
+        reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
+        averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
+        reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
+        averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+        buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
         buildOperationalPerformace(df)
     with tab5:

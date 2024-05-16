@@ -34,7 +34,7 @@ def filterProposalComponent():
 
 def plotDataframe(df, name):
     st.markdown(f"<h4 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h4>", unsafe_allow_html=True)
-    st.dataframe(df, hide_index=1)
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
 # build after query
 def plotLineChart(df, xValue, yValue,name):
@@ -54,5 +54,6 @@ def plotMapChart(df):
     columns=['lat', 'lon'])
     st.map(df)
     
+# criar métricas para páginas de financas
 def printFinanceData(df):
     st.write('')

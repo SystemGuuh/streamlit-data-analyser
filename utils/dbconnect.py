@@ -86,7 +86,6 @@ def getDataframeDashGeral(id, date, establishment):
     
     return df
 
-# query para retornar propostas por data
 @st.cache_data
 def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
     return getDfFromQuery(f"""SELECT
@@ -132,7 +131,6 @@ def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
                             AND GU.FK_PERFIL IN (100,101)
                         """)
 
-# query para retornar propostas por id
 @st.cache_data
 def GET_PROPOSTAS_BY_ID(id):
     return getDfFromQuery(f"""
@@ -184,20 +182,18 @@ def GET_USER_NAME(id):
                             GROUP BY AU.ID
                           """)
 
-@st.cache_data
+@st.cache_data # Avaliações - Avaliações da casa
 def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     df = getDfFromQuery(f"""SELECT
-                            AV.ID AS ID_AVALIACAO,
-                            AV.FK_PROPOSTA AS ID_PROPOSTA,
                             A.NOME AS ARTISTA,
                             C.NAME AS CASA,
                             GC.GRUPO_CLIENTES AS GRUPO,
-                            P.DATA_INICIO AS DATA_PROPOSTA,
                             AV.NOTA,
                             AV.COMENTARIO,
-                            AV.LAST_UPDATE AS DATA_AVALIACAO,
                             AU.FULL_NAME AS AVALIADOR,
-                            AU.LOGIN AS EMAIL_AVALIADOR
+                            AU.LOGIN AS EMAIL_AVALIADOR,
+                            P.DATA_INICIO AS DATA_PROPOSTA,
+                            AV.LAST_UPDATE AS DATA_AVALIACAO
 
                             FROM T_AVALIACAO_ATRACOES AV
                             INNER JOIN T_PROPOSTAS P ON (P.ID = AV.FK_PROPOSTA)
@@ -214,20 +210,13 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     
     return apply_filter_in_dataframe(df, date, establishment)
 
-@st.cache_data
-def GET_REVIEW_HOUSE_BY_ARTIST(id, date, establishment):
-    df = getDfFromQuery(f"""SELECT
-                        AC.ID AS ID_AVALIACAO,
-                        AC.FK_PROPOSTA AS ID_PROPOSTA,
-                        A.NOME AS ARTISTA,
+@st.cache_data # Avaliações - Avaliações da casa
+def GET_REVIEW_HOUSE_BY_ARTIST(id):
+    return getDfFromQuery(f"""SELECT
                         C.NAME AS CASA,
                         GC.GRUPO_CLIENTES AS GRUPO,
-                        P.DATA_INICIO AS DATA_PROPOSTA,
                         AC.NOTA,
-                        AC.COMENTARIO,
-                        AC.LAST_UPDATE AS DATA_AVALIACAO,
-                        AU.FULL_NAME AS AVALIADOR,
-                        AU.LOGIN AS EMAIL_AVALIADOR
+                        AC.COMENTARIO
 
                         FROM T_AVALIACAO_CASAS AC
                         INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
@@ -241,11 +230,60 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id, date, establishment):
                         GU.STATUS = 1
                         AND GU.FK_USUARIO = {id}
                         AND AC.NOTA > 0
-                        """)
-    
-    return apply_filter_in_dataframe(df, date, establishment)
+                        """)   
 
-@st.cache_data
+@st.cache_data # Avaliações - Avaliações da casa
+def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
+    return getDfFromQuery(f"""SELECT
+                            A.NOME AS ARTISTA,
+                            ROUND(AVG(AV.NOTA), 2) AS MEDIA_NOTAS,
+                            COUNT(DISTINCT AV.ID) AS QUANTIDADE_AVALIACOES,
+                            COUNT(P.FK_CONTRATADO) AS NUM_SHOWS_ARTISTA
+
+                            FROM T_AVALIACAO_ATRACOES AV
+                            INNER JOIN T_PROPOSTAS P ON (P.ID = AV.FK_PROPOSTA)
+                            LEFT JOIN ADMIN_USERS AU ON (AU.ID = AV.LAST_USER)
+                            INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
+                            INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
+                            LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
+                            LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+
+                            WHERE
+                            GU.STATUS = 1
+                            AND GU.FK_USUARIO = {id}
+                            GROUP BY
+                            A.ID, A.NOME
+                            ORDER BY
+                            MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
+    """)
+
+@st.cache_data # Avaliações - Avaliações da casa
+def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
+    return getDfFromQuery(f"""SELECT
+                            C.NAME AS CASA,
+                            ROUND(AVG(AC.NOTA), 2) AS MEDIA_NOTAS,
+                            COUNT(DISTINCT AC.ID) AS QUANTIDADE_AVALIACOES,
+                            COUNT(P.FK_CONTRANTE) AS NUM_SHOWS_CASA
+
+                            FROM T_AVALIACAO_CASAS AC
+                            INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
+                            LEFT JOIN ADMIN_USERS AU ON (AU.ID = AC.LAST_USER)
+                            INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
+                            INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
+                            LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
+                            LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+
+                            WHERE 
+                            GU.STATUS = 1
+                            AND GU.FK_USUARIO = {id}
+                            AND AC.NOTA > 0
+                            GROUP BY
+                            C.ID, C.NAME
+                            ORDER BY
+                            MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
+    """)
+
+@st.cache_data # Avaliações - Rancking
 def GET_ARTIST_RANKING(id):
     return  getDfFromQuery(f"""#RANCKIG DE ARTISTAS
                         SELECT
@@ -273,9 +311,8 @@ def GET_ARTIST_RANKING(id):
                     ORDER BY
                         MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
                         """)
-    
-# Verificar filtro
-@st.cache_data
+
+@st.cache_data # Financeiro
 def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
     df =getDfFromQuery(f"""# BASE GERAL DE SHOWS COM FECHAMENTO FINANCEIRO
 SELECT
@@ -307,3 +344,8 @@ AND GU.FK_USUARIO = {id}
 AND VALOR_TOTAL = 'SIM'
 """)
     return apply_filter_in_finance_dataframe(df, date, establishment)
+
+
+
+
+
