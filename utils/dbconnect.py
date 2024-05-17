@@ -70,6 +70,23 @@ def apply_filter_in_finance_dataframe(df, date, establishment):
 
     return df
 
+# formatar data
+def apply_filter_in_report_dataframe(df, date, establishment):
+    if len(date) > 1 and date[0] is not None and date[1] is not None:
+        startDate = pd.Timestamp(date[0])
+        endDate = pd.Timestamp(date[1])
+        df = df.dropna(subset=['DATA'])
+    
+        df = df[pd.to_datetime(df['DATA']) >= startDate]
+        df = df[pd.to_datetime(df['DATA']) <= endDate]
+
+    if establishment is not None:
+        df = df[df['CONTRATANTE'] == establishment]
+
+    df['DATA'] = pd.to_datetime(df['DATA']) 
+    df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y'
+    return df
+
 def getDataframeDashGeral(id, date, establishment):
     df = GET_PROPOSTAS_BY_ID(id)
     if len(date) > 1 and date[0] is not None and date[1] is not None:
@@ -422,4 +439,30 @@ def GET_REPORT_ARTIST_BY_OCCURRENCE(id):
                             ORDER BY
                             QUANTIDADE DESC
                     """)
+
+@st.cache_data # Desempenho Operacional
+def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
+    df = getDfFromQuery(f"""
+                            SELECT
+                            A.NOME AS ARTISTA,
+                            DATE(OA.DATA_OCORRENCIA) AS DATA,
+                            TIPO.TIPO AS TIPO,
+                            C.NAME AS CONTRATANTE
+                            FROM 
+                            T_OCORRENCIAS_AUTOMATICAS OA
+                            LEFT JOIN T_PROPOSTAS P ON P.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_PROPOSTAS'
+                            LEFT JOIN T_NOTAS_FISCAIS NF ON NF.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_NOTAS_FISCAIS' AND NF.TIPO = 'NF_UNICA'
+                            LEFT JOIN T_NOTAS_FISCAIS NF2 ON NF2.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_NOTAS_FISCAIS' AND (NF2.TIPO = 'NF_SHOW_ANTECIPADO' OR NF2.TIPO = 'NF_SHOW_SOZINHOS')
+                            INNER JOIN T_ATRACOES A ON A.ID = OA.FK_ATRACAO
+                            INNER JOIN T_TIPOS_OCORRENCIAS TIPO ON TIPO.ID = OA.FK_TIPO_OCORRENCIA
+                            LEFT JOIN T_FECHAMENTOS F ON F.ID = NF.FK_FECHAMENTO
+                            LEFT JOIN T_PROPOSTAS P2 ON P2.ID = NF2.FK_PROPOSTA
+                            LEFT JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE OR C.ID = F.FK_CONTRATANTE OR C.ID = P2.FK_CONTRANTE)
+                            WHERE 
+                            C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
+                            AND C.ID NOT IN (102,343,632,633)
+                    """)
+
+    return apply_filter_in_report_dataframe(df, date, stablishment)
+
 

@@ -64,7 +64,8 @@ if st.session_state['loggedIn']:
     with tab4:
         operationalPerformace = GET_REPORT_ARTIST(id)
         operationalPerformaceByOccurrence = GET_REPORT_ARTIST_BY_OCCURRENCE(id)
-        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence)
+        allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
+        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)

@@ -69,8 +69,7 @@ def buildComparativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
 
-#aumentar tamanho da tabela por culpa da resolucao do monitor
-#adicionar container no ranking
+#Adicionar dados do top 3 talvez
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables
     artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
@@ -80,9 +79,11 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
 
     tab1, tab2= st.tabs(["Ranking", "Avaliações de casas e artistas"])
     with tab1:
-        center = st.columns([1.5,2,1])
-        with center[0]: 
-            plotDataframe(artistRanking, "Ranking")
+        container = st.container(border=True)
+        with container:
+            center = st.columns([2,2,1])
+            with center[0]: 
+                plotDataframe(artistRanking, "Ranking")
     with tab2:
         container = st.container(border=True)
         with container:
@@ -100,13 +101,10 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 with row2[1]:
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
-# Ranking por tipo de ocorrência
-# Rank de artistas com mais ocorrências
-# Lista detalhada
 # Histórico por semana
 # Taxa de checking e confirmação
-def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence):    
-    tab1, tab2= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência"])
+def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate):    
+    tab1, tab2, tab3= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana"])
     with tab1:
         plotDataframe(operationalPerformace, "Ranking de artistas comocorrências")
     with tab2:
@@ -119,6 +117,9 @@ def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOcc
                 plotDataframe(operationalPerformaceByOccurrence[operationalPerformaceByOccurrence['TIPO']==type], "Relatório de ocorrências com artistas")
             else:
                 plotDataframe(operationalPerformaceByOccurrence, "Relatório de ocorrências com artistas")
+    with tab3:
+        plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Todos relatórios de ocorrências com artistas por data")
+        
 
 def buildFinances(df, id):
     row1 = st.columns([2,1,1,1,1,1])
