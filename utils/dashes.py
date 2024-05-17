@@ -69,6 +69,8 @@ def buildComparativeDash(df):
             st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
             plotDataframe(df, "Dados por establecimento/mês")
 
+#aumentar tamanho da tabela por culpa da resolucao do monitor
+#adicionar container no ranking
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables
     artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
@@ -103,17 +105,20 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
 # Lista detalhada
 # Histórico por semana
 # Taxa de checking e confirmação
-def buildOperationalPerformace(df):
-    row1 = st.columns(6)
-    with row1[0]:
-        type = filterReportType(df)
-
-    container = st.container(border=True)
-    with container:
-        if type is not None:
-            plotDataframe(df[df['TIPO']==type], "Relatório de ocorrências com artistas")
-        else:
-            plotDataframe(df, "Relatório de ocorrências com artistas")
+def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence):    
+    tab1, tab2= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência"])
+    with tab1:
+        plotDataframe(operationalPerformace, "Ranking de artistas comocorrências")
+    with tab2:
+        row1 = st.columns(6)
+        with row1[0]:
+            type = filterReportType(operationalPerformaceByOccurrence)
+        container = st.container(border=True)
+        with container:
+            if type is not None:
+                plotDataframe(operationalPerformaceByOccurrence[operationalPerformaceByOccurrence['TIPO']==type], "Relatório de ocorrências com artistas")
+            else:
+                plotDataframe(operationalPerformaceByOccurrence, "Relatório de ocorrências com artistas")
 
 def buildFinances(df, id):
     row1 = st.columns([2,1,1,1,1,1])

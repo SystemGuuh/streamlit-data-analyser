@@ -370,10 +370,10 @@ def GET_WEEKLY_FINANCES(id, year):
 
 @st.cache_data # Desempenho Operacional
 def GET_REPORT_ARTIST(id):
-    return getDfFromQuery(f"""SELECT
+    return getDfFromQuery(f"""
+                        SELECT
                         A.NOME AS ARTISTA,
-                        DATE(OA.DATA_OCORRENCIA) AS DATA,
-                        TIPO.TIPO AS TIPO,
+                        DATE_FORMAT(OA.DATA_OCORRENCIA, '%d/%m/%Y') AS "DATA DA ÚLTIMA OCORRÊNCIA",
                         C.NAME AS CONTRATANTE,
                         COUNT(DISTINCT OA.ID) AS QUANTIDADE
                     FROM 
@@ -391,5 +391,35 @@ def GET_REPORT_ARTIST(id):
                         AND C.ID NOT IN (102,343,632,633)
                     GROUP BY
                         OA.FK_ATRACAO
+                    ORDER BY
+                        QUANTIDADE DESC
                           """)
+
+@st.cache_data # Desempenho Operacional
+def GET_REPORT_ARTIST_BY_OCCURRENCE(id):
+    return getDfFromQuery(f"""
+                            SELECT
+                            A.NOME AS ARTISTA,
+                            DATE_FORMAT(OA.DATA_OCORRENCIA, '%d/%m/%Y') AS "DATA DA ÚLTIMA OCORRÊNCIA",
+                            TIPO.TIPO AS TIPO,
+                            C.NAME AS CONTRATANTE,
+                            COUNT(*) AS QUANTIDADE
+                            FROM 
+                            T_OCORRENCIAS_AUTOMATICAS OA
+                            LEFT JOIN T_PROPOSTAS P ON P.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_PROPOSTAS'
+                            LEFT JOIN T_NOTAS_FISCAIS NF ON NF.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_NOTAS_FISCAIS' AND NF.TIPO = 'NF_UNICA'
+                            LEFT JOIN T_NOTAS_FISCAIS NF2 ON NF2.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_NOTAS_FISCAIS' AND (NF2.TIPO = 'NF_SHOW_ANTECIPADO' OR NF2.TIPO = 'NF_SHOW_SOZINHOS')
+                            INNER JOIN T_ATRACOES A ON A.ID = OA.FK_ATRACAO
+                            INNER JOIN T_TIPOS_OCORRENCIAS TIPO ON TIPO.ID = OA.FK_TIPO_OCORRENCIA
+                            LEFT JOIN T_FECHAMENTOS F ON F.ID = NF.FK_FECHAMENTO
+                            LEFT JOIN T_PROPOSTAS P2 ON P2.ID = NF2.FK_PROPOSTA
+                            LEFT JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE OR C.ID = F.FK_CONTRATANTE OR C.ID = P2.FK_CONTRANTE)
+                            WHERE 
+                            C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
+                            AND C.ID NOT IN (102,343,632,633)
+                            GROUP BY
+                            OA.FK_ATRACAO, TIPO.TIPO
+                            ORDER BY
+                            QUANTIDADE DESC
+                    """)
 

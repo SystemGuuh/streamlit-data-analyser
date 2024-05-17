@@ -63,7 +63,8 @@ if st.session_state['loggedIn']:
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
         operationalPerformace = GET_REPORT_ARTIST(id)
-        buildOperationalPerformace(operationalPerformace)
+        operationalPerformaceByOccurrence = GET_REPORT_ARTIST_BY_OCCURRENCE(id)
+        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)
