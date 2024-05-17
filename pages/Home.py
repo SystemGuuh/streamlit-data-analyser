@@ -60,12 +60,15 @@ if st.session_state['loggedIn']:
         averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
         reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
         averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
-        operationalPerformace = GET_REPORT_ARTIST(id)
-        operationalPerformaceByOccurrence = GET_REPORT_ARTIST_BY_OCCURRENCE(id)
+        operationalPerformace = GET_REPORT_ARTIST(id, inputDate, inputEstablishment)
+        operationalPerformaceByOccurrence = GET_REPORT_ARTIST_BY_OCCURRENCE(id, inputDate, inputEstablishment)
         allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
-        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate)
+        artistCheckinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
+
+        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)

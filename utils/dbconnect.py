@@ -84,7 +84,7 @@ def apply_filter_in_report_dataframe(df, date, establishment):
         df = df[df['CONTRATANTE'] == establishment]
 
     df['DATA'] = pd.to_datetime(df['DATA']) 
-    df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y'
+    df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
     return df
 
 def getDataframeDashGeral(id, date, establishment):
@@ -386,11 +386,11 @@ def GET_WEEKLY_FINANCES(id, year):
                           """)
 
 @st.cache_data # Desempenho Operacional
-def GET_REPORT_ARTIST(id):
-    return getDfFromQuery(f"""
+def GET_REPORT_ARTIST(id, date, stablishment):
+    df = getDfFromQuery(f"""
                         SELECT
                         A.NOME AS ARTISTA,
-                        DATE_FORMAT(OA.DATA_OCORRENCIA, '%d/%m/%Y') AS "DATA DA ÚLTIMA OCORRÊNCIA",
+                        DATE(OA.DATA_OCORRENCIA) AS DATA,
                         C.NAME AS CONTRATANTE,
                         COUNT(DISTINCT OA.ID) AS QUANTIDADE
                     FROM 
@@ -411,13 +411,14 @@ def GET_REPORT_ARTIST(id):
                     ORDER BY
                         QUANTIDADE DESC
                           """)
+    return apply_filter_in_report_dataframe(df, date, stablishment)
 
 @st.cache_data # Desempenho Operacional
-def GET_REPORT_ARTIST_BY_OCCURRENCE(id):
-    return getDfFromQuery(f"""
+def GET_REPORT_ARTIST_BY_OCCURRENCE(id, date, stablishment):
+    df = getDfFromQuery(f"""
                             SELECT
                             A.NOME AS ARTISTA,
-                            DATE_FORMAT(OA.DATA_OCORRENCIA, '%d/%m/%Y') AS "DATA DA ÚLTIMA OCORRÊNCIA",
+                            DATE(OA.DATA_OCORRENCIA) AS DATA,
                             TIPO.TIPO AS TIPO,
                             C.NAME AS CONTRATANTE,
                             COUNT(*) AS QUANTIDADE
@@ -439,6 +440,7 @@ def GET_REPORT_ARTIST_BY_OCCURRENCE(id):
                             ORDER BY
                             QUANTIDADE DESC
                     """)
+    return apply_filter_in_report_dataframe(df, date, stablishment)
 
 @st.cache_data # Desempenho Operacional
 def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
@@ -465,4 +467,27 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
 
     return apply_filter_in_report_dataframe(df, date, stablishment)
 
-
+def GET_ARTIST_CHECKIN_CHECKOUT(id):
+    return getDfFromQuery(f"""
+                            SELECT
+                            A.NOME AS ARTISTA,
+                            COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) AS QUANTIDADE_CHECKIN,
+                            COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END) AS QUANTIDADE_CHECKOUT,
+                            (COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) + COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END)) AS TOTAL_CHECKIN_CHECKOUT
+                            FROM T_PROPOSTAS P
+                            LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                            LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+                            LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+                            INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO 
+                            AND GU.STATUS = 1
+                            AND GU.FK_PERFIL IN (100,101)
+                            WHERE P.TESTE = 0 
+                            AND P.FK_CONTRANTE IS NOT NULL 
+                            AND P.FK_CONTRATADO IS NOT NULL 
+                            AND P.DATA_INICIO IS NOT NULL 
+                            AND P.FK_USUARIO = {id}
+                            GROUP BY 
+                                A.NOME
+                            ORDER BY 
+                                TOTAL_CHECKIN_CHECKOUT DESC;
+                          """)

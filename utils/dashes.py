@@ -103,8 +103,8 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
 
 # Histórico por semana
 # Taxa de checking e confirmação
-def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate):    
-    tab1, tab2, tab3= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana"])
+def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
+    tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:
         plotDataframe(operationalPerformace, "Ranking de artistas comocorrências")
     with tab2:
@@ -119,6 +119,8 @@ def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOcc
                 plotDataframe(operationalPerformaceByOccurrence, "Relatório de ocorrências com artistas")
     with tab3:
         plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Todos relatórios de ocorrências com artistas por data")
+    with tab4:
+        plotDataframe(artistCheckinCheckout, "Quantidade de checkin e checkout por artista")
         
 
 def buildFinances(df, id):
