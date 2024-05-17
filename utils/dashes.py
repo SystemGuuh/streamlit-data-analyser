@@ -116,7 +116,7 @@ def buildOperationalPerformace(df):
             plotDataframe(df, "Relatório de ocorrências com artistas")
 
 def buildFinances(df, id):
-    row1 = st.columns(6)
+    row1 = st.columns([2,1,1,1,1,1])
     with row1[0]:
         proposal = filterProposalComponent()
     with row1[1]:
