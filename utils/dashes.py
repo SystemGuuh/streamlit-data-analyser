@@ -1,6 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
+from decimal import Decimal
 
 def buildGeneralDash(df):
     container = st.container(border=True)
@@ -11,7 +12,7 @@ def buildGeneralDash(df):
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
         countEstablishments = df['CASA'].nunique()
-        averageTicket = round(df['VALOR_LIQUIDO'].mean(), 2)
+        averageTicket = round(df['VALOR_BRUTO'].mean(), 2)
 
         if showNumbers > 0: meanShowsByHouse = round((showNumbers / countEstablishments), 2)
         else: meanShowsByHouse=0
@@ -53,21 +54,15 @@ def buildComparativeDash(df):
     with tab1:
         container = st.container(border=True)
         with container:
-            st.dataframe(df, hide_index=1)
-            plotDataframe(df, "Valores por dia da semana")
+            st.write('building...')
     with tab2:
         container = st.container(border=True)
         with container:
-            chart_data = df[["ARTISTA", "VALOR_BRUTO", "VALOR_LIQUIDO"]]
-            st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
-
-            plotDataframe(df, "Dados por establecimento/mês")
+            st.write('building...')
     with tab3:
         container = st.container(border=True)
         with container:
-            chart_data = df[["ARTISTA", "VALOR_BRUTO", "VALOR_LIQUIDO"]]
-            st.line_chart(chart_data, x="ARTISTA", y=("VALOR_BRUTO", "VALOR_LIQUIDO"))
-            plotDataframe(df, "Dados por establecimento/mês")
+            st.write('building...')
 
 #Adicionar dados do top 3 talvez
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
@@ -104,7 +99,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
 def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
     tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:
-        plotDataframe(operationalPerformace, "Ranking de artistas comocorrências")
+        plotDataframe(operationalPerformace, "Ranking de artistas com ocorrências")
     with tab2:
         row1 = st.columns(6)
         with row1[0]:
@@ -120,7 +115,6 @@ def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOcc
     with tab4:
         plotDataframe(artistCheckinCheckout, "Quantidade de checkin e checkout por artista")
         
-
 def buildFinances(df, id):
     row1 = st.columns([2,1,1,1,1,1])
     with row1[0]:
@@ -153,55 +147,33 @@ def buildFinances(df, id):
         plotDataframe(df, "Dados Financeiros Semanais")
 
 def buildShowStatement(df):
-    col1, col2, col3 = st.columns([1,2,1])
-    with col3:
-        st.info('⚠️ Filtro de data não será aplicado!')
-    
-    container = st.container(border=True)
-    with container:
-        plotDataframe(df, "Controle Lançamentos da semana corrente")
+    # getting values
+    total = df.shape[0]
+    hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
+    artist = df['ARTISTA'].value_counts().idxmax()
+    value = sum(df['VALOR_BRUTO']).quantize(Decimal('0.00'))
 
-# Extrato de shows
-def buildCompleteView(df):
+    # formating
+    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
+    df = df.drop(columns=['ID_PROPOSTA'])
+    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
+                      'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+
     row1 = st.columns(4)
-    row2 = st.columns(4)
 
     tile = row1[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
 
     tile = row1[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Artista Favorito:</br>{artist}</h6>", unsafe_allow_html=True)
 
     tile = row1[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{hours}</h6>", unsafe_allow_html=True)
 
     tile = row1[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
-
-    tile = row2[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
-
-    tile = row2[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
-
-    tile = row2[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
-
-    tile = row2[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Mais detalhes</br></h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de valor bruto:</br>R$ {value}</h6>", unsafe_allow_html=True)
     
     container = st.container(border=True)
     with container:
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            plotDataframe(df, "Ranking - Experiência da Casa")
-        with col2:
-            plotDataframe(df, "Ranking - Experiência do Artista")
-        with col3:
-            plotDataframe(df, "Histórico por Semana - Experiência do Artistas")
-        
-        with st.expander("Ver Avaliações dos Artistas Sobre as Casas"):
-            plotDataframe(df, "Avaliações dos Artistas Sobre as Casas")
-        with st.expander("Ver Avaliações dos Gestores das Casas Sobre os Artistas"):
-            plotDataframe(df, "Avaliações dos Gestores das Casas Sobre os Artistas")
+        plotDataframe(df, "Extrato de propostas e shows")
              

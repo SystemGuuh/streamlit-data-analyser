@@ -42,7 +42,9 @@ if st.session_state['loggedIn']:
     col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
-    df = getDataframeDashGeral(id, inputDate, inputEstablishment) 
+
+    df = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
+    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(translate_day)
 
     # Dataframe vazio
     if df.empty:
@@ -73,6 +75,9 @@ if st.session_state['loggedIn']:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)
     with tab6:
-        buildShowStatement(df)
+        showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
+        showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+        
+        buildShowStatement(showStatement)
 else:
     st.switch_page("main.py")

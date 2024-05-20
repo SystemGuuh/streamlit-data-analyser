@@ -23,7 +23,7 @@ def filterCalendarComponent():
     return d
 
 def filterEstablishmentComponent(id):
-    df = GET_PROPOSTAS_BY_ID(id)
+    df = GET_PROPOSTAS_BY_ID(id, None, None)
     option = st.selectbox("Estabelecimentos:",(df['CASA'].unique()),
             index=None, placeholder="Escolha um")
     return option
@@ -85,7 +85,7 @@ def filterFinanceStatus(df):
             index=None, placeholder="Escolha um")
     return option
 
-def tranlate_day(dia):
+def translate_day(dia):
     dias_da_semana = {
     'Monday': 'Segunda-feira',
     'Tuesday': 'Terça-feira',
@@ -99,7 +99,7 @@ def tranlate_day(dia):
     return dias_da_semana[dia]
 
 def formatFinancesDataframe(df):
-    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(tranlate_day)
+    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(translate_day)
     df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
     df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
     

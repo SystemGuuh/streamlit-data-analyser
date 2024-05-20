@@ -70,7 +70,6 @@ def apply_filter_in_finance_dataframe(df, date, establishment):
 
     return df
 
-# formatar data
 def apply_filter_in_report_dataframe(df, date, establishment):
     if len(date) > 1 and date[0] is not None and date[1] is not None:
         startDate = pd.Timestamp(date[0])
@@ -87,6 +86,28 @@ def apply_filter_in_report_dataframe(df, date, establishment):
     df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
     return df
 
+def apply_filter_in_geral_dataframe(df, date, establishment):
+    if date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA_INICIO'])
+            df = df.dropna(subset=['DATA_FIM'])
+        
+            df = df[pd.to_datetime(df['DATA_INICIO']) >= startDate]
+            df = df[pd.to_datetime(df['DATA_FIM']) <= endDate]
+
+    if establishment is not None:
+        df = df[df['CONTRATANTE'] == establishment]
+
+    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO']) 
+    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
+
+    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM']) 
+    df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
+
+    return df
+
 def get_report_artist(df):
     df['QUANTIDADE'] = df.groupby('ARTISTA')['ARTISTA'].transform('count')
     df_grouped = df.drop_duplicates(subset=['ARTISTA'])
@@ -99,70 +120,9 @@ def get_report_artist_by_occurrence(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
-def getDataframeDashGeral(id, date, establishment):
-    df = GET_PROPOSTAS_BY_ID(id)
-    if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = date[0]
-        endDate = date[1]
-        df = df.apply(convert_date, axis=1)
-        df = df.dropna(subset=['DATA_INICIO'])
-        
-        df = df[df['DATA_INICIO'] >= startDate]
-        df = df[df['DATA_FIM'] <= endDate]
-
-    if establishment is not None:
-        df = df[df['CASA'] == establishment]
-    
-    return df
-
 @st.cache_data
-def GET_PROPOSTAS_BY_ID_AND_DATE(id, startDate, endDate):
-    return getDfFromQuery(f"""SELECT
-                            P.ID AS ID_PROPOSTA,
-                            CASE 
-                                WHEN S.DESCRICAO IS NULL THEN "Cancelada"
-                                ELSE S.DESCRICAO
-                            END AS STATUS_PROPOSTA,
-                            C.NAME AS CASA,
-                            A.NOME AS ARTISTA,
-                            DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO, 
-                            DATE_FORMAT(DATA_INICIO, '%H:%i') AS HORARIO_INICIO,
-                            DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM, 
-                            DATE_FORMAT(DATA_FIM, '%H:%i') AS HORARIO_FIM,
-                            TIMEDIFF(DATA_FIM, DATA_INICIO) AS DURACAO,
-                            DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
-                            P.VALOR_BRUTO,
-                            P.VALOR_LIQUIDO,
-                            P.VALOR_BRUTO_OCULTO,
-                            SF.DESCRICAO AS STATUS_FINANCEIRO,
-                            F.FONTE,
-                            P.B2C,
-                            P.ADIANTAMENTO,
-                            C.ID AS ID_CASA,
-                            A.ID AS ID_ARTISTA,
-                            P.FK_USUARIO,
-                            GU.FK_USUARIO
-                        FROM T_PROPOSTAS P
-                        LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-                        LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-                        LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                        LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
-                        LEFT JOIN T_FONTE F ON (F.ID = P.FK_FONTE)
-                        INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO
-                        WHERE P.TESTE = 0 
-                            AND P.FK_CONTRANTE IS NOT NULL 
-                            AND P.FK_CONTRATADO IS NOT NULL 
-                            AND P.DATA_INICIO IS NOT NULL 
-                            AND P.FK_USUARIO = {id}
-                            AND P.DATA_INICIO >= '{startDate}'
-                            AND P.DATA_FIM <= '{endDate}'
-                            AND GU.STATUS = 1
-                            AND GU.FK_PERFIL IN (100,101)
-                        """)
-
-@st.cache_data
-def GET_PROPOSTAS_BY_ID(id):
-    return getDfFromQuery(f"""
+def GET_PROPOSTAS_BY_ID(id, date, establishment):
+    df =  getDfFromQuery(f"""
                     SELECT DISTINCT
                         P.ID AS ID_PROPOSTA,
                         CASE 
@@ -171,17 +131,12 @@ def GET_PROPOSTAS_BY_ID(id):
                         END AS STATUS_PROPOSTA,
                         C.NAME AS CASA,
                         A.NOME AS ARTISTA,
-                        DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO, 
-                        DATE_FORMAT(DATA_INICIO, '%H:%i') AS HORARIO_INICIO,
-                        DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM, 
-                        DATE_FORMAT(DATA_FIM, '%H:%i') AS HORARIO_FIM,
+                        DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO,
+                        DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM,
                         TIMEDIFF(DATA_FIM, DATA_INICIO) AS DURACAO,
                         DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
-                        P.VALOR_LIQUIDO,
-                        SF.DESCRICAO AS STATUS_FINANCEIRO,
-                        C.ID AS ID_CASA,
-                        A.ID AS ID_ARTISTA
+                        SF.DESCRICAO AS STATUS_FINANCEIRO
                         
                     FROM T_PROPOSTAS P
                     LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
@@ -198,6 +153,8 @@ def GET_PROPOSTAS_BY_ID(id):
                         AND P.DATA_INICIO IS NOT NULL 
                         AND P.FK_USUARIO = {id}
                         """)
+
+    return apply_filter_in_geral_dataframe(df, date, establishment)
 
 def GET_USER_NAME(id):
     return getDfFromQuery(f"""SELECT 
