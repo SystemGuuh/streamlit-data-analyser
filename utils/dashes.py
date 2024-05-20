@@ -101,8 +101,6 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 with row2[1]:
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
-# Histórico por semana
-# Taxa de checking e confirmação
 def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
     tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:

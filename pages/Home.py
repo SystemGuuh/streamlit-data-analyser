@@ -63,9 +63,9 @@ if st.session_state['loggedIn']:
 
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
-        operationalPerformace = GET_REPORT_ARTIST(id, inputDate, inputEstablishment)
-        operationalPerformaceByOccurrence = GET_REPORT_ARTIST_BY_OCCURRENCE(id, inputDate, inputEstablishment)
         allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
+        operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate)
+        operationalPerformaceByOccurrence = get_report_artist_by_occurrence(allOperationalPerformaceByOccurrenceAndDate)
         artistCheckinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
 
         buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout)
