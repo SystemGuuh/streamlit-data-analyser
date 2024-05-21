@@ -4,6 +4,7 @@ from utils.dbconnect import GET_PROPOSTAS_BY_ID, GET_WEEKLY_FINANCES
 import pandas as pd
 import numpy as np
 from datetime import date
+from io import BytesIO
 
 def hide_sidebar():
     st.markdown("""
@@ -130,3 +131,21 @@ def plotFinanceMonthlyChart(id, year):
 def weeklyeDaysNumber(id, year):
     df = GET_WEEKLY_FINANCES(id, year)
     st.dataframe(df[['NUMERO_SEMANA', 'DIA']], hide_index=True, use_container_width=True)
+
+def to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Sheet1')
+    writer.close()
+    processed_data = output.getvalue()
+    return processed_data
+
+def buttonDowloadDash(df, name):
+    st.download_button(
+    label='Baixar em Excel',
+    data=to_excel(df),
+    file_name=f"{name}.xlsx",
+    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+

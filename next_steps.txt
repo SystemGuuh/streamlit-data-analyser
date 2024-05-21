@@ -1,10 +1,10 @@
 > Extrato:
--- Ticket médio no lugar de artista mais contratado(colocar no final)
--- Arrumar nomes da colunas
--- Valor Transacionado no lugar de  'total valor bruto'
--- Coluna 'Casa' trocar por Estabelecimento
--- botao pra dowload pra excel
----- precisa tirar 'ç' e trocar pra c
+Ticket médio no lugar de artista mais contratado(colocar no final)
+Arrumar nomes da colunas
+Valor Transacionado no lugar de  'total valor bruto'
+Coluna 'Casa' trocar por Estabelecimento
+botao pra dowload pra excel
+precisa tirar 'ç' e trocar pra c
 -- Ver questao das horas 
 -- Conferir querys tem que puxar por GU.FK_USUARUO
 -- Colocar máscara no valor bruto
@@ -39,7 +39,7 @@
 -- Colocar um extrato de avalições no final (Data do show, avaliação, fiuncionário, artista...)
 
 Header
-Arrumar logo
+-- Arrumar logo
 Colocar botão na mesma linha(direita)
 Ocupar menos espaço
 Arrumar filtro erro nome CASA e CONTRATANTE mudar para ESTABLECIMENTO

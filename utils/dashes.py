@@ -181,30 +181,33 @@ def buildShowStatement(df):
     # getting values
     total = df.shape[0]
     hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
-    artist = df['ARTISTA'].value_counts().idxmax()
+    ticket = (sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00'))
     value = sum(df['VALOR_BRUTO']).quantize(Decimal('0.00'))
 
     # formating
     df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
     df = df.drop(columns=['ID_PROPOSTA'])
-    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',
+    df_renamed = df
+    df_renamed = df_renamed.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',
                       'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
 
     row1 = st.columns(4)
 
     tile = row1[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Artista Mais Contratado:</br>{artist}</h6>", unsafe_allow_html=True)
-
-    tile = row1[1].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
 
-    tile = row1[2].container(border=True)
+    tile = row1[1].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{hours} Horas</h6>", unsafe_allow_html=True)
 
+    tile = row1[2].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado:</br>R$ {value}</h6>", unsafe_allow_html=True)
+
     tile = row1[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de valor bruto:</br>R$ {value}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
     
+    buttonDowloadDash(df, "Extrato-de-Shows")
+
     container = st.container(border=True)
     with container:
-        plotDataframe(df, "Extrato de propostas e shows")
+        plotDataframe(df_renamed, "Extrato de propostas e shows")
              

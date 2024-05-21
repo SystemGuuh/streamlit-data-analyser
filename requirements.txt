@@ -4,3 +4,4 @@ streamlit
 matplotlib
 monday
 mysql-connector-python
+xlsxwriter
