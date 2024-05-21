@@ -21,16 +21,17 @@ if st.session_state['loggedIn']:
     id = 31582
 
     # Header
-    col1, col2 = st.columns([4,1])
+    col1, col2, col3 = st.columns([9,0.6,1])
 
     # Caso não ache o ID de usuário
     username = GET_USER_NAME(id)
     if username.empty:
         col1.error('ID de usuário não encontrado')
     else:
-        col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
-    col2.image("./assets/imgs/eshows-logo.png", width=100)
-    if col2.button("Logout"):
+        col1.write(f"# Olá, {username.iloc[0]['FULL_NAME']}")
+    col2.image("./assets/imgs/eshows100x100.png")
+    
+    if col3.button("Logout"):
         logout()
         st.switch_page("main.py")
     

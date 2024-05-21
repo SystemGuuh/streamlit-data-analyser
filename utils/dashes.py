@@ -12,7 +12,7 @@ def buildGeneralDash(df):
 
         showNumbers = df.shape[0]
         trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
-        countEstablishments = df['CASA'].nunique()
+        countEstablishments = df['ESTABLECIMENTO'].nunique()
         averageTicket = round(df['VALOR_BRUTO'].mean(), 2)
 
         if showNumbers > 0: meanShowsByHouse = round((showNumbers / countEstablishments), 2)

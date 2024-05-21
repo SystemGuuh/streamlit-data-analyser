@@ -1,1 +1,47 @@
-- Extrato:
+> Extrato:
+-- Ticket médio no lugar de artista mais contratado(colocar no final)
+-- Arrumar nomes da colunas
+-- Valor Transacionado no lugar de  'total valor bruto'
+-- Coluna 'Casa' trocar por Estabelecimento
+-- botao pra dowload pra excel
+---- precisa tirar 'ç' e trocar pra c
+-- Ver questao das horas 
+-- Conferir querys tem que puxar por GU.FK_USUARUO
+-- Colocar máscara no valor bruto
+
+> Desempenho Operacional:
+- Graficos: 
+-- Pizza pra tipo de ocorrências
+-- Barras para artistas com mais ocorrências
+-- Barras para históricos de quantidade de ocorrências por semana
+-- Barras de taxa de checkin por artista
+
+- Desing:
+-- Tentar implementação com uma aba só
+-- Aba de resumo com gráficos
+-- Mudar título 'Ranking de artistas com Mais Ocorrências'
+--- Contratante == Estabelecimento
+--- Remover o hide_index
+--- Filtro por tipo de ocorrência
+-- Ranking de artistas com mais ocorrência
+-- Aba resumo e aba de extratos
+
+> Avaliações:
+-- Arrumar formatação dos nomes das colunas
+-- Separar em abas de 'Artista para Estabelecimento' e 'Estabelecimento para artista'
+-- Graficos:
+--- Funcionários que mais avaliam(satisfação dos funcionário)
+-------- Quantidade de avaliação e média de avaliação
+-------- Não precisa do extrato, somente comentário e nota ordenado por data da avaliação(não mostrar a data no front)
+-- Artistas mais avaliados
+-------- Quantidadede artistas mais avaliadis com média
+-- Média de avaliação por semana
+-- Colocar um extrato de avalições no final (Data do show, avaliação, fiuncionário, artista...)
+
+Header
+Arrumar logo
+Colocar botão na mesma linha(direita)
+Ocupar menos espaço
+Arrumar filtro erro nome CASA e CONTRATANTE mudar para ESTABLECIMENTO
+Filtro de casa ordenado por ordem alfabética
+

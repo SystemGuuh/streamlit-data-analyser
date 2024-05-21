@@ -52,7 +52,7 @@ def apply_filter_in_dataframe(df, date, establishment):
         df = df[df['DATA_AVALIACAO'] <= endDate]
 
     if establishment is not None:
-        df = df[df['CASA'] == establishment]
+        df = df[df['ESTABLECIMENTO'] == establishment]
 
     return df
 
@@ -66,7 +66,7 @@ def apply_filter_in_finance_dataframe(df, date, establishment):
         df = df[df['DATA_FIM'] <= endDate]
 
     if establishment is not None:
-        df = df[df['CASA'] == establishment]
+        df = df[df['ESTABLECIMENTO'] == establishment]
 
     return df
 
@@ -129,7 +129,7 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                             WHEN S.DESCRICAO IS NULL THEN "Cancelada"
                             ELSE S.DESCRICAO
                         END AS STATUS_PROPOSTA,
-                        C.NAME AS CASA,
+                        C.NAME AS ESTABLECIMENTO,
                         A.NOME AS ARTISTA,
                         DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO,
                         DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM,
@@ -171,7 +171,7 @@ def GET_USER_NAME(id):
 def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     df = getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
-                            C.NAME AS CASA,
+                            C.NAME AS ESTABLECIMENTO,
                             GC.GRUPO_CLIENTES AS GRUPO,
                             AV.NOTA,
                             AV.COMENTARIO,
@@ -198,7 +198,7 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
 @st.cache_data # Avaliações - Avaliações da casa
 def GET_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
-                        C.NAME AS CASA,
+                        C.NAME AS ESTABLECIMENTO,
                         GC.GRUPO_CLIENTES AS GRUPO,
                         AC.NOTA,
                         AC.COMENTARIO
@@ -245,7 +245,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
 @st.cache_data # Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
-                            C.NAME AS CASA,
+                            C.NAME AS ESTABLECIMENTO,
                             ROUND(AVG(AC.NOTA), 2) AS MEDIA_NOTAS,
                             COUNT(DISTINCT AC.ID) AS QUANTIDADE_AVALIACOES,
                             COUNT(P.FK_CONTRANTE) AS NUM_SHOWS_CASA
@@ -303,12 +303,12 @@ def GET_ARTIST_RANKING(id):
                         """)
 
 @st.cache_data # Financeiro
-def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
+def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment): 
     df =getDfFromQuery(f"""
                         SELECT
                         S.DESCRICAO AS STATUS_PROPOSTA,
                         SF.DESCRICAO AS STATUS_FINANCEIRO,
-                        C.NAME AS CASA,
+                        C.NAME AS ESTABLECIMENTO,
                         A.NOME AS ARTISTA,
                         P.DATA_INICIO AS DATA_INICIO,
                         P.DATA_FIM AS DATA_FIM,
@@ -366,7 +366,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             A.NOME AS ARTISTA,
                             DATE(OA.DATA_OCORRENCIA) AS DATA,
                             TIPO.TIPO AS TIPO,
-                            C.NAME AS CONTRATANTE
+                            C.NAME AS ESTABLECIMENTO
                             FROM 
                             T_OCORRENCIAS_AUTOMATICAS OA
                             LEFT JOIN T_PROPOSTAS P ON P.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_PROPOSTAS'
