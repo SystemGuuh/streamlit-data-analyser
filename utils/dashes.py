@@ -3,6 +3,7 @@ from utils.components import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
 
+# Dash Geral
 def buildGeneralDash(df):
     container = st.container(border=True)
     with container:
@@ -47,6 +48,7 @@ def buildGeneralDash(df):
 # Investimento por dia da semana
 # Ticket médio por artista
 # Compativo por casa
+# Comparativo Mensal
 def buildComparativeDash(df):
     st.header("DASH ANALÍTICO COMPARATIVO MENSAL")
 
@@ -64,7 +66,7 @@ def buildComparativeDash(df):
         with container:
             st.write('building...')
 
-#Adicionar dados do top 3 talvez
+# Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables
     artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
@@ -76,9 +78,32 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
     with tab1:
         container = st.container(border=True)
         with container:
-            center = st.columns([2,2,1])
+            center = st.columns([2,2])
             with center[0]: 
-                plotDataframe(artistRanking, "Ranking")
+                plotDataframe(artistRanking[['ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
+            with center[1]:
+                with st.expander("🏆 1º Artista mais bem avaliado"):
+                    col1, col2 = st.columns(2)
+                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[0]}")
+                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[0]}")
+                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[0]}")
+                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
+
+                with st.expander("🏆 2º Artista mais bem avaliado"):
+                    col1, col2 = st.columns(2)
+                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[1]}")
+                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[1]}")
+                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[1]}")
+                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[1]}")
+
+                with st.expander("🏆 3º Artista mais bem avaliado"):
+                    col1, col2 = st.columns(2)
+                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[2]}")
+                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[2]}")
+                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[2]}")
+                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[2]}")
+
+
     with tab2:
         container = st.container(border=True)
         with container:
@@ -96,6 +121,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 with row2[1]:
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
+# Desempenho Operacional
 def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
     tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:
@@ -113,8 +139,12 @@ def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOcc
     with tab3:
         plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Todos relatórios de ocorrências com artistas por data")
     with tab4:
+        artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
+                      'TOTAL_CHECKIN_CHECKOUT': 'TOTAL'})
+
         plotDataframe(artistCheckinCheckout, "Quantidade de checkin e checkout por artista")
-        
+
+# Financeiro        
 def buildFinances(df, id):
     row1 = st.columns([2,1,1,1,1,1])
     with row1[0]:
@@ -146,6 +176,7 @@ def buildFinances(df, id):
         df = formatFinancesDataframe(df)
         plotDataframe(df, "Dados Financeiros Semanais")
 
+# Extrato de show
 def buildShowStatement(df):
     # getting values
     total = df.shape[0]
@@ -156,19 +187,19 @@ def buildShowStatement(df):
     # formating
     df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
     df = df.drop(columns=['ID_PROPOSTA'])
-    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
+    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',
                       'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
 
     row1 = st.columns(4)
 
     tile = row1[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Artista Mais Contratado:</br>{artist}</h6>", unsafe_allow_html=True)
 
     tile = row1[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Artista Favorito:</br>{artist}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
 
     tile = row1[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{hours}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{hours} Horas</h6>", unsafe_allow_html=True)
 
     tile = row1[3].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Total de valor bruto:</br>R$ {value}</h6>", unsafe_allow_html=True)
