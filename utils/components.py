@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 from io import BytesIO
+import matplotlib.pyplot as plt
 
 def hide_sidebar():
     st.markdown("""
@@ -54,6 +55,31 @@ def plotLineChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
 
     st.line_chart(df, x=xValue, y=yValue)
+
+def plotPizzaChart(labels, sizes, name):
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    fig1, ax1 = plt.subplots()
+    
+    # Plotar o gráfico de pizza
+    wedges, texts, autotexts = ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=-1, counterclock=False)
+
+    # Ajustar a cor dos textos
+    for text in texts:
+        text.set_color('orange')
+    for autotext in autotexts:
+        autotext.set_color('white')
+        autotext.set_weight('bold')
+    
+    # Remover sombra e fundo
+    fig1.patch.set_alpha(0)
+    ax1.axis('equal')
+
+    # Melhorar a legibilidade dos textos
+    plt.setp(autotexts, size=5, weight="bold")
+    plt.setp(texts, size=8)
+
+    
+    st.pyplot(fig1)
 
 def plotBarChart(name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -148,4 +174,5 @@ def buttonDowloadDash(df, name):
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 
-
+def format_brazilian(num):
+        return f"{num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

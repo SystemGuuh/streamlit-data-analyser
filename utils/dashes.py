@@ -122,20 +122,21 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
 # Desempenho Operacional
-def buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
+def buildOperationalPerformace(operationalPerformace, pizzaChart, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
     tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:
+        plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
         plotDataframe(operationalPerformace, "Ranking de artistas com ocorrências")
     with tab2:
         row1 = st.columns(6)
         with row1[0]:
-            type = filterReportType(operationalPerformaceByOccurrence)
+            type = filterReportType(pizzaChart)
         container = st.container(border=True)
         with container:
             if type is not None:
-                plotDataframe(operationalPerformaceByOccurrence[operationalPerformaceByOccurrence['TIPO']==type], "Relatório de ocorrências com artistas")
+                plotDataframe(pizzaChart[pizzaChart['TIPO']==type], "Relatório de ocorrências com artistas")
             else:
-                plotDataframe(operationalPerformaceByOccurrence, "Relatório de ocorrências com artistas")
+                plotDataframe(pizzaChart, "Relatório de ocorrências com artistas")
     with tab3:
         plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Todos relatórios de ocorrências com artistas por data")
     with tab4:
@@ -181,11 +182,11 @@ def buildShowStatement(df):
     # getting values
     total = df.shape[0]
     hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
-    ticket = (sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00'))
-    value = sum(df['VALOR_BRUTO']).quantize(Decimal('0.00'))
+    ticket = format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
+    value = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
 
     # formating
-    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
+    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].apply(format_brazilian).astype(str)
     df = df.drop(columns=['ID_PROPOSTA'])
     df_renamed = df
     df_renamed = df_renamed.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',

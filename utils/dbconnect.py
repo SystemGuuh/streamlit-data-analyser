@@ -86,13 +86,12 @@ def apply_filter_in_report_dataframe(df, date, establishment):
     df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
     return df
 
-def apply_filter_in_geral_dataframe(df, date, establishment):
+def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
     if date is not None:
         if len(date) > 1 and date[0] is not None and date[1] is not None:
             startDate = pd.Timestamp(date[0])
             endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA_INICIO'])
-            df = df.dropna(subset=['DATA_FIM'])
+            df = df.dropna(subset=['DATA_INICIO', 'DATA_FIM'])
         
             df = df[pd.to_datetime(df['DATA_INICIO']) >= startDate]
             df = df[pd.to_datetime(df['DATA_FIM']) <= endDate]
@@ -100,10 +99,13 @@ def apply_filter_in_geral_dataframe(df, date, establishment):
     if establishment is not None:
         df = df[df['CONTRATANTE'] == establishment]
 
-    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO']) 
-    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
+    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'])
+    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'])
+    
+    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).dt.total_seconds()
+    df['DURACAO'] = df['DURACAO'].apply(lambda x: f"{int(x // 3600):02}:{int((x % 3600) // 60):02}:{int(x % 60):02}")
 
-    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM']) 
+    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
     df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
 
     return df
@@ -120,6 +122,11 @@ def get_report_artist_by_occurrence(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
+def get_report_artist_by_type(df):
+    df_grouped = df.groupby('TIPO')['QUANTIDADE'].sum().reset_index()
+    df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
+    return df_grouped
+
 @st.cache_data
 def GET_PROPOSTAS_BY_ID(id, date, establishment):
     df =  getDfFromQuery(f"""
@@ -133,7 +140,7 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                         A.NOME AS ARTISTA,
                         DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO,
                         DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM,
-                        TIMEDIFF(DATA_FIM, DATA_INICIO) AS DURACAO,
+                        SEC_TO_TIME(TIMESTAMPDIFF(SECOND, DATA_INICIO, DATA_FIM)) AS DURACAO,
                         DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
                         SF.DESCRICAO AS STATUS_FINANCEIRO
@@ -151,9 +158,8 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                         AND P.FK_CONTRANTE IS NOT NULL 
                         AND P.FK_CONTRATADO IS NOT NULL 
                         AND P.DATA_INICIO IS NOT NULL 
-                        AND P.FK_USUARIO = {id}
+                        AND GU.FK_USUARIO = {id}
                         """)
-
     return apply_filter_in_geral_dataframe(df, date, establishment)
 
 def GET_USER_NAME(id):

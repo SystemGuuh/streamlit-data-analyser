@@ -6,8 +6,8 @@ Coluna 'Casa' trocar por Estabelecimento
 botao pra dowload pra excel
 precisa tirar 'ç' e trocar pra c
 -- Ver questao das horas 
--- Conferir querys tem que puxar por GU.FK_USUARUO
--- Colocar máscara no valor bruto
+Conferir querys tem que puxar por GU.FK_USUARUO
+Colocar máscara no valor bruto
 
 > Desempenho Operacional:
 - Graficos: 

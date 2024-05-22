@@ -70,6 +70,7 @@ if st.session_state['loggedIn']:
         allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
         operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate)
         operationalPerformaceByOccurrence = get_report_artist_by_occurrence(allOperationalPerformaceByOccurrenceAndDate)
+        operationalPerformaceByOccurrence = get_report_artist_by_type(operationalPerformaceByOccurrence)
         artistCheckinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
 
         buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout)
