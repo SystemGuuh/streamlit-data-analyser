@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 from io import BytesIO
-import matplotlib.pyplot as plt
+from streamlit_echarts import st_echarts
 
 def hide_sidebar():
     st.markdown("""
@@ -58,27 +58,47 @@ def plotLineChart(df, xValue, yValue,name):
 
 def plotPizzaChart(labels, sizes, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
-    fig1, ax1 = plt.subplots()
     
-    # Plotar o gráfico de pizza
-    wedges, texts, autotexts = ax1.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=-1, counterclock=False)
-
-    # Ajustar a cor dos textos
-    for text in texts:
-        text.set_color('orange')
-    for autotext in autotexts:
-        autotext.set_color('white')
-        autotext.set_weight('bold')
+    # Preparar os dados para o gráfico
+    data = [{"value": size, "name": label} for size, label in zip(sizes, labels)]
     
-    # Remover sombra e fundo
-    fig1.patch.set_alpha(0)
-    ax1.axis('equal')
-
-    # Melhorar a legibilidade dos textos
-    plt.setp(autotexts, size=5, weight="bold")
-    plt.setp(texts, size=8)
-
-    st.pyplot(fig1)
+    options = {
+        "tooltip": {"trigger": "item"},
+        "legend": {
+            "orient": "vertical",
+            "left": "left",
+            "top": "top", 
+            "textStyle": {
+                "color": "orange"
+            }
+        },
+        "grid": {  # Adicionado para organizar o layout
+            "left": "50%", 
+            "right": "50%", 
+            "containLabel": True
+        },
+        "series": [
+            {
+                "name": "Quantidade",
+                "type": "pie",
+                "radius": "75%",
+                "center": ["75%", "45%"],  # Posiciona o gráfico no meio verticalmente
+                "data": data,
+                "label": {
+                    "show": False  # Ocultar os textos nas fatias
+                },
+                "emphasis": {
+                    "itemStyle": {
+                        "shadowBlur": 10,
+                        "shadowOffsetX": 0,
+                        "shadowColor": "rgba(0, 0, 0, 0.5)",
+                    }
+                },
+            }
+        ],
+    }
+    
+    st_echarts(options=options, height="300px")
 
 def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)

@@ -24,7 +24,7 @@ Contratante == Estabelecimento
 Remover o hide_index
 Filtro por tipo de ocorrência
 Ranking de artistas com mais ocorrência
--- Aba resumo e aba de extratos
+Aba resumo e aba de extratos
 
 > Avaliações:
 -- Arrumar formatação dos nomes das colunas
