@@ -80,11 +80,12 @@ def apply_filter_in_report_dataframe(df, date, establishment):
             df = df[pd.to_datetime(df['DATA']) >= startDate]
             df = df[pd.to_datetime(df['DATA']) <= endDate]
 
+        df['DATA'] = pd.to_datetime(df['DATA']) 
+        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
+
     if establishment is not None:
         df = df[df['CONTRATANTE'] == establishment]
-
-    df['DATA'] = pd.to_datetime(df['DATA']) 
-    df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
+  
     return df
 
 def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
@@ -124,8 +125,8 @@ def get_report_by_occurrence(df):
     return df_grouped
 
 def get_report_artist_by_week(df):
-    df['QUANTIDADE'] = df.groupby('DATA')['DATA'].transform('count')
-    df_grouped = df.drop_duplicates(subset=['DATA'])
+    df['QUANTIDADE'] = df.groupby('SEMANA')['SEMANA'].transform('count')
+    df_grouped = df.drop_duplicates(subset=['SEMANA'])
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
@@ -373,6 +374,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             SELECT
                             A.NOME AS ARTISTA,
                             DATE(OA.DATA_OCORRENCIA) AS DATA,
+                            DATE_ADD(DATE(OA.DATA_OCORRENCIA), INTERVAL(2-DAYOFWEEK(OA.DATA_OCORRENCIA)) DAY) AS SEMANA,
                             TIPO.TIPO AS TIPO,
                             EM.DESCRICAO AS ESTILO,
                             C.NAME AS ESTABLECIMENTO

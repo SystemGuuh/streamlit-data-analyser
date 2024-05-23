@@ -54,7 +54,7 @@ def plotDataframe(df, name):
 def plotLineChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
 
-    st.line_chart(df, x=xValue, y=yValue, use_container_width=True)
+    st.line_chart(df, x=xValue, y=yValue, use_container_width=True, color=["#ff6600"])
 
 def plotPizzaChart(labels, sizes, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -82,7 +82,7 @@ def plotPizzaChart(labels, sizes, name):
 
 def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
-    st.bar_chart(df, x=xValue, y=yValue, use_container_width=True)
+    st.bar_chart(df, x=xValue, y=yValue, use_container_width=True, color=["#ff6600"])
 
 def plotMapChart(df):
     df = pd.DataFrame(

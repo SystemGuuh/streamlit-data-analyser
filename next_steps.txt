@@ -13,7 +13,7 @@ Colocar máscara no valor bruto
 - Graficos: 
 Pizza pra tipo de ocorrências
 Barras para artistas com mais ocorrências
--- Barras para históricos de quantidade de ocorrências por semana
+Barras para históricos de quantidade de ocorrências por semana
 -- Barras de taxa de checkin por artista
 
 - Desing:
