@@ -55,32 +55,43 @@ if st.session_state['loggedIn']:
     #Body
     tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["DASH GERAL", "COMPARATIVO MENSAL", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "FINANCEIRO", "EXTRATO DE SHOWS"])
     with tab1:
+        # página
         buildGeneralDash(df)
     with tab2:
+        # página
         buildComparativeDash(df)
     with tab3:
+        # tabelas usadas
         artistRanking = GET_ARTIST_RANKING(id)
         reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
         averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
         reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
         averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
 
+        # página
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
+        # tabelas usadas
         allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
         operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
         ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
         ByWeek = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None, inputEstablishment)) #grafico de barras
         checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
 
+        # página
         buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, checkinCheckout, allOperationalPerformaceByOccurrenceAndDate)
     with tab5:
+        # tabelas usadas
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
+
+        # página
         buildFinances(financeDash, id)
     with tab6:
+        # tabelas usadas
         showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
         showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
         
+        # página
         buildShowStatement(showStatement)
 else:
     st.switch_page("main.py")

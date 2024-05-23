@@ -19,7 +19,6 @@ def buildGeneralDash(df):
         else: meanShowsByHouse=0
         
         distinctArtists = df['ARTISTA'].nunique()
-        
         # Page
         tile = row1[0].container(border=True)
         tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
@@ -131,7 +130,7 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
             row1 = st.columns(2)
             with row1[0]:
                 plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
-                plotLineChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
+                plotBarChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
             with row1[1]:
                 st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
                 st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=700)

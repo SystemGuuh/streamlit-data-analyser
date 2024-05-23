@@ -10,7 +10,7 @@ Conferir querys tem que puxar por GU.FK_USUARUO
 Colocar máscara no valor bruto
 
 > Desempenho Operacional:
-- Graficos: 
+Graficos: 
 Pizza pra tipo de ocorrências
 Barras para artistas com mais ocorrências
 Barras para históricos de quantidade de ocorrências por semana
@@ -18,7 +18,7 @@ Barras para históricos de quantidade de ocorrências por semana
 
 - Desing:
 Tentar implementação com uma aba só
--- Aba de resumo com gráficos
+Aba de resumo com gráficos
 Mudar título 'Ranking de artistas com Mais Ocorrências'
 Contratante == Estabelecimento
 Remover o hide_index
