@@ -55,3 +55,14 @@ def parse_duration(duration_str):
         seconds = int(duration_str.split('s')[0].strip())
     return pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
+# Função para somar coluna DURACAO e devolver o valor total de horas, minutos e segundos 
+def sum_duration_from_dataframe(df):
+    temp = df['DURACAO'].apply(parse_duration)
+    total_duration = temp.sum()
+    total_seconds = int(total_duration.total_seconds())
+    
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    
+    return hours, minutes, seconds

@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.components import *
-from utils.dashes import *
+from utils.menuPages import *
 from utils.dbconnect import *
 from utils.user import logout
 

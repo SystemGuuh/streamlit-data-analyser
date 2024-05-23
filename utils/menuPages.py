@@ -194,8 +194,7 @@ def buildFinances(df, id):
 def buildShowStatement(df):
     # getting values
     total = df.shape[0]
-    # hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
-    hours = 0
+    total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(df)
     ticket = format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
     value = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
 
@@ -204,6 +203,7 @@ def buildShowStatement(df):
     df = df.drop(columns=['ID_PROPOSTA'])
     df_renamed = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
                       'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+    
     new_order = ['STATUS PROPOSTA','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
     df_renamed = df_renamed[new_order]
     
@@ -214,7 +214,7 @@ def buildShowStatement(df):
     tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
 
     tile = row1[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{hours} Horas</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{total_hours}h {total_minutes}m {total_seconds}s</h6>", unsafe_allow_html=True)
 
     tile = row1[2].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado:</br>R$ {value}</h6>", unsafe_allow_html=True)
