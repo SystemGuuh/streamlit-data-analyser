@@ -181,7 +181,8 @@ def buildFinances(df, id):
 def buildShowStatement(df):
     # getting values
     total = df.shape[0]
-    hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
+    # hours = round((df['DURACAO'].sum().total_seconds() / 3600),2)
+    hours = 0
     ticket = format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
     value = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
 

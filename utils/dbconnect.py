@@ -102,9 +102,6 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
     df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'])
     df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'])
     
-    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).dt.total_seconds()
-    df['DURACAO'] = df['DURACAO'].apply(lambda x: f"{int(x // 3600):02}:{int((x % 3600) // 60):02}:{int(x % 60):02}")
-
     df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
     df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
 
