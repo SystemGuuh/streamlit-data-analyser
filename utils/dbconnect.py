@@ -52,7 +52,7 @@ def apply_filter_in_dataframe(df, date, establishment):
         df = df[df['DATA_AVALIACAO'] <= endDate]
 
     if establishment is not None:
-        df = df[df['ESTABLECIMENTO'] == establishment]
+        df = df[df['ESTABELECIMENTO'] == establishment]
 
     return df
 
@@ -66,7 +66,7 @@ def apply_filter_in_finance_dataframe(df, date, establishment):
         df = df[df['DATA_FIM'] <= endDate]
 
     if establishment is not None:
-        df = df[df['ESTABLECIMENTO'] == establishment]
+        df = df[df['ESTABELECIMENTO'] == establishment]
 
     return df
 
@@ -84,7 +84,7 @@ def apply_filter_in_report_dataframe(df, date, establishment):
         df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
 
     if establishment is not None:
-        df = df[df['CONTRATANTE'] == establishment]
+        df = df[df['ESTABELECIMENTO'] == establishment]
   
     return df
 
@@ -99,7 +99,7 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
             df = df[pd.to_datetime(df['DATA_FIM']) <= endDate]
 
     if establishment is not None:
-        df = df[df['CONTRATANTE'] == establishment]
+        df = df[df['ESTABELECIMENTO'] == establishment]
 
     df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'])
     df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'])
@@ -145,7 +145,7 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                             WHEN S.DESCRICAO IS NULL THEN "Cancelada"
                             ELSE S.DESCRICAO
                         END AS STATUS_PROPOSTA,
-                        C.NAME AS ESTABLECIMENTO,
+                        C.NAME AS ESTABELECIMENTO,
                         A.NOME AS ARTISTA,
                         DATA_INICIO AS DATA_INICIO,
                         DATA_FIM AS DATA_FIM,
@@ -185,7 +185,7 @@ def GET_USER_NAME(id):
 def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     df = getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
-                            C.NAME AS ESTABLECIMENTO,
+                            C.NAME AS ESTABELECIMENTO,
                             GC.GRUPO_CLIENTES AS GRUPO,
                             AV.NOTA,
                             AV.COMENTARIO,
@@ -212,7 +212,7 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
 # Avaliações - Avaliações da casa
 def GET_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
-                        C.NAME AS ESTABLECIMENTO,
+                        C.NAME AS ESTABELECIMENTO,
                         GC.GRUPO_CLIENTES AS GRUPO,
                         AC.NOTA,
                         AC.COMENTARIO
@@ -259,7 +259,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
 # Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
-                            C.NAME AS ESTABLECIMENTO,
+                            C.NAME AS ESTABELECIMENTO,
                             ROUND(AVG(AC.NOTA), 2) AS MEDIA_NOTAS,
                             COUNT(DISTINCT AC.ID) AS QUANTIDADE_AVALIACOES,
                             COUNT(P.FK_CONTRANTE) AS NUM_SHOWS_CASA
@@ -322,7 +322,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
                         SELECT
                         S.DESCRICAO AS STATUS_PROPOSTA,
                         SF.DESCRICAO AS STATUS_FINANCEIRO,
-                        C.NAME AS ESTABLECIMENTO,
+                        C.NAME AS ESTABELECIMENTO,
                         A.NOME AS ARTISTA,
                         P.DATA_INICIO AS DATA_INICIO,
                         P.DATA_FIM AS DATA_FIM,
@@ -382,7 +382,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             DATE_ADD(DATE(OA.DATA_OCORRENCIA), INTERVAL(2-DAYOFWEEK(OA.DATA_OCORRENCIA)) DAY) AS SEMANA,
                             TIPO.TIPO AS TIPO,
                             EM.DESCRICAO AS ESTILO,
-                            C.NAME AS ESTABLECIMENTO
+                            C.NAME AS ESTABELECIMENTO
                             FROM 
                             T_OCORRENCIAS_AUTOMATICAS OA
                             LEFT JOIN T_PROPOSTAS P ON P.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_PROPOSTAS'

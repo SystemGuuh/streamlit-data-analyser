@@ -26,8 +26,8 @@ def filterCalendarComponent():
 
 def filterEstablishmentComponent(id):
     df = GET_PROPOSTAS_BY_ID(id, None, None)
-    df_sorted = df.sort_values(by='ESTABLECIMENTO')
-    option = st.selectbox("Estabelecimentos:",(df_sorted['ESTABLECIMENTO'].unique()),
+    df_sorted = df.sort_values(by='ESTABELECIMENTO')
+    option = st.selectbox("Estabelecimentos:",(df_sorted['ESTABELECIMENTO'].unique()),
             index=None, placeholder="Escolha um")
     return option
 
