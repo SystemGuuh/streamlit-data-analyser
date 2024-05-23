@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.components import *
+from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
 
@@ -170,8 +171,6 @@ def buildFinances(df, id):
         year = filterYearChartFinances()
     with row1[5]:
         st.write("")
-        with st.popover("Consultar semana"):
-            weeklyeDaysNumber(id, year)
     
     st.header("DASH FINANCEIRO")
     container = st.container(border=True)
@@ -203,9 +202,11 @@ def buildShowStatement(df):
     # formating
     df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].apply(format_brazilian).astype(str)
     df = df.drop(columns=['ID_PROPOSTA'])
-    df_renamed = df
-    df_renamed = df_renamed.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',
+    df_renamed = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
                       'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+    new_order = ['STATUS PROPOSTA','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
+    df_renamed = df_renamed[new_order]
+    
     buttonDowloadDash(df, "Extrato-de-Shows")
     row1 = st.columns(4)
 

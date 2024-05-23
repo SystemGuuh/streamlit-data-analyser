@@ -4,8 +4,8 @@ from utils.dbconnect import GET_PROPOSTAS_BY_ID, GET_WEEKLY_FINANCES
 import pandas as pd
 import numpy as np
 from datetime import date
-from io import BytesIO
 from streamlit_echarts import st_echarts
+from utils.functions import *
 
 def hide_sidebar():
     st.markdown("""
@@ -131,29 +131,6 @@ def filterFinanceStatus(df):
             index=None, placeholder="Escolha um")
     return option
 
-def translate_day(dia):
-    dias_da_semana = {
-    'Monday': 'Segunda-feira',
-    'Tuesday': 'Terça-feira',
-    'Wednesday': 'Quarta-feira',
-    'Thursday': 'Quinta-feira',
-    'Friday': 'Sexta-feira',
-    'Saturday': 'Sábado',
-    'Sunday': 'Domingo'
-    }
-
-    return dias_da_semana[dia]
-
-def formatFinancesDataframe(df):
-    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(translate_day)
-    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
-    df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
-    
-    df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA', 'HORARIO_INICIO': 'HORÁRIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
-                     'VALOR_LIQUIDO': 'VALOR LÍQUIDO', 'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
-
-    return df
-
 def plotFinanceWeeklyChart(id, year):
     df = GET_WEEKLY_FINANCES(id, year)
     df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
@@ -171,18 +148,6 @@ def plotFinanceMonthlyChart(id, year):
     with st.expander("Gráfico de linhas"):
         st.line_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
 
-def weeklyeDaysNumber(id, year):
-    df = GET_WEEKLY_FINANCES(id, year)
-    st.dataframe(df[['NUMERO_SEMANA', 'DIA']], hide_index=True, use_container_width=True)
-
-def to_excel(df):
-    output = BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-    writer.close()
-    processed_data = output.getvalue()
-    return processed_data
-
 def buttonDowloadDash(df, name):
     st.download_button(
     label='Baixar em Excel',
@@ -191,5 +156,3 @@ def buttonDowloadDash(df, name):
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 
-def format_brazilian(num):
-        return f"{num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

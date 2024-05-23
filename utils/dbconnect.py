@@ -103,6 +103,10 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
 
     df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'])
     df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'])
+
+    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).apply(
+        lambda x: f"{x.components.hours}h {x.components.minutes}m {x.components.seconds}s"
+    )
     
     df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
     df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
@@ -130,7 +134,9 @@ def get_report_artist_by_week(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
-@st.cache_data
+# QUERIES - colocar em outro arquivo
+
+@st.cache_data # Extrato
 def GET_PROPOSTAS_BY_ID(id, date, establishment):
     df =  getDfFromQuery(f"""
                     SELECT DISTINCT
@@ -141,9 +147,8 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                         END AS STATUS_PROPOSTA,
                         C.NAME AS ESTABLECIMENTO,
                         A.NOME AS ARTISTA,
-                        DATE_FORMAT(DATA_INICIO, '%d/%m/%y') AS DATA_INICIO,
-                        DATE_FORMAT(DATA_FIM, '%d/%m/%y') AS DATA_FIM,
-                        SEC_TO_TIME(TIMESTAMPDIFF(SECOND, DATA_INICIO, DATA_FIM)) AS DURACAO,
+                        DATA_INICIO AS DATA_INICIO,
+                        DATA_FIM AS DATA_FIM,
                         DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
                         SF.DESCRICAO AS STATUS_FINANCEIRO
@@ -204,7 +209,7 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     
     return apply_filter_in_dataframe(df, date, establishment)
 
-@st.cache_data # Avaliações - Avaliações da casa
+# Avaliações - Avaliações da casa
 def GET_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
                         C.NAME AS ESTABLECIMENTO,
@@ -226,7 +231,7 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
                         AND AC.NOTA > 0
                         """)   
 
-@st.cache_data # Avaliações - Avaliações da casa
+# Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     return getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
@@ -251,7 +256,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
                             MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
     """)
 
-@st.cache_data # Avaliações - Avaliações da casa
+# Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABLECIMENTO,

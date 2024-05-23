@@ -38,6 +38,3 @@ if __name__ == '__main__':
     )
     hide_sidebar()
     main()
-
-    # quando carrega a página tá deslogando
-    # adicionar querys de relatórios
