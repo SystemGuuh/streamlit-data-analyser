@@ -122,10 +122,16 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
 # Desempenho Operacional
-def buildOperationalPerformace(operationalPerformace, pizzaChart, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout):    
+def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artistCheckinCheckout):    
     tab1, tab2, tab3, tab4= st.tabs(["Ranking de artistas com mais ocorrências", "Ranking por tipo de ocorrência", "Histórico de ocorrências por semana", "Quantiade de checkin e chekout por artista"])
     with tab1:
-        plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
+        row1 = st.columns(2)
+        with row1[0]:
+            plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
+            plotBarChart(ByWeek, 'DATA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
+        with row1[1]:
+            st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
+            st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=700)
         plotDataframe(operationalPerformace, "Ranking de artistas com ocorrências")
     with tab2:
         row1 = st.columns(6)
@@ -138,7 +144,7 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, allOperational
             else:
                 plotDataframe(pizzaChart, "Relatório de ocorrências com artistas")
     with tab3:
-        plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Todos relatórios de ocorrências com artistas por data")
+        plotDataframe(ByWeek, "Todos relatórios de ocorrências com artistas por data")
     with tab4:
         artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
                       'TOTAL_CHECKIN_CHECKOUT': 'TOTAL'})

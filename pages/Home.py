@@ -68,12 +68,12 @@ if st.session_state['loggedIn']:
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
         allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
-        operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate)
-        operationalPerformaceByOccurrence = get_report_artist_by_occurrence(allOperationalPerformaceByOccurrenceAndDate)
-        operationalPerformaceByOccurrence = get_report_artist_by_type(operationalPerformaceByOccurrence)
+        operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
+        ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
+        ByWeek = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None, inputEstablishment)) #grafico de barras
         artistCheckinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
 
-        buildOperationalPerformace(operationalPerformace, operationalPerformaceByOccurrence, allOperationalPerformaceByOccurrenceAndDate, artistCheckinCheckout)
+        buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, artistCheckinCheckout)
     with tab5:
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
         buildFinances(financeDash, id)

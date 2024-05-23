@@ -71,13 +71,14 @@ def apply_filter_in_finance_dataframe(df, date, establishment):
     return df
 
 def apply_filter_in_report_dataframe(df, date, establishment):
-    if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = pd.Timestamp(date[0])
-        endDate = pd.Timestamp(date[1])
-        df = df.dropna(subset=['DATA'])
-    
-        df = df[pd.to_datetime(df['DATA']) >= startDate]
-        df = df[pd.to_datetime(df['DATA']) <= endDate]
+    if  date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA'])
+        
+            df = df[pd.to_datetime(df['DATA']) >= startDate]
+            df = df[pd.to_datetime(df['DATA']) <= endDate]
 
     if establishment is not None:
         df = df[df['CONTRATANTE'] == establishment]
@@ -111,16 +112,20 @@ def get_report_artist(df):
     df['QUANTIDADE'] = df.groupby('ARTISTA')['ARTISTA'].transform('count')
     df_grouped = df.drop_duplicates(subset=['ARTISTA'])
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
+    df_grouped['RANKING'] = df_grouped['QUANTIDADE'].rank(method='first', ascending=False).astype(int)
+    df_grouped = df_grouped.reset_index(drop=True)
+
     return df_grouped
 
-def get_report_artist_by_occurrence(df):
-    df['QUANTIDADE'] = df.groupby(['ARTISTA', 'TIPO'])['ARTISTA'].transform('count')
-    df_grouped = df.drop_duplicates(subset=['ARTISTA', 'TIPO'])
+def get_report_by_occurrence(df):
+    df['QUANTIDADE'] = df.groupby(['TIPO'])['ARTISTA'].transform('count')
+    df_grouped = df.drop_duplicates(subset=['TIPO'])
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
-def get_report_artist_by_type(df):
-    df_grouped = df.groupby('TIPO')['QUANTIDADE'].sum().reset_index()
+def get_report_artist_by_week(df):
+    df['QUANTIDADE'] = df.groupby('DATA')['DATA'].transform('count')
+    df_grouped = df.drop_duplicates(subset=['DATA'])
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
@@ -343,11 +348,11 @@ def GET_WEEKLY_FINANCES(id, year):
     return getDfFromQuery(f"""
                         SELECT
                             MONTHNAME(P.DATA_INICIO) AS MES,
-                            MONTH(P.DATA_INICIO) AS NUMERO_MES,
-                            WEEK(P.DATA_INICIO) AS NUMERO_SEMANA,
-                            DATE_FORMAT(DATE_ADD(P.DATA_INICIO, INTERVAL(1-DAYOFWEEK(P.DATA_INICIO)) DAY), '%d-%m-%Y') AS DIA,
+                            DATE_ADD(DATE(P.DATA_INICIO), INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY) AS NUMERO_SEMANA,
+                            DATE_FORMAT(DATE_ADD(P.DATA_INICIO, INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY), '%d-%m-%Y') AS DIA,
                             SUM(P.VALOR_BRUTO) AS VALOR_GANHO_BRUTO,
-                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO   
+                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO,
+                            CONCAT(MONTH(P.DATA_INICIO),' - ',MONTHNAME(P.DATA_INICIO)) AS NUMERO_MES  
                         FROM 
                             T_PROPOSTAS P
                             INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
@@ -369,6 +374,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             A.NOME AS ARTISTA,
                             DATE(OA.DATA_OCORRENCIA) AS DATA,
                             TIPO.TIPO AS TIPO,
+                            EM.DESCRICAO AS ESTILO,
                             C.NAME AS ESTABLECIMENTO
                             FROM 
                             T_OCORRENCIAS_AUTOMATICAS OA
@@ -380,6 +386,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             LEFT JOIN T_FECHAMENTOS F ON F.ID = NF.FK_FECHAMENTO
                             LEFT JOIN T_PROPOSTAS P2 ON P2.ID = NF2.FK_PROPOSTA
                             LEFT JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE OR C.ID = F.FK_CONTRATANTE OR C.ID = P2.FK_CONTRANTE)
+                            LEFT JOIN T_ESTILOS_MUSICAIS EM ON A.FK_ESTILO_PRINCIPAL = EM.ID
                             WHERE 
                             C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
                             AND C.ID NOT IN (102,343,632,633)

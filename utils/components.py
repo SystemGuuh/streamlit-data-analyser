@@ -54,7 +54,7 @@ def plotDataframe(df, name):
 def plotLineChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
 
-    st.line_chart(df, x=xValue, y=yValue)
+    st.line_chart(df, x=xValue, y=yValue, use_container_width=True)
 
 def plotPizzaChart(labels, sizes, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -78,13 +78,11 @@ def plotPizzaChart(labels, sizes, name):
     plt.setp(autotexts, size=5, weight="bold")
     plt.setp(texts, size=8)
 
-    
     st.pyplot(fig1)
 
-def plotBarChart(name):
+def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
-    chart_data = pd.DataFrame({"col1": list(range(20)), "col2": np.random.randn(20), "col3": np.random.randn(20)})
-    st.bar_chart(chart_data, x="col1", y=["col2", "col3"], color=["#FFB131", "#FF6600"])
+    st.bar_chart(df, x=xValue, y=yValue, use_container_width=True)
 
 def plotMapChart(df):
     df = pd.DataFrame(
@@ -147,8 +145,7 @@ def plotFinanceWeeklyChart(id, year):
     
 def plotFinanceMonthlyChart(id, year):
     df = GET_WEEKLY_FINANCES(id, year)
-    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
-    df = df.groupby('NUMERO_MES').sum().reset_index()
+    df['VALOR_GANHO_BRUTO'] = df[['VALOR_GANHO_BRUTO']].astype(int)
     with st.expander("Gráfico de barras", expanded=True):
         st.bar_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
     with st.expander("Gráfico de linhas"):
