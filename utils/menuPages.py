@@ -74,7 +74,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
     artistRanking = artistRanking.drop(columns=['ID'])
 
 
-    tab1, tab2= st.tabs(["Ranking", "Avaliações de casas e artistas"])
+    tab1, tab2, tab3= st.tabs(["Ranking", "Avaliações de Artista para Estabelecimento", "Avaliações de Estabelecimento para Artista"])
     with tab1:
         container = st.container(border=True)
         with container:
@@ -107,19 +107,20 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
     with tab2:
         container = st.container(border=True)
         with container:
-            with st.expander("Avaliações sobre artistas", expanded=True):
-                row1 = st.columns([3,2])
-                with row1[0]:
-                    plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas Sobre os Artistas")
-                with row1[1]:
-                    plotDataframe(averageReviewArtistByHouse, "Médias de Avaliações das Casas Sobre os Artistas")
+            row1 = st.columns([3,2])
+            with row1[0]:
+                plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas")
+            with row1[1]:
+                plotDataframe(averageReviewArtistByHouse, "Médias de Avaliações")
             
-            with st.expander("Avaliações sobre casas"):
-                row2 = st.columns([3,2])
-                with row2[0]:
-                    plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas Sobre as Casas")
-                with row2[1]:
-                    plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
+    with tab3:
+        container = st.container(border=True)
+        with container:
+            row2 = st.columns([3,2])
+            with row2[0]:
+                plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas")
+            with row2[1]:
+                plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
 
 # Desempenho Operacional
 def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artistCheckinCheckout, extract):    

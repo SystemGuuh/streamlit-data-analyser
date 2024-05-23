@@ -54,6 +54,9 @@ def apply_filter_in_dataframe(df, date, establishment):
     if establishment is not None:
         df = df[df['ESTABELECIMENTO'] == establishment]
 
+    df = df.rename(columns={'COMENTARIO': 'COMENTÁRIO', 'EMAIL_AVALIADOR':'E-MAIL DO AVALIADOR', 'DATA_PROPOSTA':'DATA DA PROPOSTA'
+                                    ,'DATA_AVALICAO':'DATA DA AVALIAÇÃO'})
+
     return df
 
 def apply_filter_in_finance_dataframe(df, date, establishment):
@@ -215,7 +218,7 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
                         C.NAME AS ESTABELECIMENTO,
                         GC.GRUPO_CLIENTES AS GRUPO,
                         AC.NOTA,
-                        AC.COMENTARIO
+                        AC.COMENTARIO AS 'COMENTÁRIO'
 
                         FROM T_AVALIACAO_CASAS AC
                         INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
@@ -235,9 +238,9 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     return getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
-                            ROUND(AVG(AV.NOTA), 2) AS MEDIA_NOTAS,
-                            COUNT(DISTINCT AV.ID) AS QUANTIDADE_AVALIACOES,
-                            COUNT(P.FK_CONTRATADO) AS NUM_SHOWS_ARTISTA
+                            ROUND(AVG(AV.NOTA), 2) AS 'MÉDIA DE NOTAS',
+                            COUNT(DISTINCT AV.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
+                            COUNT(P.FK_CONTRATADO) AS 'NÚMERO DE SHOWS'
 
                             FROM T_AVALIACAO_ATRACOES AV
                             INNER JOIN T_PROPOSTAS P ON (P.ID = AV.FK_PROPOSTA)
@@ -253,16 +256,16 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
                             GROUP BY
                             A.ID, A.NOME
                             ORDER BY
-                            MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
+                            'MÉDIA DE NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
     """)
 
 # Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
-                            ROUND(AVG(AC.NOTA), 2) AS MEDIA_NOTAS,
-                            COUNT(DISTINCT AC.ID) AS QUANTIDADE_AVALIACOES,
-                            COUNT(P.FK_CONTRANTE) AS NUM_SHOWS_CASA
+                            ROUND(AVG(AC.NOTA), 2) AS 'MÉDIA NOTAS',
+                            COUNT(DISTINCT AC.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
+                            COUNT(P.FK_CONTRANTE) AS 'NÚMERO DE SHOWS'
 
                             FROM T_AVALIACAO_CASAS AC
                             INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
@@ -279,7 +282,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
                             GROUP BY
                             C.ID, C.NAME
                             ORDER BY
-                            MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
+                            'MÉDIA NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
     """)
 
 # Avaliações - Rancking

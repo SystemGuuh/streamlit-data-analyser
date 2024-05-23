@@ -27,8 +27,8 @@ Ranking de artistas com mais ocorrência
 Aba resumo e aba de extratos
 
 > Avaliações:
--- Arrumar formatação dos nomes das colunas
--- Separar em abas de 'Artista para Estabelecimento' e 'Estabelecimento para artista'
+Arrumar formatação dos nomes das colunas
+Separar em abas de 'Artista para Estabelecimento' e 'Estabelecimento para artista'
 -- Graficos:
 --- Funcionários que mais avaliam(satisfação dos funcionário)
 -------- Quantidade de avaliação e média de avaliação
