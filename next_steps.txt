@@ -17,13 +17,13 @@ Barras para históricos de quantidade de ocorrências por semana
 -- Barras de taxa de checkin por artista
 
 - Desing:
--- Tentar implementação com uma aba só
+Tentar implementação com uma aba só
 -- Aba de resumo com gráficos
--- Mudar título 'Ranking de artistas com Mais Ocorrências'
---- Contratante == Estabelecimento
---- Remover o hide_index
---- Filtro por tipo de ocorrência
--- Ranking de artistas com mais ocorrência
+Mudar título 'Ranking de artistas com Mais Ocorrências'
+Contratante == Estabelecimento
+Remover o hide_index
+Filtro por tipo de ocorrência
+Ranking de artistas com mais ocorrência
 -- Aba resumo e aba de extratos
 
 > Avaliações:

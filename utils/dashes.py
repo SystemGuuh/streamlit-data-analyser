@@ -122,27 +122,43 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                     plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações dos Artistas Sobre as Casas")
 
 # Desempenho Operacional
-def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artistCheckinCheckout):   
-    container1 = st.container(border=True)
-    container2 = st.container(border=True)
-    with container1: 
-        row1 = st.columns(2)
-        with row1[0]:
-            plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
-            plotLineChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
-        with row1[1]:
-            st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
-            st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=700)
+def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artistCheckinCheckout, extract):    
+    tab1, tab2= st.tabs(["Resumos", "Extratos"])
+    with tab1:
+        container1 = st.container(border=True)
+        container2 = st.container(border=True)
+        with container1: 
+            row1 = st.columns(2)
+            with row1[0]:
+                plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
+                plotLineChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
+            with row1[1]:
+                st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
+                st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=700)
 
-    with container2:    
-        artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
-                            'TOTAL_CHECKIN_CHECKOUT': 'TOTAL'})
-        
-        artistCheckinCheckout['PORCENTAGEM DE CHECKING(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKING'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
-        artistCheckinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKOUT'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
-        
-        plotDataframe(artistCheckinCheckout[['ARTISTA', 'TOTAL', 'PORCENTAGEM DE CHECKING(%)', 'PORCENTAGEM DE CHECKOUT(%)']], "Quantidade de checkin e checkout por artista")
+        with container2:    
+            artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
+                                'TOTAL_CHECKIN_CHECKOUT': 'TOTAL'})
+            
+            artistCheckinCheckout['PORCENTAGEM DE CHECKING(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKING'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
+            artistCheckinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKOUT'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
+            
+            plotDataframe(artistCheckinCheckout[['ARTISTA', 'TOTAL', 'PORCENTAGEM DE CHECKING(%)', 'PORCENTAGEM DE CHECKOUT(%)']], "Quantidade de checkin e checkout por artista")
     
+    with tab2:
+        row1 = st.columns(6)
+        with row1[0]:
+            type = filterReportType(extract)
+        with row1[5]:
+            st.write('') # alinhar botão
+            st.write('') # alinhar botão
+            buttonDowloadDash(extract, "Extrato-de-Ocorrencias")
+        container = st.container(border=True)
+        with container:
+            if type is not None:
+                plotDataframe(extract[extract['TIPO']==type], "Relatório completo de ocorrências")
+            else:
+                plotDataframe(extract, "Relatório completo de ocorrências")
 
 # Financeiro        
 def buildFinances(df, id):
@@ -191,7 +207,7 @@ def buildShowStatement(df):
     df_renamed = df
     df_renamed = df_renamed.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DIA_DA_SEMANA': 'DIA DA SEMANA',
                       'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
-
+    buttonDowloadDash(df, "Extrato-de-Shows")
     row1 = st.columns(4)
 
     tile = row1[0].container(border=True)
@@ -206,7 +222,7 @@ def buildShowStatement(df):
     tile = row1[3].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
     
-    buttonDowloadDash(df, "Extrato-de-Shows")
+    
 
     container = st.container(border=True)
     with container:
