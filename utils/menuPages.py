@@ -80,29 +80,21 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
         container = st.container(border=True)
         with container:
             center = st.columns([2,2])
-            with center[0]: 
+            with center[0]:
+                option = st.selectbox("Buscar artista:", artistRanking['ARTISTA'],
+                        index=None, placeholder="Selecione um artista") 
                 plotDataframe(artistRanking[['ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
             with center[1]:
-                with st.expander("🏆 1º Artista mais bem avaliado"):
-                    col1, col2 = st.columns(2)
-                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[0]}")
-                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[0]}")
-                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[0]}")
-                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
+                if option is not None:
+                    st.markdown(f"<div style='margin-bottom: 10px;'><h5 padding: 0.1em;'></h5></div>", unsafe_allow_html=True)
+                    with st.expander(f"🏆 Dados de artista {option}"):
+                        col1, col2 = st.columns(2)
+                        col1.write(f"Posição no rank: {(artistRanking[artistRanking['ARTISTA'] == option].index[0]) + 1}º Lugar")
+                        col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[0]}")
+                        col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[0]}")
+                        col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
+                plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
 
-                with st.expander("🏆 2º Artista mais bem avaliado"):
-                    col1, col2 = st.columns(2)
-                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[1]}")
-                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[1]}")
-                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[1]}")
-                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[1]}")
-
-                with st.expander("🏆 3º Artista mais bem avaliado"):
-                    col1, col2 = st.columns(2)
-                    col1.write(f"Nome: {artistRanking['ARTISTA'].iloc[2]}")
-                    col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[2]}")
-                    col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[2]}")
-                    col2.write(f"Celular: {artistRanking['CELULAR'].iloc[2]}")
 
 
     with tab2:
@@ -184,7 +176,7 @@ def buildFinances(df, id):
             df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
 
         printFinanceData(df)
-        
+
         tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
         weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:

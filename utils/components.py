@@ -197,6 +197,66 @@ def plotBarChart(df, xValue, yValue,name):
     
     st_echarts(options=options, height="300px")
 
+def plotSideBarChart(df, xValue, yValue1, yValue2, name):
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    temp = df.head(10)
+    temp = temp.iloc[::-1].reset_index(drop=True)
+    options = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+                "type": "shadow"
+            }
+        },
+        "legend": {},
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": "3%",
+            "containLabel": True
+        },
+        "xAxis": {
+            "type": "value"
+        },
+        "yAxis": {
+            "type": "category",
+            "data": temp[xValue].tolist()
+        },
+        "series": [
+            {
+                "name": yValue1,
+                "type": "bar",
+                "stack": "total",
+                "label": {
+                    "show": True
+                },
+                "emphasis": {
+                    "focus": "series"
+                },
+                "data": temp[yValue1].tolist(),
+                "itemStyle": {
+                    "color": "#ffb131"
+                }
+            },
+            {
+                "name": yValue2,
+                "type": "bar",
+                "stack": "total",
+                "label": {
+                    "show": True
+                },
+                "emphasis": {
+                    "focus": "series"
+                },
+                "data": temp[yValue2].tolist(),
+                "itemStyle": {
+                    "color": "#ff6600"  # Tom de laranja diferente para a segunda série
+                }
+            }
+        ]
+    }
+    st_echarts(options=options, height="300px")
+
 def plotMapChart(df):
     df = pd.DataFrame(
     np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
