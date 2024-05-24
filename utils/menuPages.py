@@ -3,6 +3,7 @@ from utils.components import *
 from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
+import time
 
 # Dash Geral
 def buildGeneralDash(df):

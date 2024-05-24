@@ -38,10 +38,14 @@ Separar em abas de 'Artista para Estabelecimento' e 'Estabelecimento para artist
 -- Média de avaliação por semana
 -- Colocar um extrato de avalições no final (Data do show, avaliação, fiuncionário, artista...)
 
+-- arrumar query de chekin e chekout
+-- ver grado de pizza para checkin
+
 Header
--- Arrumar logo
+Arrumar logo
 Colocar botão na mesma linha(direita)
 Ocupar menos espaço
 Arrumar filtro erro nome CASA e CONTRATANTE mudar para ESTABLECIMENTO
 Filtro de casa ordenado por ordem alfabética
 
+-- adicionar if para quando não carregar dataframes

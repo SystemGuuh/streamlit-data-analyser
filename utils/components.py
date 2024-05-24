@@ -53,8 +53,44 @@ def plotDataframe(df, name):
 
 def plotLineChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    
+    if df[xValue].dtype == 'object':
+        # Tentar converter os valores para o tipo datetime
+        try:
+            df_sorted = df.sort_values(by=xValue)
+            df_sorted[xValue] = pd.to_datetime(df_sorted[xValue])
+            df_sorted[xValue] = df_sorted[xValue].dt.strftime('%d/%m/%Y')
+        except ValueError:
+            df_sorted = df
 
-    st.line_chart(df, x=xValue, y=yValue, use_container_width=True, color=["#ff6600"])
+    options = {
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+                "type": "cross"
+            }
+        },
+        "xAxis": {
+            "type": "category",
+            "boundaryGap": False,
+            "data": df_sorted[xValue].tolist(),
+        },
+        "yAxis": {"type": "value"},
+        "series": [
+            {
+                "data": df_sorted[yValue].tolist(),
+                "type": "line",
+                "lineStyle": {
+                    "color": "#ff6600",  # Cor laranja para a linha
+                    "width": 4
+                },
+                "areaStyle": {
+                    "color": "#808080"  # Cor amarela para a área abaixo da linha
+                }
+            }
+        ],
+    }
+    st_echarts(options=options, height="400px")
 
 def plotPizzaChart(labels, sizes, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -102,7 +138,53 @@ def plotPizzaChart(labels, sizes, name):
 
 def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
-    st.bar_chart(df, x=xValue, y=yValue, use_container_width=True, color=["#ff6600"])
+    
+    if df[xValue].dtype == 'object':
+        # Tentar converter os valores para o tipo datetime
+        try:
+            df_sorted = df.sort_values(by=xValue)
+            df_sorted[xValue] = pd.to_datetime(df_sorted[xValue])
+            df_sorted[xValue] = df_sorted[xValue].dt.strftime('%d/%m/%Y')
+        except ValueError:
+            df_sorted = df
+
+    options = {
+        "xAxis": {
+            "type": "category",
+            "data": df_sorted[xValue].tolist(),
+        },
+        "yAxis": {"type": "value"},
+        "series": [
+            {
+                "data": df_sorted[yValue].tolist(),
+                "type": "bar",
+                "itemStyle": {
+                    "color": "#ff6600"
+                },
+                "barWidth": "50%"  # Ajuste a largura das colunas aqui
+            }
+        ],
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+                "type": "shadow"
+            }
+        },
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": "3%",
+            "containLabel": True
+        },
+        "legend": {
+            "data": [yValue],
+            "textStyle": {
+                "color": "orange"
+            }
+        }
+    }
+    
+    st_echarts(options=options, height="400px")
 
 def plotMapChart(df):
     df = pd.DataFrame(
@@ -136,17 +218,18 @@ def plotFinanceWeeklyChart(id, year):
     df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
 
     with st.expander("Gráfico de barras", expanded=True):
-        st.bar_chart(df[['NUMERO_SEMANA','VALOR_GANHO_BRUTO']], x='NUMERO_SEMANA', y='VALOR_GANHO_BRUTO', color=["#ff6600"])
+        plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
     with st.expander("Gráfico de linhas"):
-        st.line_chart(df[['NUMERO_SEMANA','VALOR_GANHO_BRUTO']], x='NUMERO_SEMANA', y='VALOR_GANHO_BRUTO', color=["#ff6600"])
+        plotLineChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
     
 def plotFinanceMonthlyChart(id, year):
     df = GET_WEEKLY_FINANCES(id, year)
     df['VALOR_GANHO_BRUTO'] = df[['VALOR_GANHO_BRUTO']].astype(int)
+
     with st.expander("Gráfico de barras", expanded=True):
-        st.bar_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
+        plotBarChart(df, 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
     with st.expander("Gráfico de linhas"):
-        st.line_chart(df[['NUMERO_MES','VALOR_GANHO_BRUTO']], x='NUMERO_MES', y='VALOR_GANHO_BRUTO', color=["#ffcc00"])
+        plotLineChart(df, 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
 
 def buttonDowloadDash(df, name):
     st.download_button(

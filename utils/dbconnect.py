@@ -360,8 +360,7 @@ def GET_WEEKLY_FINANCES(id, year):
                             DATE_ADD(DATE(P.DATA_INICIO), INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY) AS NUMERO_SEMANA,
                             DATE_FORMAT(DATE_ADD(P.DATA_INICIO, INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY), '%d-%m-%Y') AS DIA,
                             SUM(P.VALOR_BRUTO) AS VALOR_GANHO_BRUTO,
-                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO,
-                            CONCAT(MONTH(P.DATA_INICIO),' - ',MONTHNAME(P.DATA_INICIO)) AS NUMERO_MES  
+                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO
                         FROM 
                             T_PROPOSTAS P
                             INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
