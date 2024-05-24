@@ -14,7 +14,7 @@ Graficos:
 Pizza pra tipo de ocorrências
 Barras para artistas com mais ocorrências
 Barras para históricos de quantidade de ocorrências por semana
--- Barras de taxa de checkin por artista
+Barras de taxa de checkin por artista
 
 - Desing:
 Tentar implementação com uma aba só
@@ -39,7 +39,7 @@ Separar em abas de 'Artista para Estabelecimento' e 'Estabelecimento para artist
 -- Colocar um extrato de avalições no final (Data do show, avaliação, fiuncionário, artista...)
 
 -- arrumar query de chekin e chekout
--- ver grado de pizza para checkin
+-- ver grafo de pizza para checkin
 
 Header
 Arrumar logo
@@ -47,5 +47,3 @@ Colocar botão na mesma linha(direita)
 Ocupar menos espaço
 Arrumar filtro erro nome CASA e CONTRATANTE mudar para ESTABLECIMENTO
 Filtro de casa ordenado por ordem alfabética
-
--- adicionar if para quando não carregar dataframes

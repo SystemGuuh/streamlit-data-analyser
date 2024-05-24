@@ -6,6 +6,7 @@ import numpy as np
 from datetime import date
 from streamlit_echarts import st_echarts
 from utils.functions import *
+from decimal import Decimal
 
 def hide_sidebar():
     st.markdown("""
@@ -146,7 +147,6 @@ def plotPizzaChart(labels, sizes, name):
     
     st_echarts(options=options, height="300px")
     
-
 def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     
@@ -206,18 +206,20 @@ def plotMapChart(df):
 def printFinanceData(df):
     row2 = st.columns(4)
     tile = row2[0].container(border=True)
-    
 
+    total_brute = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
+    total_liquid = format_brazilian(sum(df['VALOR_LIQUIDO']).quantize(Decimal('0.00')))
+    
     tile.markdown(f"<h6 style='text-align: center;'>Shows Aceitos</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</h6>", unsafe_allow_html=True)
 
     tile = row2[1].container(border=True)
     tile.markdown(f"<h6 style='text-align: center;'>Shows Cancelados</br>{(df['STATUS_PROPOSTA'] == 'Cancelada').sum()}</h6>", unsafe_allow_html=True)
 
     tile = row2[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Bruto Total</br>R$ {'{:.2f}'.format(df['VALOR_BRUTO'].sum())}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Bruto Total</br>R$ {total_brute}</h6>", unsafe_allow_html=True)
 
     tile = row2[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Líquido Total</br>R$ {'{:.2f}'.format(df['VALOR_LIQUIDO'].sum())}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Líquido Total</br>R$ {total_liquid}</h6>", unsafe_allow_html=True)
 
 def filterFinanceStatus(df):
     option = st.selectbox("Status Financeiro:",(df['STATUS_FINANCEIRO'].unique()),

@@ -184,6 +184,7 @@ def buildFinances(df, id):
             df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
 
         printFinanceData(df)
+        
         tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
         weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:

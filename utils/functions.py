@@ -38,7 +38,7 @@ def to_excel(df):
     processed_data = output.getvalue()
     return processed_data
 
-# Função para transformar dias em ingles para pt-br
+# Função para transformar valores em dinheiro
 def format_brazilian(num):
         return f"{num:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
