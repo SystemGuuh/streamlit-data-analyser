@@ -16,6 +16,16 @@ def hide_sidebar():
     </style>
     """, unsafe_allow_html=True)
 
+# resolve o bug de carregamento dos gráficos de echart
+def fix_tab_echarts():
+    streamlit_style = """
+    <style>
+    iframe[title="streamlit_echarts.st_echarts"]{ height: 300px;} 
+   </style>
+    """
+
+    return st.markdown(streamlit_style, unsafe_allow_html=True)
+
 def filterCalendarComponent():
     today = datetime.date.today()
     thirty_days_ago = today - datetime.timedelta(days=90)
@@ -90,7 +100,7 @@ def plotLineChart(df, xValue, yValue,name):
             }
         ],
     }
-    st_echarts(options=options, height="400px")
+    st_echarts(options=options, height="300px")
 
 def plotPizzaChart(labels, sizes, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -185,7 +195,7 @@ def plotBarChart(df, xValue, yValue,name):
         }
     }
     
-    st_echarts(options=options, height="400px")
+    st_echarts(options=options, height="300px")
 
 def plotMapChart(df):
     df = pd.DataFrame(

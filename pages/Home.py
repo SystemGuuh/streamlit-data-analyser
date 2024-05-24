@@ -11,6 +11,8 @@ st.set_page_config(
         )
 
 hide_sidebar()
+fix_tab_echarts()
+
 
 if 'loggedIn' not in st.session_state:
     st.switch_page("main.py")
