@@ -135,6 +135,7 @@ def plotPizzaChart(labels, sizes, name):
     }
     
     st_echarts(options=options, height="300px")
+    
 
 def plotBarChart(df, xValue, yValue,name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -213,8 +214,7 @@ def filterFinanceStatus(df):
             index=None, placeholder="Escolha um")
     return option
 
-def plotFinanceWeeklyChart(id, year):
-    df = GET_WEEKLY_FINANCES(id, year)
+def plotFinanceWeeklyChart(df):
     df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
 
     with st.expander("Gráfico de barras", expanded=True):
@@ -222,8 +222,7 @@ def plotFinanceWeeklyChart(id, year):
     with st.expander("Gráfico de linhas"):
         plotLineChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
     
-def plotFinanceMonthlyChart(id, year):
-    df = GET_WEEKLY_FINANCES(id, year)
+def plotFinanceMonthlyChart(df):
     df['VALOR_GANHO_BRUTO'] = df[['VALOR_GANHO_BRUTO']].astype(int)
 
     with st.expander("Gráfico de barras", expanded=True):

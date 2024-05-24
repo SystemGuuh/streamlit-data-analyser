@@ -136,7 +136,7 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
                 plotBarChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
             with row1[1]:
                 st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
-                st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=700)
+                st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=735)
 
         with container2:    
             artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
@@ -164,6 +164,7 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
 
 # Financeiro        
 def buildFinances(df, id):
+    year = 2024
     row1 = st.columns([2,1,1,1,1,1])
     with row1[0]:
         proposal = filterProposalComponent()
@@ -184,10 +185,11 @@ def buildFinances(df, id):
 
         printFinanceData(df)
         tab1, tab2 = st.tabs(["SEMANAL", "MENSAL"])
+        weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:
-            plotFinanceWeeklyChart(id, year)
+            plotFinanceWeeklyChart(weeklyFinances)
         with tab2:
-            plotFinanceMonthlyChart(id, year)
+            plotFinanceMonthlyChart(weeklyFinances)
 
         df = formatFinancesDataframe(df)
         plotDataframe(df, "Dados Financeiros Semanais")
