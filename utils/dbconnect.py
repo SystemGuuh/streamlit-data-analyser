@@ -234,41 +234,42 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
                         AND AC.NOTA > 0
                         """)   
 
-# Avaliações - Avaliações da casa
+# Avaliações - Avaliações de artista
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
-    return getDfFromQuery(f"""SELECT
-                            A.NOME AS ARTISTA,
-                            ROUND(AVG(AV.NOTA), 2) AS 'MÉDIA DE NOTAS',
-                            COUNT(DISTINCT AV.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
-                            COUNT(P.FK_CONTRATADO) AS 'NÚMERO DE SHOWS'
+    return getDfFromQuery(f"""
+                        SELECT
+                        A.NOME AS ARTISTA,
+                        IFNULL(ROUND(AVG(AV.NOTA), 2),'0') AS 'MÉDIA DE NOTAS',
+                        COUNT(DISTINCT AV.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
+                        COUNT(P.FK_CONTRATADO) AS 'NÚMERO DE SHOWS'
 
-                            FROM T_AVALIACAO_ATRACOES AV
-                            INNER JOIN T_PROPOSTAS P ON (P.ID = AV.FK_PROPOSTA)
-                            LEFT JOIN ADMIN_USERS AU ON (AU.ID = AV.LAST_USER)
-                            INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
-                            INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
-                            LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
-                            LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+                        FROM T_PROPOSTAS P
+                        LEFT JOIN T_AVALIACAO_ATRACOES AV ON (P.ID = AV.FK_PROPOSTA)
+                        LEFT JOIN ADMIN_USERS AU ON (AU.ID = AV.LAST_USER)
+                        INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
+                        INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
+                        LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
+                        LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
 
-                            WHERE
-                            GU.STATUS = 1
-                            AND GU.FK_USUARIO = {id}
-                            GROUP BY
-                            A.ID, A.NOME
-                            ORDER BY
-                            'MÉDIA DE NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
+                        WHERE
+                        GU.STATUS = 1
+                        AND GU.FK_USUARIO = 31582
+                        AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                        GROUP BY
+                        A.ID, A.NOME
+                        ORDER BY 'MÉDIA DE NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
     """)
 
 # Avaliações - Avaliações da casa
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
-                            ROUND(AVG(AC.NOTA), 2) AS 'MÉDIA NOTAS',
+                            IFNULL(ROUND(AVG(AC.NOTA), 2),'0') AS 'MÉDIA NOTAS',
                             COUNT(DISTINCT AC.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
                             COUNT(P.FK_CONTRANTE) AS 'NÚMERO DE SHOWS'
 
-                            FROM T_AVALIACAO_CASAS AC
-                            INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
+                            FROM T_PROPOSTAS P
+                            LEFT JOIN T_AVALIACAO_CASAS AC ON (P.ID = AC.FK_PROPOSTA)
                             LEFT JOIN ADMIN_USERS AU ON (AU.ID = AC.LAST_USER)
                             INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
                             INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
@@ -278,7 +279,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
                             WHERE 
                             GU.STATUS = 1
                             AND GU.FK_USUARIO = {id}
-                            AND AC.NOTA > 0
+                            AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                             GROUP BY
                             C.ID, C.NAME
                             ORDER BY

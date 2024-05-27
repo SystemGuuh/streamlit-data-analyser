@@ -95,13 +95,12 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                         col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
                 plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
 
-
-
     with tab2:
         container = st.container(border=True)
         with container:
             row1 = st.columns([3,2])
             with row1[0]:
+                reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','GRUPO','NOTA', 'AVALIADOR', 'COMENTÁRIO']]
                 plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas")
             with row1[1]:
                 plotDataframe(averageReviewArtistByHouse, "Médias de Avaliações")
