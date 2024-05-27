@@ -100,7 +100,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
         with container:
             row1 = st.columns([3,2])
             with row1[0]:
-                reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','GRUPO','NOTA', 'AVALIADOR', 'COMENTÁRIO']]
+                reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','GRUPO','NOTA', 'AVALIADOR']]
                 plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas")
             with row1[1]:
                 plotDataframe(averageReviewArtistByHouse, "Médias de Avaliações")
@@ -110,6 +110,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
         with container:
             row2 = st.columns([3,2])
             with row2[0]:
+                reviewHouseByArtirst = reviewHouseByArtirst[['ESTABELECIMENTO','GRUPO','NOTA']]
                 plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas")
             with row2[1]:
                 plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
