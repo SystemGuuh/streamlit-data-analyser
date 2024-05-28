@@ -377,7 +377,7 @@ def GET_WEEKLY_FINANCES(id, year):
                           """)
 
 @st.cache_data # Desempenho Operacional
-def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
+def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, establishment):
     df = getDfFromQuery(f"""
                             SELECT
                             A.NOME AS ARTISTA,
@@ -402,7 +402,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, stablishment):
                             AND C.ID NOT IN (102,343,632,633)
                     """)
 
-    return apply_filter_in_report_dataframe(df, date, stablishment)
+    return apply_filter_in_report_dataframe(df, date, establishment)
 
 def GET_ARTIST_CHECKIN_CHECKOUT(id):
     return getDfFromQuery(f"""

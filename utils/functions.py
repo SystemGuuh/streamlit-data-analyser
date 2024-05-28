@@ -66,3 +66,12 @@ def sum_duration_from_dataframe(df):
     seconds = total_seconds % 60
     
     return hours, minutes, seconds
+
+def format_finances_dash(financeDash):
+    financeDash['VALOR_BRUTO'] = 'R$ ' + financeDash['VALOR_BRUTO'].apply(format_brazilian).astype(str)
+    financeDash_renamed = financeDash.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
+                    'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+    new_order = ['STATUS PROPOSTA','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
+    financeDash_renamed = financeDash_renamed[new_order]
+
+    return financeDash_renamed

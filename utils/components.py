@@ -46,6 +46,11 @@ def filterProposalComponent():
     option = st.multiselect("Proposta da semana recorrente:",['Aceita','Cancelada','Recusada','Pendente','Checkin Realizado','Checkout Realizado'], ['Aceita', 'Cancelada'])
     return option
 
+def filterWeekComponent():
+    option = st.selectbox("Agrupar por dia da semana:",['Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado','Domingo'],
+            index=None, placeholder="Escolha um")
+    return option
+
 def filterYearChartFinances():
     current_year = date.today().year
     years = list(range(2015, current_year + 1))
@@ -55,6 +60,11 @@ def filterYearChartFinances():
 
 def filterReportType(df):
     option = st.selectbox("Tipo de ocorrência:",(df['TIPO'].unique()),
+            index=None, placeholder="Escolha um")
+    return option
+
+def filterReportArtist(df):
+    option = st.selectbox("Filtro por artista:",(df['ARTISTA'].unique()),
             index=None, placeholder="Escolha um")
     return option
 
@@ -93,7 +103,7 @@ def plotLineChart(df, xValue, yValue,name):
                 "type": "line",
                 "lineStyle": {
                     "color": "#ff6600",  # Cor laranja para a linha
-                    "width": 4
+                    "width": 2
                 },
                 "areaStyle": {
                     "color": "#808080"  # Cor amarela para a área abaixo da linha

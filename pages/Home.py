@@ -60,8 +60,13 @@ if st.session_state['loggedIn']:
         # página
         buildGeneralDash(df)
     with tab2:
+        # Tabelas usadas
+        financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
+
+        financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
+
         # página
-        buildComparativeDash(df)
+        buildComparativeDash(financeDash)
     with tab3:
         # tabelas usadas
         artistRanking = GET_ARTIST_RANKING(id)

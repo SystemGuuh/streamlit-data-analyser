@@ -3,7 +3,6 @@ from utils.components import *
 from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
-import time
 
 # Dash Geral
 def buildGeneralDash(df):
@@ -43,30 +42,32 @@ def buildGeneralDash(df):
         # Body
         plotDataframe(df, "Dash Geral")
 
-# GMV total
-# Lista de shows
-# Shows por artista
-# Investimento por dia da semana
-# Ticket médio por artista
-# Compativo por casa
-# Comparativo Mensal
-def buildComparativeDash(df):
+def buildComparativeDash(financeDash):
     st.header("DASH ANALÍTICO COMPARATIVO MENSAL")
+    # Values
+    week = None
+    row1 = st.columns(6)
+    trasactionValue = format_brazilian(sum(financeDash['VALOR_BRUTO']).quantize(Decimal('0.00')))
 
-    tab1, tab2, tab3 = st.tabs(["CORPORATIVO MENSAL 1", "CORPORATIVO MENSAL 2", "CORPORATIVO MENSAL 3"])
-    with tab1:
-        container = st.container(border=True)
-        with container:
-            st.write('building...')
-    with tab2:
-        container = st.container(border=True)
-        with container:
-            st.write('building...')
-    with tab3:
-        container = st.container(border=True)
-        with container:
-            st.write('building...')
+    # Page
+    tile = row1[5].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total transacionado:</br>R$ {trasactionValue}</h6>", unsafe_allow_html=True)
 
+    with row1[0]:
+        if artist := filterReportArtist(financeDash):
+            financeDash = financeDash[financeDash['ARTISTA']==artist]
+
+            tile = row1[4].container(border=True)
+            ticket = format_brazilian((sum(financeDash['VALOR_BRUTO']).quantize(Decimal('0.00')))/financeDash.shape[0])
+            tile.markdown(f"<h6 style='text-align: center;'>Ticket médio do artista:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
+              
+    container = st.container(border=True)
+    with container:
+        financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+        grouped_financeDash = financeDash.groupby('DIA_DA_SEMANA')['VALOR_BRUTO'].sum().reset_index()
+        plotBarChart(grouped_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+        plotDataframe(format_finances_dash(financeDash), 'Lista de shows')
+         
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables
@@ -189,20 +190,14 @@ def buildFinances(df, id):
 
 # Extrato de show
 def buildShowStatement(df):
-    # getting values
+    # pegando valores
     total = df.shape[0]
     total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(df)
     ticket = format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
     value = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
 
-    # formating
-    df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].apply(format_brazilian).astype(str)
-    df = df.drop(columns=['ID_PROPOSTA'])
-    df_renamed = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
-                      'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
-    
-    new_order = ['STATUS PROPOSTA','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
-    df_renamed = df_renamed[new_order]
+    # formatando df
+    df_renamed = format_finances_dash(df)
     
     buttonDowloadDash(df, "Extrato-de-Shows")
     row1 = st.columns(4)
