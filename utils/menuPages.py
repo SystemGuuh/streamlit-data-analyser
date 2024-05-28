@@ -61,11 +61,29 @@ def buildComparativeDash(financeDash):
             ticket = format_brazilian((sum(financeDash['VALOR_BRUTO']).quantize(Decimal('0.00')))/financeDash.shape[0])
             tile.markdown(f"<h6 style='text-align: center;'>Ticket médio do artista:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
               
-    container = st.container(border=True)
-    with container:
-        financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
-        grouped_financeDash = financeDash.groupby('DIA_DA_SEMANA')['VALOR_BRUTO'].sum().reset_index()
-        plotBarChart(grouped_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+    tab1, tab2= st.tabs(["Dia da semana", "Artista"])
+    with tab1:
+        container = st.container(border=True)
+        with container:
+            financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+            grouped_financeDash = financeDash.groupby('DIA_DA_SEMANA')['VALOR_BRUTO'].sum().reset_index()
+            # Problema de formatação, não tá ordenado os dias da semana
+            plotBarChart(grouped_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+    with tab2:
+        container = st.container(border=True)
+        with container:
+            financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+            grouped_financeDash = financeDash.groupby('ARTISTA').agg(
+                SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),
+                CONTA_VALOR_BRUTO=('VALOR_BRUTO', 'count')
+            ).reset_index()
+            grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['CONTA_VALOR_BRUTO']
+            grouped_financeDash = grouped_financeDash.sort_values(by='CONTA_VALOR_BRUTO')
+            # Problema de formatação, não tá ordenado os dias da semana
+            plotBarChart(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'Ticket médio por artista')
+
+    container2 = st.container(border=True)
+    with container2:
         plotDataframe(format_finances_dash(financeDash), 'Lista de shows')
          
 # Avaliação
