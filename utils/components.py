@@ -158,6 +158,7 @@ def plotPizzaChart(labels, sizes, name):
     st_echarts(options=options, height="300px")
     
 def plotBarChart(df, xValue, yValue,name):
+    chart_key = f"{xValue}_{yValue}_{name}"
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     
     if df[xValue].dtype == 'object':
@@ -205,7 +206,47 @@ def plotBarChart(df, xValue, yValue,name):
         }
     }
     
-    st_echarts(options=options, height="300px")
+    st_echarts(options=options, height="300px", key=chart_key)
+
+def plotBarChart2(df, xValue, yValue, zValue, name):
+    chart_key = f"{xValue}_{yValue}_{zValue}_{name}"
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+    
+    if df[xValue].dtype == 'object':
+        # Tentar converter os valores para o tipo datetime
+        try:
+            df_sorted = df.sort_values(by=xValue)
+            df_sorted[xValue] = pd.to_datetime(df_sorted[xValue])
+            df_sorted[xValue] = df_sorted[xValue].dt.strftime('%d/%m/%Y')
+        except ValueError:
+            df_sorted = df
+
+    options = {
+        "xAxis": {
+            "type": "category",
+            "data": df_sorted[xValue].tolist(),
+        },
+        "yAxis": {"type": "value"},
+        "series": [
+            {
+                "data": df_sorted[yValue].tolist(),
+                "type": "bar",
+                "itemStyle": {"color": "#ff6600"},
+                "barWidth": "40%"  # Ajuste a largura das colunas aqui
+            },
+            {
+                "data": df_sorted[zValue].tolist(),
+                "type": "bar",
+                "itemStyle": {"color": "#0088ff"},
+                "barWidth": "40%"  # Ajuste a largura das colunas aqui
+            }
+        ],
+        "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
+        "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": True},
+        "legend": {"data": [yValue, zValue], "textStyle": {"color": "orange"}}
+    }
+    
+    st_echarts(options=options, height="300px", key=chart_key)
 
 def plotSideBarChart(df, xValue, yValue1, yValue2, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
@@ -296,21 +337,21 @@ def filterFinanceStatus(df):
             index=None, placeholder="Escolha um")
     return option
 
-def plotFinanceWeeklyChart(df):
+def plotFinanceWeeklyChart(df, financeDash):
+    # Transformando e agrupando valores
     df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
+    financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+    grouped_byWek_financeDash = financeDash.groupby('DIA_DA_SEMANA')['VALOR_BRUTO'].sum().reset_index()
+    df_byMonth = df.groupby('MES')['VALOR_GANHO_BRUTO'].sum().reset_index()
 
-    with st.expander("Gráfico de barras", expanded=True):
+    # Plotrando gráficos
+    with st.expander("Valor ganho por semana", expanded=False):
         plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
-    with st.expander("Gráfico de linhas"):
-        plotLineChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
-    
-def plotFinanceMonthlyChart(df):
-    df['VALOR_GANHO_BRUTO'] = df[['VALOR_GANHO_BRUTO']].astype(int)
-
-    with st.expander("Gráfico de barras", expanded=True):
-        plotBarChart(df, 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
-    with st.expander("Gráfico de linhas"):
-        plotLineChart(df, 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
+    with st.expander("Valor ganho por mês", expanded=False):
+        plotBarChart(df_byMonth, 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
+    with st.expander("Investimento por dia da semana", expanded=False):
+        plotBarChart(grouped_byWek_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+  
 
 def buttonDowloadDash(df, name):
     st.download_button(
@@ -319,4 +360,27 @@ def buttonDowloadDash(df, name):
     file_name=f"{name}.xlsx",
     mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
+def plotFinanceArtist(financeDash):
+    financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+    
+    grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),CONTA_VALOR_BRUTO=('VALOR_BRUTO', 'count')).reset_index()
+    grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['CONTA_VALOR_BRUTO']
+    grouped_financeDash = grouped_financeDash.sort_values(by='CONTA_VALOR_BRUTO') # ordenado por artisas com mais shows na casa
+    col1, col2 = st.columns([4,2])
+    with col1:
+        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'CONTA_VALOR_BRUTO', 'Ticket médio por artista')
+    grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
+    with col2:
+        st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Artistas</h5>", unsafe_allow_html=True)
+        st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']],
+            column_config={
+            "TICKET MÉDIO": st.column_config.ProgressColumn(
+                "TICKET MÉDIO",
+                help="O Valor Líquido da Venda do produto em reais",
+                format="R$%f",
+                min_value=0,
+                max_value=grouped_financeDash['TICKET MÉDIO'].max(),
+            )},hide_index=True, use_container_width=True, height=310)
+
 

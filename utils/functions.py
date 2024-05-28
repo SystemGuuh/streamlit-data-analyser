@@ -67,11 +67,13 @@ def sum_duration_from_dataframe(df):
     
     return hours, minutes, seconds
 
+# Função para formatar os dados da tabela de finanças
 def format_finances_dash(financeDash):
-    financeDash['VALOR_BRUTO'] = 'R$ ' + financeDash['VALOR_BRUTO'].apply(format_brazilian).astype(str)
-    financeDash_renamed = financeDash.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
+    copy = financeDash
+    copy['VALOR_BRUTO'] = 'R$ ' + copy['VALOR_BRUTO'].apply(format_brazilian).astype(str)
+    financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
                     'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
-    new_order = ['STATUS PROPOSTA','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
+    new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
     financeDash_renamed = financeDash_renamed[new_order]
 
     return financeDash_renamed

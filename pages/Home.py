@@ -90,9 +90,11 @@ if st.session_state['loggedIn']:
     with tab5:
         # tabelas usadas
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
+        financeDash_br = financeDash.copy()
+        financeDash_br['DIA_DA_SEMANA'] = financeDash_br['DIA_DA_SEMANA'].apply(translate_day)
 
         # página
-        buildFinances(financeDash, id)
+        buildFinances(financeDash, financeDash_br, id)
     with tab6:
         # tabelas usadas
         showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
