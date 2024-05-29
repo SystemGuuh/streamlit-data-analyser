@@ -363,21 +363,21 @@ def buttonDowloadDash(df, name):
 def plotFinanceArtist(financeDash):
     financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
     
-    grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),CONTA_VALOR_BRUTO=('VALOR_BRUTO', 'count')).reset_index()
-    grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['CONTA_VALOR_BRUTO']
-    grouped_financeDash = grouped_financeDash.sort_values(by='CONTA_VALOR_BRUTO') # ordenado por artisas com mais shows na casa
+    grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),QUANTIDADE_SHOWS=('VALOR_BRUTO', 'count')).reset_index()
+    grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']
+    grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS') # ordenado por artisas com mais shows na casa
     col1, col2 = st.columns([4,2])
     with col1:
-        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'CONTA_VALOR_BRUTO', 'Ticket médio por artista')
+        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'Ticket médio por artista')
     grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
     with col2:
         st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Artistas</h5>", unsafe_allow_html=True)
-        st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']],
+        st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
             column_config={
             "TICKET MÉDIO": st.column_config.ProgressColumn(
                 "TICKET MÉDIO",
                 help="O Valor Líquido da Venda do produto em reais",
-                format="R$%f",
+                format="R$%.2f",
                 min_value=0,
                 max_value=grouped_financeDash['TICKET MÉDIO'].max(),
             )},hide_index=True, use_container_width=True, height=310)
