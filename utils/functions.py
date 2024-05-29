@@ -3,6 +3,7 @@ from utils.dbconnect import GET_WEEKLY_FINANCES
 import pandas as pd
 from io import BytesIO
 from utils.functions import *
+import re
 
 # Função para criar um dicionário com dias da semana
 def translate_day(dia):
@@ -67,10 +68,36 @@ def sum_duration_from_dataframe(df):
     
     return hours, minutes, seconds
 
+# Função de tradução de horas
+def translate_duration(duration):
+    if isinstance(duration, pd.Timedelta):
+        total_seconds = duration.total_seconds()
+        if total_seconds == 1800:  # 30 minutos
+            return 'meia hora'
+        elif total_seconds < 3600:
+            minutes = total_seconds // 60
+            return f'{int(minutes)} minutos'
+        elif total_seconds < 86400:  # menos que um dia
+            hours = total_seconds // 3600
+            return f'{int(hours)} hora' if hours == 1 else f'{int(hours)} horas'
+        else:
+            days = total_seconds // 86400
+            return f'{int(days)} dia' if days == 1 else f'{int(days)} dias'
+    return str(duration)
+
 # Função para formatar os dados da tabela de finanças
 def format_finances_dash(financeDash):
     copy = financeDash
+
+    # Colocando mascara nos valores
     copy['VALOR_BRUTO'] = 'R$ ' + copy['VALOR_BRUTO'].apply(format_brazilian).astype(str)
+    copy['DATA_INICIO'] = pd.to_datetime(copy['DATA_INICIO'], dayfirst=True)
+    copy['DATA_FIM'] = pd.to_datetime(copy['DATA_FIM'], dayfirst=True)
+    copy['DATA_INICIO'] = copy['DATA_INICIO'].dt.strftime('%d/%m/%Y')
+    copy['DATA_FIM'] = copy['DATA_FIM'].dt.strftime('%d/%m/%Y')
+    copy['DURACAO'] = copy['DURACAO'].apply(translate_duration)
+
+    # Renomeando e removendo colunas
     financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
                     'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
     new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']

@@ -42,62 +42,42 @@ def buildGeneralDash(df):
         # Body
         plotDataframe(df, "Dash Geral")
 
-# Remover
-def buildComparativeDash(financeDash):
-    st.header("DASH ANALÍTICO COMPARATIVO MENSAL")
-    # Values
-    week = None
-    row1 = st.columns(6)
-    trasactionValue = format_brazilian(sum(financeDash['VALOR_BRUTO']).quantize(Decimal('0.00')))
+# Financeiro        
+def buildFinances(financeDash,id):
+    year = 2024
 
-    # Page
-    tile = row1[5].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total transacionado:</br>R$ {trasactionValue}</h6>", unsafe_allow_html=True)
-
+    # Compenentes de filtragem
+    row1 = st.columns([2,1,1,1,1,1])
     with row1[0]:
-        if artist := filterReportArtist(financeDash):
-            financeDash = financeDash[financeDash['ARTISTA']==artist]
+        proposal = filterProposalComponent()
+    with row1[1]:
+        status = filterFinanceStatus(financeDash)
+    with row1[2]:
+        year = filterYearChartFinances()
+    with row1[5]:
+        st.write("")
+    
+    st.header("DASH FINANCEIRO")
+    container = st.container(border=True)
 
-            tile = row1[4].container(border=True)
-            ticket = format_brazilian((sum(financeDash['VALOR_BRUTO']).quantize(Decimal('0.00')))/financeDash.shape[0])
-            tile.markdown(f"<h6 style='text-align: center;'>Ticket médio do artista:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
-              
-    tab1, tab2, tab3= st.tabs(["Comaparativo por dia da semana", "Comparativo por casa", "Comparativo Mensal"])
-    with tab1:
-        container = st.container(border=True)
-        with container:
-            financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
-            grouped_financeDash = financeDash.groupby('DIA_DA_SEMANA')['VALOR_BRUTO'].sum().reset_index()
-            # Problema de formatação, não tá ordenado os dias da semana
-            #plotBarChart(grouped_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
-            
-            financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
-            grouped_financeDash = financeDash.groupby('ARTISTA').agg(
-                SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),
-                CONTA_VALOR_BRUTO=('VALOR_BRUTO', 'count')
-            ).reset_index()
-            grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['CONTA_VALOR_BRUTO']
-            grouped_financeDash = grouped_financeDash.sort_values(by='CONTA_VALOR_BRUTO') # ordenado por artisas com mais shows na casa
-            # Problema de formatação, não tá ordenado os dias da semana
-            col1, col2 = st.columns([4,2])
-            with col1:
-                st.write('')
-                #plotBarChart(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'Ticket médio por artista')
-            grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
-            with col2:
-                st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Artistas</h5>", unsafe_allow_html=True)
-                st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']],
-                    column_config={
-                    "TICKET MÉDIO": st.column_config.ProgressColumn(
-                        "TICKET MÉDIO",
-                        help="O Valor Líquido da Venda do produto em reais",
-                        format="R$%f",
-                        min_value=0,
-                        max_value=grouped_financeDash['TICKET MÉDIO'].max(),
-                    )},hide_index=True, use_container_width=True, height=310)
-            
-            st.divider()
-            plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
+    # Plotagem dos gráficos
+    with container:
+        if status is not None:
+            financeDash = financeDash[financeDash['STATUS_FINANCEIRO'] == status]
+        if proposal is not None:
+            financeDash = financeDash[financeDash['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
+
+        printFinanceData(financeDash)
+
+        tab1, tab2 = st.tabs(["Por período", "Por artistas"])
+        weeklyFinances = GET_WEEKLY_FINANCES(id, year)
+        with tab1:
+            plotFinanceWeeklyChart(weeklyFinances, financeDash) # Resolver questão das ordens dos dias e meses
+        with tab2:
+            plotFinanceArtist(financeDash)
+        st.divider()
+        plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
+
 
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
@@ -185,41 +165,6 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
                 plotDataframe(extract[extract['TIPO']==type], "Relatório completo de ocorrências")
             else:
                 plotDataframe(extract, "Relatório completo de ocorrências")
-
-# Financeiro        
-def buildFinances(df, financeDash,id):
-    year = 2024
-
-    # Compenentes de filtragem
-    row1 = st.columns([2,1,1,1,1,1])
-    with row1[0]:
-        proposal = filterProposalComponent()
-    with row1[1]:
-        status = filterFinanceStatus(df)
-    with row1[2]:
-        year = filterYearChartFinances()
-    with row1[5]:
-        st.write("")
-    
-    st.header("DASH FINANCEIRO")
-    container = st.container(border=True)
-
-    # Plotagem dos gráficos
-    with container:
-        if status is not None:
-            df = df[df['STATUS_FINANCEIRO'] == status]
-        if proposal is not None:
-            df = df[df['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
-
-        printFinanceData(df)
-
-        tab1, tab2 = st.tabs(["Por período", "Por artistas"])
-        weeklyFinances = GET_WEEKLY_FINANCES(id, year)
-        with tab1:
-            plotFinanceWeeklyChart(weeklyFinances, financeDash) # Resolver questão das ordens dos dias e meses
-            plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
-        with tab2:
-            plotFinanceArtist(financeDash) # adicionar tabela
 
 # Extrato de show
 def buildShowStatement(df):

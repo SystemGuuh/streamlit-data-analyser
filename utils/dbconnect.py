@@ -104,8 +104,8 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
     if establishment is not None:
         df = df[df['ESTABELECIMENTO'] == establishment]
 
-    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'])
-    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'])
+    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'], dayfirst=True)
+    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'], dayfirst=True)
 
     df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).apply(
         lambda x: f"{x.components.hours}h {x.components.minutes}m {x.components.seconds}s"

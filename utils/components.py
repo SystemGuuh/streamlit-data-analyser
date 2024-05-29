@@ -352,7 +352,6 @@ def plotFinanceWeeklyChart(df, financeDash):
     with st.expander("Investimento por dia da semana", expanded=False):
         plotBarChart(grouped_byWek_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
   
-
 def buttonDowloadDash(df, name):
     st.download_button(
     label='Baixar em Excel',
@@ -382,5 +381,6 @@ def plotFinanceArtist(financeDash):
                 min_value=0,
                 max_value=grouped_financeDash['TICKET MÉDIO'].max(),
             )},hide_index=True, use_container_width=True, height=310)
+
 
 

@@ -55,18 +55,17 @@ if st.session_state['loggedIn']:
         col1.warning('Parace que você não permissão para visualizar dados de casas.')
 
     #Body
-    tab1, tab2, tab3, tab4, tab5, tab6= st.tabs(["DASH GERAL", "COMPARATIVO MENSAL", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "FINANCEIRO", "EXTRATO DE SHOWS"])
+    tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
     with tab1:
         # página
         buildGeneralDash(df)
     with tab2:
-        # Tabelas usadas
+       # tabelas usadas
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
-
         financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
 
         # página
-        buildComparativeDash(financeDash)
+        buildFinances(financeDash, id)
     with tab3:
         # tabelas usadas
         artistRanking = GET_ARTIST_RANKING(id)
@@ -86,16 +85,8 @@ if st.session_state['loggedIn']:
         checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
 
         # página
-        buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, checkinCheckout, allOperationalPerformaceByOccurrenceAndDate)
+        buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, checkinCheckout, allOperationalPerformaceByOccurrenceAndDate)   
     with tab5:
-        # tabelas usadas
-        financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
-        financeDash_br = financeDash.copy()
-        financeDash_br['DIA_DA_SEMANA'] = financeDash_br['DIA_DA_SEMANA'].apply(translate_day)
-
-        # página
-        buildFinances(financeDash, financeDash_br, id)
-    with tab6:
         # tabelas usadas
         showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
         showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
