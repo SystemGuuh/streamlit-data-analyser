@@ -78,7 +78,6 @@ def buildFinances(financeDash,id):
         st.divider()
         plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
 
-
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formating tables

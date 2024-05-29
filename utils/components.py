@@ -178,6 +178,7 @@ def plotBarChart(df, xValue, yValue,name):
         "yAxis": {"type": "value"},
         "series": [
             {
+                "name": yValue,
                 "data": df_sorted[yValue].tolist(),
                 "type": "bar",
                 "itemStyle": {
@@ -201,7 +202,7 @@ def plotBarChart(df, xValue, yValue,name):
         "legend": {
             "data": [yValue],
             "textStyle": {
-                "color": "orange"
+                "color": "#808080"
             }
         }
     }
@@ -264,7 +265,7 @@ def plotSideBarChart(df, xValue, yValue1, yValue2, name):
                 "type": "shadow"
             }
         },
-        "legend": {},
+        "legend": {"textStyle": {"color": "#808080"}},
         "grid": {
             "left": "3%",
             "right": "4%",
