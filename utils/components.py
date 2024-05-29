@@ -1,6 +1,6 @@
 import streamlit as st
 import datetime
-from utils.dbconnect import GET_PROPOSTAS_BY_ID, GET_WEEKLY_FINANCES
+from utils.dbconnect import GET_PROPOSTAS_BY_ID
 import pandas as pd
 import numpy as np
 from datetime import date
@@ -356,7 +356,7 @@ def plotFinanceWeeklyChart(df, financeDash):
     with st.expander("Valor ganho por mês", expanded=False):
         plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
     with st.expander("Investimento por dia da semana", expanded=False):
-        plotBarChart(grouped_byWek_financeDash, 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+        plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
   
 def buttonDowloadDash(df, name):
     st.download_button(
