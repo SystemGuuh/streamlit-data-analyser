@@ -222,29 +222,34 @@ def plotBarChart2(df, xValue, yValue, zValue, name):
             df_sorted = df
 
     options = {
-        "xAxis": {
-            "type": "category",
-            "data": df_sorted[xValue].tolist(),
+    "xAxis": {
+        "type": "category",
+        "data": df_sorted[xValue].tolist(),
+    },
+    "yAxis": {"type": "value"},
+    "series": [
+        {
+            "name": "Ticket Médio",
+            "data": df_sorted[yValue].tolist(),
+            "type": "bar",
+            "itemStyle": {"color": "#ff6600"},
+            "barWidth": "40%",  # Ajuste a largura das colunas aqui
+            "tooltip": {"formatter": "{b}: {c} (Ticket Médio)"}  # Formato da dica de ferramenta
         },
-        "yAxis": {"type": "value"},
-        "series": [
-            {
-                "data": df_sorted[yValue].tolist(),
-                "type": "bar",
-                "itemStyle": {"color": "#ff6600"},
-                "barWidth": "40%"  # Ajuste a largura das colunas aqui
-            },
-            {
-                "data": df_sorted[zValue].tolist(),
-                "type": "bar",
-                "itemStyle": {"color": "#0088ff"},
-                "barWidth": "40%"  # Ajuste a largura das colunas aqui
-            }
-        ],
-        "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
-        "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": True},
-        "legend": {"data": [yValue, zValue], "textStyle": {"color": "orange"}}
-    }
+        {
+            "name": "Quantidade de Shows",
+            "data": df_sorted[zValue].tolist(),
+            "type": "bar",
+            "itemStyle": {"color": "#ffb131"},
+            "barWidth": "0%",  # Ajuste a largura das colunas aqui
+            "tooltip": {"formatter": "{b}: {c} (Quantidade de Shows)"}  # Formato da dica de ferramenta
+        }
+    ],
+    "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
+    "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": True},
+    "legend": {"data": ["Ticket Médio", "Quantidade de Shows"], "textStyle": {"color": "#808080"}}
+}
+
     
     st_echarts(options=options, height="300px", key=chart_key)
 
@@ -364,14 +369,14 @@ def plotFinanceArtist(financeDash):
     financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
     
     grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),QUANTIDADE_SHOWS=('VALOR_BRUTO', 'count')).reset_index()
-    grouped_financeDash['TICKET_MEDIO'] = grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']
-    grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS') # ordenado por artisas com mais shows na casa
+    grouped_financeDash['TICKET_MEDIO'] = (grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']).round(2)
+    grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS', ascending=False)
     col1, col2 = st.columns([4,2])
     with col1:
-        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'Ticket médio por artista')
+        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'TOP 20 - Quantidade de shows e ticket médio por artista')
     grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
     with col2:
-        st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Artistas</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio de artistas</h5>", unsafe_allow_html=True)
         st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
             column_config={
             "TICKET MÉDIO": st.column_config.ProgressColumn(

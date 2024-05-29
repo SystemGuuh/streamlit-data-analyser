@@ -74,7 +74,7 @@ def buildFinances(financeDash,id):
         with tab1:
             plotFinanceWeeklyChart(weeklyFinances, financeDash) # Resolver questão das ordens dos dias e meses
         with tab2:
-            plotFinanceArtist(financeDash) # Adicionar coluna pra quantidade de shows
+            plotFinanceArtist(financeDash)
         st.divider()
         plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
 
