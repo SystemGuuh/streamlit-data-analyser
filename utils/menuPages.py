@@ -4,9 +4,7 @@ from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
 
-#ver filtros
 #terminar pagina geral
-#testar com outros ids
 #arrumar login
 
 # Dash Geral
@@ -144,8 +142,8 @@ def buildShowStatement(df):
     # pegando valores
     total = df.shape[0]
     total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(df)
-    ticket = format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
-    value = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
+    ticket = 0 if total == 0 else  format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
+    value = format_brazilian(Decimal(sum(df['VALOR_BRUTO'])).quantize(Decimal('0.00')))
 
     # formatando df
     df_renamed = format_finances_dash(df)

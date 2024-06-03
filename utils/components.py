@@ -351,9 +351,9 @@ def plotFinanceWeeklyChart(df, financeDash):
     df_byMonth = df.groupby('MES')['VALOR_GANHO_BRUTO'].sum().reset_index()
 
     # Plotando gráficos
-    with st.expander("Valor ganho por semana", expanded=False):
+    with st.expander("Valor investido por semana", expanded=False):
         plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
-    with st.expander("Valor ganho por mês", expanded=False):
+    with st.expander("Valor investido por mês", expanded=False):
         plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
     with st.expander("Investimento por dia da semana", expanded=False):
         plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')

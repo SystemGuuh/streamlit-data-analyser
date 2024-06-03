@@ -24,4 +24,5 @@ def login(userName: str, password: str) -> bool:
             return False
 
 def logout():
+    st.cache_data.clear()
     st.session_state['loggedIn'] = False
