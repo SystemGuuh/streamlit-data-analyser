@@ -1,6 +1,6 @@
 import streamlit as st
 import datetime
-from utils.dbconnect import GET_PROPOSTAS_BY_ID
+from utils.dbconnect import GET_GERAL_INFORMATION_AND_FINANCES
 import pandas as pd
 import numpy as np
 from datetime import date
@@ -36,7 +36,7 @@ def filterCalendarComponent():
     return d
 
 def filterEstablishmentComponent(id):
-    df = GET_PROPOSTAS_BY_ID(id, None, None)
+    df = GET_GERAL_INFORMATION_AND_FINANCES(id, None, None)
     df_sorted = df.sort_values(by='ESTABELECIMENTO')
     option = st.selectbox("Estabelecimentos:",(df_sorted['ESTABELECIMENTO'].unique()),
             index=None, placeholder="Escolha um")

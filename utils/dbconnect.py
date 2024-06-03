@@ -42,6 +42,12 @@ def convert_date(row):
         row['DATA_FIM'] = None 
     return row
 
+def apply_filter_establishment_in_dataframe(df, establishment):
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+
+    return df
+
 def apply_filter_in_dataframe(df, date, establishment):
     if len(date) > 1 and date[0] is not None and date[1] is not None:
         startDate = pd.Timestamp(date[0])
@@ -60,13 +66,14 @@ def apply_filter_in_dataframe(df, date, establishment):
     return df
 
 def apply_filter_in_finance_dataframe(df, date, establishment):
-    if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = pd.Timestamp(date[0])
-        endDate = pd.Timestamp(date[1])
-        df = df.dropna(subset=['DATA_INICIO'])
-    
-        df = df[df['DATA_INICIO'] >= startDate]
-        df = df[df['DATA_FIM'] <= endDate]
+    if date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA_INICIO'])
+        
+            df = df[df['DATA_INICIO'] >= startDate]
+            df = df[df['DATA_FIM'] <= endDate]
 
     if establishment is not None:
         df = df[df['ESTABELECIMENTO'] == establishment]
@@ -213,8 +220,8 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
     return apply_filter_in_dataframe(df, date, establishment)
 
 # Avaliações - Avaliações da casa
-def GET_REVIEW_HOUSE_BY_ARTIST(id):
-    return getDfFromQuery(f"""SELECT
+def GET_REVIEW_HOUSE_BY_ARTIST(id, establishment):
+    df = getDfFromQuery(f"""SELECT
                         C.NAME AS ESTABELECIMENTO,
                         GC.GRUPO_CLIENTES AS GRUPO,
                         AC.NOTA,
@@ -232,7 +239,9 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
                         GU.STATUS = 1
                         AND GU.FK_USUARIO = {id}
                         AND AC.NOTA > 0
-                        """)   
+                        """)  
+
+    return apply_filter_establishment_in_dataframe(df, establishment) 
 
 # Avaliações - Avaliações de artista
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
@@ -261,8 +270,8 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     """)
 
 # Avaliações - Avaliações da casa
-def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
-    return getDfFromQuery(f"""SELECT
+def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, establishment):
+    df = getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
                             IFNULL(ROUND(AVG(AC.NOTA), 2),'0') AS 'MÉDIA NOTAS',
                             COUNT(DISTINCT AC.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
@@ -285,6 +294,8 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
                             ORDER BY
                             'MÉDIA NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
     """)
+
+    return apply_filter_establishment_in_dataframe(df, establishment)
 
 # Avaliações - Rancking
 def GET_ARTIST_RANKING(id):

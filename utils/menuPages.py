@@ -10,42 +10,11 @@ from decimal import Decimal
 #arrumar login
 
 # Dash Geral
-def buildGeneralDash(df):
+def buildGeneralDash():
     container = st.container(border=True)
     with container:
         # Values
-        row1 = st.columns(6)
-
-        showNumbers = df.shape[0]
-        trasactionValue = round(df['VALOR_BRUTO'].sum(), 2)
-        countEstablishments = df['ESTABELECIMENTO'].nunique()
-        averageTicket = round(df['VALOR_BRUTO'].mean(), 2)
-
-        if showNumbers > 0: meanShowsByHouse = round((showNumbers / countEstablishments), 2)
-        else: meanShowsByHouse=0
-        
-        distinctArtists = df['ARTISTA'].nunique()
-        # Page
-        tile = row1[0].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Número de Shows</br>{showNumbers}</h6>", unsafe_allow_html=True)
-
-        tile = row1[1].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado</br>R$ {trasactionValue}</h6>", unsafe_allow_html=True)
-
-        tile = row1[2].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Estabelecimentos</br>{countEstablishments}</h6>", unsafe_allow_html=True)
-
-        tile = row1[3].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio</br>R$ {averageTicket}</h6>", unsafe_allow_html=True)
-
-        tile = row1[4].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Média de Shows por Casa</br>{meanShowsByHouse}</h6>", unsafe_allow_html=True)
-
-        tile = row1[5].container(border=True)
-        tile.markdown(f"<h6 style='text-align: center;'>Artistas Distintos</br>{distinctArtists}</h6>", unsafe_allow_html=True)
-
-        # Body
-        plotDataframe(df, "Dash Geral")
+        st.info('Building...')
 
 # Financeiro        
 def buildFinances(financeDash,id):
@@ -85,7 +54,7 @@ def buildFinances(financeDash,id):
 
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
-    #formating tables
+    #formatando tabelas
     artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
     artistRanking = artistRanking.rename(columns={'NUM_SHOWS_ARTISTA': 'NÚMERO DE SHOWS', 'MEDIA_NOTAS': 'NOTAS', 'QUANTIDADE_AVALIACOES': 'AVALIAÇÕES'})
     artistRanking = artistRanking.drop(columns=['ID'])

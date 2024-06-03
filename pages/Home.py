@@ -47,18 +47,11 @@ if st.session_state['loggedIn']:
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
 
-    df = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
-    df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(translate_day)
-
-    # Dataframe vazio
-    if df.empty:
-        col1.warning('Parace que você não permissão para visualizar dados de casas.')
-
     #Body
     tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
     with tab1:
         # página
-        buildGeneralDash(df)
+        buildGeneralDash()
     with tab2:
        # tabelas usadas
         financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
@@ -67,12 +60,12 @@ if st.session_state['loggedIn']:
         # página
         buildFinances(financeDash, id)
     with tab3:
-        # tabelas usadas
+        # tabelas usadas    
         artistRanking = GET_ARTIST_RANKING(id)
         reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
         averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-        reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
-        averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+        reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
+        averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
 
         # página
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
