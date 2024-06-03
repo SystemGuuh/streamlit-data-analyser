@@ -4,6 +4,11 @@ from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
 
+#ver filtros
+#terminar pagina geral
+#testar com outros ids
+#arrumar login
+
 # Dash Geral
 def buildGeneralDash(df):
     container = st.container(border=True)
@@ -72,12 +77,11 @@ def buildFinances(financeDash,id):
         tab1, tab2 = st.tabs(["Por período", "Por artistas"])
         weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:
-            plotFinanceWeeklyChart(weeklyFinances, financeDash) # Resolver questão das ordens dos dias e meses
+            plotFinanceWeeklyChart(weeklyFinances, financeDash)
         with tab2:
             plotFinanceArtist(financeDash)
         st.divider()
         plotDataframe(format_finances_dash(financeDash.copy()), 'Lista de shows')
-
 
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):

@@ -1,9 +1,6 @@
-import streamlit as st
-from utils.dbconnect import GET_WEEKLY_FINANCES
 import pandas as pd
 from io import BytesIO
 from utils.functions import *
-import re
 
 # Função para criar um dicionário com dias da semana
 def translate_day(dia):
@@ -104,3 +101,46 @@ def format_finances_dash(financeDash):
     financeDash_renamed = financeDash_renamed[new_order]
 
     return financeDash_renamed
+
+# Função para traduzir e colocar na ordem os meses de um dataframe
+def order_and_format_month_dataframe(df):
+    # Definindo a ordem dos meses
+    month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+    # Criando um DataFrame com todos os meses
+    all_months = pd.DataFrame({'MES': range(1, 13)})
+    all_months['MES'] = pd.Categorical(all_months['MES'], categories=range(1, 13), ordered=True)
+    all_months['MES'] = all_months['MES'].cat.rename_categories(month_order)
+
+    # Mesclando os dados originais com todos os meses
+    df = pd.merge(all_months, df, on='MES', how='left')
+
+    # Ordenar o DataFrame pelo mês(index)
+    df = df.sort_index()
+
+    # Zerando os valores null
+    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].fillna(0)
+
+    # Traduzir os meses para português
+    df['MES'] = df['MES'].replace({'January': 'Janeiro', 'February': 'Fevereiro', 'March': 'Março', 'April': 'Abril', 'May': 'Maio', 'June': 'Junho', 'July': 'Julho', 'August': 'Agosto', 'September': 'Setembro', 'October': 'Outubro', 'November': 'Novembro', 'December': 'Dezembro'})
+
+    return df
+
+# Função para traduzir e colocar na ordem as semanas de um dataframe
+def order_and_format_weekday_dataframe(df):
+    # Definindo a ordem dos dias da semana em português
+    weekday_order = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
+
+    # Criando um DataFrame com todos os dias da semana
+    all_weekdays = pd.DataFrame({'DIA_DA_SEMANA': weekday_order})
+
+    # Mesclando os dados originais com todos os dias da semana
+    df = pd.merge(all_weekdays, df, on='DIA_DA_SEMANA', how='left')
+
+    # Substituindo valores nulos por None
+    df = df.where(pd.notnull(df), None)
+
+    # Ordenando o DataFrame pelo índice
+    df = df.sort_index()
+
+    return df
