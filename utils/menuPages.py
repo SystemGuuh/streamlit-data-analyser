@@ -8,11 +8,47 @@ from decimal import Decimal
 #arrumar login
 
 # Dash Geral
-def buildGeneralDash():
+def buildGeneralDash(monthlyFinances, financeDash, averageReviewHouseByArtist, pizzaChart, showStatement):
+    # pegando valores
+    artists = len(pd.unique(showStatement['ARTISTA']))
+    stablishment = len(pd.unique(showStatement['ESTABELECIMENTO']))
+    total = showStatement.shape[0]
+    total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(showStatement)
+    ticket = 0 if total == 0 else  format_brazilian((sum(showStatement['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
+    value = format_brazilian(Decimal(sum(showStatement['VALOR_BRUTO'])).quantize(Decimal('0.00')))
+
+    # Printando valores em containers
+    row1 = st.columns(6)
+
+    tile = row1[0].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Artistas:</br>{artists}</h6>", unsafe_allow_html=True)
+
+    tile = row1[1].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Estabelecimentos:</br>{stablishment}</h6>", unsafe_allow_html=True)
+
+    tile = row1[2].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
+
+    tile = row1[3].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Horas em shows:</br>{total_hours}h {total_minutes}m {total_seconds}s</h6>", unsafe_allow_html=True)
+
+    tile = row1[4].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado:</br>R$ {value}</h6>", unsafe_allow_html=True)
+
+    tile = row1[5].container(border=True)
+    tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
+    
     container = st.container(border=True)
     with container:
-        # Values
-        st.info('Building...')
+        row2 = st.columns([3,2])
+        with row2[0]:
+            plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Resumo de ocorrêcias por tipo")
+        with row2[1]:
+            plotGeneralFinanceArtist(financeDash)
+        plotGeneralFinanceChart(monthlyFinances)
+        plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
+        
+        
 
 # Financeiro        
 def buildFinances(financeDash,id):
@@ -44,7 +80,7 @@ def buildFinances(financeDash,id):
         tab1, tab2 = st.tabs(["Por período", "Por artistas"])
         weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:
-            plotFinanceWeeklyChart(weeklyFinances, financeDash)
+            plotFinanceCharts(weeklyFinances, financeDash)
         with tab2:
             plotFinanceArtist(financeDash)
         st.divider()
@@ -69,7 +105,6 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 plotDataframe(artistRanking[['ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
             with center[1]:
                 if option is not None:
-                    st.markdown(f"<div style='margin-bottom: 10px;'><h5 padding: 0.1em;'></h5></div>", unsafe_allow_html=True)
                     with st.expander(f"🏆 Dados de artista {option}"):
                         col1, col2 = st.columns(2)
                         col1.write(f"Posição no rank: {(artistRanking[artistRanking['ARTISTA'] == option].index[0]) + 1}º Lugar")
@@ -81,17 +116,18 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
     with tab2:
         container = st.container(border=True)
         with container:
-            row1 = st.columns([3,2])
+            row1 = st.columns([2,2])
             with row1[0]:
                 reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','GRUPO','NOTA', 'AVALIADOR']]
                 plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas")
             with row1[1]:
-                plotDataframe(averageReviewArtistByHouse, "Médias de Avaliações")
+                averageReviewArtistByHouse_sorted = averageReviewArtistByHouse.sort_values(by='NÚMERO DE SHOWS', ascending=False)
+                plotDataframe(averageReviewArtistByHouse_sorted, "Médias de Avaliações")
             
     with tab3:
         container = st.container(border=True)
         with container:
-            row2 = st.columns([3,2])
+            row2 = st.columns([2,2])
             with row2[0]:
                 reviewHouseByArtirst = reviewHouseByArtirst[['ESTABELECIMENTO','GRUPO','NOTA']]
                 plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas")

@@ -3,6 +3,7 @@ from utils.components import *
 from utils.menuPages import *
 from utils.dbconnect import *
 from utils.user import logout
+from datetime import datetime
 
 st.set_page_config(
             page_title="Eshows-Data Analytics",
@@ -47,44 +48,39 @@ if st.session_state['loggedIn']:
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
 
+    # == Tabelas usadas ==
+    # Geral
+    generalFinances = GET_WEEKLY_FINANCES(id, datetime.now().year)
+    # financeiro
+    financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
+    financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
+    # Avaliações
+    artistRanking = GET_ARTIST_RANKING(id)
+    reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
+    averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
+    reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
+    averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
+    # Desempenho operacional
+    allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
+    operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
+    ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
+    ByWeek = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None, inputEstablishment)) #grafico de barras
+    checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
+    # Extrato
+    showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
+    showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+
     #Body
     tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
     with tab1:
-        # página
-        buildGeneralDash()
+        buildGeneralDash(generalFinances.copy(), financeDash.copy(), averageReviewHouseByArtist.copy(), ByOccurrence.copy(), showStatement.copy())
     with tab2:
-       # tabelas usadas
-        financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
-        financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-
-        # página
         buildFinances(financeDash, id)
     with tab3:
-        # tabelas usadas    
-        artistRanking = GET_ARTIST_RANKING(id)
-        reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
-        averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-        reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
-        averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
-
-        # página
         buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
     with tab4:
-        # tabelas usadas
-        allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
-        operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
-        ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
-        ByWeek = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None, inputEstablishment)) #grafico de barras
-        checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
-
-        # página
         buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, checkinCheckout, allOperationalPerformaceByOccurrenceAndDate)   
     with tab5:
-        # tabelas usadas
-        showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
-        showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
-        
-        # página
         buildShowStatement(showStatement)
 else:
     st.switch_page("main.py")

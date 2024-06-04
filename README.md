@@ -29,6 +29,11 @@ Execute o aplicativo Streamlit:
 streamlit run Hello.py
 ```
 
+No sistemas Linux é necessário criar um espaço virtual com dois comandos:
+```
+python -m venv venv
+source venv/bin/activate
+```
 ## Funcionalidades
 
 - Visualização de dados do Monday

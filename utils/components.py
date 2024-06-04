@@ -1,8 +1,8 @@
 import streamlit as st
-import datetime
 from utils.dbconnect import GET_GERAL_INFORMATION_AND_FINANCES
 import pandas as pd
 import numpy as np
+import datetime
 from datetime import date
 from streamlit_echarts import st_echarts
 from utils.functions import *
@@ -114,6 +114,7 @@ def plotLineChart(df, xValue, yValue,name):
     st_echarts(options=options, height="300px")
 
 def plotPizzaChart(labels, sizes, name):
+    chart_key = f"{labels}_{sizes}_{name}_"
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     
     # Preparar os dados para o gráfico
@@ -155,11 +156,15 @@ def plotPizzaChart(labels, sizes, name):
         ],
     }
     
-    st_echarts(options=options, height="300px")
+    st_echarts(options=options, height="300px", key=chart_key)
     
 def plotBarChart(df, xValue, yValue,name):
     chart_key = f"{xValue}_{yValue}_{name}"
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
+
+    if yValue == 'VALOR_GANHO_BRUTO':
+        df = df.rename(columns={'VALOR_GANHO_BRUTO': 'VALOR INVESTIDO'})
+        yValue = 'VALOR INVESTIDO'
     
     if df[xValue].dtype == 'object':
         # Tentar converter os valores para o tipo datetime
@@ -249,7 +254,7 @@ def plotBarChart2(df, xValue, yValue, zValue, name):
     "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}},
     "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": True},
     "legend": {"data": ["Ticket Médio", "Quantidade de Shows"], "textStyle": {"color": "#808080"}}
-}
+    }
 
     
     st_echarts(options=options, height="300px", key=chart_key)
@@ -319,7 +324,34 @@ def plotMapChart(df):
     np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
     columns=['lat', 'lon'])
     st.map(df)
-    
+
+def plotGeneralFinanceChart(df):
+    # Transformando e agrupando valores
+    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
+    df_byMonth = df.groupby('MES')['VALOR_GANHO_BRUTO'].sum().reset_index()
+
+    # Plotando gráficos
+    plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', f'Valor investido por mês em {datetime.date.today().year}')
+
+def plotGeneralFinanceArtist(df):
+    financeDash = df.copy()
+    financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+    grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),QUANTIDADE_SHOWS=('VALOR_BRUTO', 'count')).reset_index()
+    grouped_financeDash['TICKET_MEDIO'] = (grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']).round(2)
+    grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS', ascending=False)
+    grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
+
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio de artistas</h5>", unsafe_allow_html=True)
+    st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
+        column_config={
+        "TICKET MÉDIO": st.column_config.ProgressColumn(
+            "TICKET MÉDIO",
+            help="O Valor Líquido da Venda do produto em reais",
+            format="R$%.2f",
+            min_value=0,
+            max_value=grouped_financeDash['TICKET MÉDIO'].max(),
+        )},hide_index=True, use_container_width=True, height=310)
+
 def printFinanceData(df):
     row2 = st.columns(4)
     tile = row2[0].container(border=True)
@@ -343,7 +375,7 @@ def filterFinanceStatus(df):
             index=None, placeholder="Escolha um")
     return option
 
-def plotFinanceWeeklyChart(df, financeDash):
+def plotFinanceCharts(df, financeDash):
     # Transformando e agrupando valores
     df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].astype(int)
     financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
@@ -352,18 +384,20 @@ def plotFinanceWeeklyChart(df, financeDash):
 
     # Plotando gráficos
     with st.expander("Valor investido por semana", expanded=False):
-        plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor ganho por semana')
+        plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor investido por semana')
     with st.expander("Valor investido por mês", expanded=False):
-        plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor ganho por mês')
+        plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor investido por mês')
     with st.expander("Investimento por dia da semana", expanded=False):
         plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
   
 def buttonDowloadDash(df, name):
+    button_key = f"_{name}_"
     st.download_button(
     label='Baixar em Excel',
     data=to_excel(df),
     file_name=f"{name}.xlsx",
-    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    key=button_key
     )
 
 def plotFinanceArtist(financeDash):
