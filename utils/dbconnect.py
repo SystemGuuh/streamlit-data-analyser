@@ -87,10 +87,10 @@ def apply_filter_in_report_dataframe(df, date, establishment):
             endDate = pd.Timestamp(date[1])
             df = df.dropna(subset=['DATA'])
         
-            df = df[pd.to_datetime(df['DATA']) >= startDate]
-            df = df[pd.to_datetime(df['DATA']) <= endDate]
+            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
+            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
 
-        df['DATA'] = pd.to_datetime(df['DATA']) 
+        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
         df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
 
     if establishment is not None:
@@ -105,8 +105,8 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
             endDate = pd.Timestamp(date[1])
             df = df.dropna(subset=['DATA_INICIO', 'DATA_FIM'])
         
-            df = df[pd.to_datetime(df['DATA_INICIO']) >= startDate]
-            df = df[pd.to_datetime(df['DATA_FIM']) <= endDate]
+            df = df[pd.to_datetime(df['DATA_INICIO'], format='%d/%m/%Y') >= startDate]
+            df = df[pd.to_datetime(df['DATA_FIM'], format='%d/%m/%Y') <= endDate]
 
     if establishment is not None:
         df = df[df['ESTABELECIMENTO'] == establishment]
@@ -144,10 +144,48 @@ def get_report_artist_by_week(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
-# QUERIES - colocar em outro arquivo
+def load_data_in_session_state(id):
+    try: # Geral
+        st.session_state['generalFinances'] = GET_WEEKLY_FINANCES(id, datetime.now().year)
+    except:
+        st.error('Não foi possível carregar os dados gerais')
 
+    try: # financeiro
+        financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
+        financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
+        st.session_state['financeDash'] = financeDash
+    except:
+        st.error('Não foi possível carregar os dados financeiros')
+
+    try: # Avaliações
+        st.session_state['artistRanking'] = GET_ARTIST_RANKING(id)
+        st.session_state['reviewArtitsByHouse'] = GET_REVIEW_ARTIST_BY_HOUSE(id)
+        st.session_state['averageReviewArtistByHouse'] = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
+        st.session_state['reviewHouseByArtist'] = GET_REVIEW_HOUSE_BY_ARTIST(id)
+        st.session_state['averageReviewHouseByArtist'] = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+    except:
+        st.error('Não foi possível carregar os dados de avaliação')
+
+    try: # Desempenho operacional
+        allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
+        st.session_state['allOperationalPerformaceByOccurrenceAndDate'] = allOperationalPerformaceByOccurrenceAndDate
+        st.session_state['operationalPerformace'] = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
+        st.session_state['ByOccurrence'] = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
+        st.session_state['ByWeek'] = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None)) #grafico de barras
+        st.session_state['checkinCheckout'] = GET_ARTIST_CHECKIN_CHECKOUT(id)
+    except:
+        st.error('Não foi possível carregar os dados de desempenho operacional')
+
+    try: # Extrato
+        showStatement = GET_PROPOSTAS_BY_ID(id) 
+        showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+        st.session_state['showStatement'] = showStatement
+    except:
+        st.error('Não foi possível carregar os dados de extrato')
+
+# QUERIES - colocar em outro arquivo
 @st.cache_data # Extrato
-def GET_PROPOSTAS_BY_ID(id, date, establishment):
+def GET_PROPOSTAS_BY_ID(id):
     df =  getDfFromQuery(f"""
                     SELECT DISTINCT
                         P.ID AS ID_PROPOSTA,
@@ -178,7 +216,7 @@ def GET_PROPOSTAS_BY_ID(id, date, establishment):
                         AND P.DATA_INICIO IS NOT NULL 
                         AND GU.FK_USUARIO = {id}
                         """)
-    return apply_filter_in_geral_dataframe(df, date, establishment)
+    return df
 
 def GET_USER_NAME(id):
     return getDfFromQuery(f"""SELECT 
@@ -192,7 +230,7 @@ def GET_USER_NAME(id):
                           """)
 
 @st.cache_data # Avaliações - Avaliações da casa
-def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
+def GET_REVIEW_ARTIST_BY_HOUSE(id):
     df = getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
                             C.NAME AS ESTABELECIMENTO,
@@ -217,10 +255,10 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id, date, establishment):
                             AND GU.FK_USUARIO = {id}
                         """)
     
-    return apply_filter_in_dataframe(df, date, establishment)
+    return df
 
 # Avaliações - Avaliações da casa
-def GET_REVIEW_HOUSE_BY_ARTIST(id, establishment):
+def GET_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                         C.NAME AS ESTABELECIMENTO,
                         GC.GRUPO_CLIENTES AS GRUPO,
@@ -241,7 +279,7 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id, establishment):
                         AND AC.NOTA > 0
                         """)  
 
-    return apply_filter_establishment_in_dataframe(df, establishment) 
+    return df
 
 # Avaliações - Avaliações de artista
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
@@ -270,7 +308,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     """)
 
 # Avaliações - Avaliações da casa
-def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, establishment):
+def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
                             IFNULL(ROUND(AVG(AC.NOTA), 2),'0') AS 'MÉDIA NOTAS',
@@ -295,7 +333,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, establishment):
                             'MÉDIA NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
     """)
 
-    return apply_filter_establishment_in_dataframe(df, establishment)
+    return df
 
 # Avaliações - Rancking
 def GET_ARTIST_RANKING(id):
@@ -332,7 +370,7 @@ def GET_ARTIST_RANKING(id):
                         """)
 
 @st.cache_data # Financeiro
-def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment): 
+def GET_GERAL_INFORMATION_AND_FINANCES(id): 
     df =getDfFromQuery(f"""
                         SELECT
                         S.DESCRICAO AS STATUS_PROPOSTA,
@@ -362,7 +400,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id, date, establishment):
                         AND GU.FK_USUARIO = {id}
                         """)
     
-    return apply_filter_in_finance_dataframe(df, date, establishment)
+    return df
 
 @st.cache_data # Financeiro
 def GET_WEEKLY_FINANCES(id, year):
@@ -388,7 +426,7 @@ def GET_WEEKLY_FINANCES(id, year):
                           """)
 
 @st.cache_data # Desempenho Operacional
-def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, establishment):
+def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
     df = getDfFromQuery(f"""
                             SELECT
                             A.NOME AS ARTISTA,
@@ -413,7 +451,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, date, establishment):
                             AND C.ID NOT IN (102,343,632,633)
                     """)
 
-    return apply_filter_in_report_dataframe(df, date, establishment)
+    return df
 
 def GET_ARTIST_CHECKIN_CHECKOUT(id):
     return getDfFromQuery(f"""

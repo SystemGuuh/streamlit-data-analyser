@@ -4,7 +4,6 @@ from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
 
-#terminar pagina geral
 #arrumar login
 
 # Dash Geral
@@ -48,8 +47,6 @@ def buildGeneralDash(monthlyFinances, financeDash, averageReviewHouseByArtist, p
         plotGeneralFinanceChart(monthlyFinances)
         plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
         
-        
-
 # Financeiro        
 def buildFinances(financeDash,id):
     year = 2024
@@ -105,13 +102,17 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                 plotDataframe(artistRanking[['ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
             with center[1]:
                 if option is not None:
+                    st.markdown("<p style='padding-top:0.2em'></p>", unsafe_allow_html=True)
                     with st.expander(f"🏆 Dados de artista {option}"):
                         col1, col2 = st.columns(2)
                         col1.write(f"Posição no rank: {(artistRanking[artistRanking['ARTISTA'] == option].index[0]) + 1}º Lugar")
                         col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[0]}")
                         col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[0]}")
                         col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
-                plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
+                    plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
+                else:
+                    st.markdown("<p style='padding-top:4.3em'></p>", unsafe_allow_html=True)
+                    plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
 
     with tab2:
         container = st.container(border=True)

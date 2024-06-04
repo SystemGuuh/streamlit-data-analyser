@@ -47,40 +47,47 @@ if st.session_state['loggedIn']:
     col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
+    
+    # Carrega dados na sessão caso não tenha
+    if "data" not in st.session_state or st.session_state['data'] == False:
+        with st.spinner('Carregando dados, por favor aguarde...'):
+            load_data_in_session_state(id)
+        st.session_state['data'] = True 
 
-    # == Tabelas usadas ==
-    # Geral
-    generalFinances = GET_WEEKLY_FINANCES(id, datetime.now().year)
-    # financeiro
-    financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id, inputDate, inputEstablishment)
-    financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-    # Avaliações
-    artistRanking = GET_ARTIST_RANKING(id)
-    reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id, inputDate, inputEstablishment)
-    averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-    reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
-    averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id, inputEstablishment)
-    # Desempenho operacional
-    allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, inputDate, inputEstablishment)
-    operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
-    ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
-    ByWeek = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None, inputEstablishment)) #grafico de barras
-    checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
-    # Extrato
-    showStatement = GET_PROPOSTAS_BY_ID(id, inputDate, inputEstablishment) 
-    showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+    generalFinances = st.session_state['generalFinances']
+    financeDash = st.session_state['financeDash']
+    artistRanking = st.session_state['artistRanking']
+    reviewArtitsByHouse = st.session_state['reviewArtitsByHouse']
+    averageReviewArtistByHouse = st.session_state['averageReviewArtistByHouse']
+    reviewHouseByArtist = st.session_state['reviewHouseByArtist']
+    averageReviewHouseByArtist = st.session_state['averageReviewHouseByArtist']
+    allOperationalPerformaceByOccurrenceAndDate = st.session_state['allOperationalPerformaceByOccurrenceAndDate']
+    operationalPerformace = st.session_state['operationalPerformace']
+    ByOccurrence = st.session_state['ByOccurrence']
+    ByWeek = st.session_state['ByWeek']
+    checkinCheckout = st.session_state['checkinCheckout']
+    showStatement = st.session_state['showStatement']
 
-    #Body
+    # Aplicando filtros
+    showStatement = apply_filter_in_geral_dataframe(showStatement, inputDate, inputEstablishment)
+    reviewArtitsByHouse = apply_filter_in_dataframe(reviewArtitsByHouse, inputDate, inputEstablishment)
+    reviewHouseByArtist = apply_filter_establishment_in_dataframe(reviewHouseByArtist, inputEstablishment) 
+    averageReviewHouseByArtist = apply_filter_establishment_in_dataframe(averageReviewHouseByArtist, inputEstablishment)
+    financeDash = apply_filter_in_finance_dataframe(financeDash, inputDate, inputEstablishment)
+    allOperationalPerformaceByOccurrenceAndDate = apply_filter_in_report_dataframe(allOperationalPerformaceByOccurrenceAndDate, inputDate, inputEstablishment)
+
+    # Body
     tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
     with tab1:
         buildGeneralDash(generalFinances.copy(), financeDash.copy(), averageReviewHouseByArtist.copy(), ByOccurrence.copy(), showStatement.copy())
     with tab2:
-        buildFinances(financeDash, id)
+        buildFinances(financeDash.copy(), id)
     with tab3:
-        buildReview(artistRanking, reviewArtitsByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist)
+        buildReview(artistRanking.copy(), reviewArtitsByHouse.copy(), averageReviewArtistByHouse.copy(), reviewHouseByArtist.copy(), averageReviewHouseByArtist.copy())
     with tab4:
-        buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, checkinCheckout, allOperationalPerformaceByOccurrenceAndDate)   
+        buildOperationalPerformace(operationalPerformace.copy(), ByOccurrence.copy(), ByWeek.copy(), checkinCheckout.copy(), allOperationalPerformaceByOccurrenceAndDate.copy())   
     with tab5:
-        buildShowStatement(showStatement)
+        buildShowStatement(showStatement.copy())
+
 else:
     st.switch_page("main.py")

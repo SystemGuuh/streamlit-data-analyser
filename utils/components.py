@@ -36,7 +36,7 @@ def filterCalendarComponent():
     return d
 
 def filterEstablishmentComponent(id):
-    df = GET_GERAL_INFORMATION_AND_FINANCES(id, None, None)
+    df = GET_GERAL_INFORMATION_AND_FINANCES(id)
     df_sorted = df.sort_values(by='ESTABELECIMENTO')
     option = st.selectbox("Estabelecimentos:",(df_sorted['ESTABELECIMENTO'].unique()),
             index=None, placeholder="Escolha um")
