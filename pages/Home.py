@@ -1,9 +1,40 @@
 import streamlit as st
 from utils.components import *
 from utils.menuPages import *
+from utils.functions import *
 from utils.dbconnect import *
 from utils.user import logout
 from datetime import datetime
+
+# Carregando dados na sessão
+@st.cache_data
+def load_data_in_session_state(id):
+    # Geral
+    st.session_state['generalFinances'] = GET_WEEKLY_FINANCES(id, datetime.now().year)
+    # financeiro
+    financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
+    financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
+    st.session_state['financeDash'] = financeDash
+    # Avaliações
+    st.session_state['artistRanking'] = GET_ARTIST_RANKING(id)
+    st.session_state['reviewArtitsByHouse'] = GET_REVIEW_ARTIST_BY_HOUSE(id)
+    st.session_state['averageReviewArtistByHouse'] = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
+    st.session_state['reviewHouseByArtist'] = GET_REVIEW_HOUSE_BY_ARTIST(id)
+    st.session_state['averageReviewHouseByArtist'] = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+    # Desempenho operacional
+    allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
+    st.session_state['allOperationalPerformaceByOccurrenceAndDate'] = allOperationalPerformaceByOccurrenceAndDate
+    st.session_state['operationalPerformace'] = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
+    st.session_state['ByOccurrence'] = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
+    byWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate) #grafico de barras
+    st.session_state['byWeek'] = byWeek
+    st.session_state['checkinCheckout'] = GET_ARTIST_CHECKIN_CHECKOUT(id)
+    # Extrato
+    showStatement = GET_PROPOSTAS_BY_ID(id) 
+    showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+    st.session_state['showStatement'] = showStatement
+    # Estado dos dados
+    st.session_state['data_state'] = True
 
 st.set_page_config(
             page_title="Eshows-Data Analytics",
@@ -49,11 +80,11 @@ if st.session_state['loggedIn']:
         inputEstablishment = filterEstablishmentComponent(id)
     
     # Carrega dados na sessão caso não tenha
-    if "data" not in st.session_state or st.session_state['data'] == False:
+    if 'data_state' not in st.session_state:
         with st.spinner('Carregando dados, por favor aguarde...'):
             load_data_in_session_state(id)
-        st.session_state['data'] = True 
-
+        
+ 
     generalFinances = st.session_state['generalFinances']
     financeDash = st.session_state['financeDash']
     artistRanking = st.session_state['artistRanking']
@@ -64,7 +95,7 @@ if st.session_state['loggedIn']:
     allOperationalPerformaceByOccurrenceAndDate = st.session_state['allOperationalPerformaceByOccurrenceAndDate']
     operationalPerformace = st.session_state['operationalPerformace']
     ByOccurrence = st.session_state['ByOccurrence']
-    ByWeek = st.session_state['ByWeek']
+    ByWeek = st.session_state['byWeek']
     checkinCheckout = st.session_state['checkinCheckout']
     showStatement = st.session_state['showStatement']
 

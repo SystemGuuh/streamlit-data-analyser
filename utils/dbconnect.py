@@ -42,87 +42,7 @@ def convert_date(row):
         row['DATA_FIM'] = None 
     return row
 
-def apply_filter_establishment_in_dataframe(df, establishment):
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    return df
-
-def apply_filter_in_dataframe(df, date, establishment):
-    if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = pd.Timestamp(date[0])
-        endDate = pd.Timestamp(date[1])
-        df = df.dropna(subset=['DATA_AVALIACAO'])
-    
-        df = df[df['DATA_AVALIACAO'] >= startDate]
-        df = df[df['DATA_AVALIACAO'] <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    df = df.rename(columns={'COMENTARIO': 'COMENTÁRIO', 'EMAIL_AVALIADOR':'E-MAIL DO AVALIADOR', 'DATA_PROPOSTA':'DATA DA PROPOSTA'
-                                    ,'DATA_AVALICAO':'DATA DA AVALIAÇÃO'})
-
-    return df
-
-def apply_filter_in_finance_dataframe(df, date, establishment):
-    if date is not None:
-        if len(date) > 1 and date[0] is not None and date[1] is not None:
-            startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA_INICIO'])
-        
-            df = df[df['DATA_INICIO'] >= startDate]
-            df = df[df['DATA_FIM'] <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    return df
-
-def apply_filter_in_report_dataframe(df, date, establishment):
-    if  date is not None:
-        if len(date) > 1 and date[0] is not None and date[1] is not None:
-            startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA'])
-        
-            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
-            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
-
-        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
-        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-  
-    return df
-
-def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
-    if date is not None:
-        if len(date) > 1 and date[0] is not None and date[1] is not None:
-            startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA_INICIO', 'DATA_FIM'])
-        
-            df = df[pd.to_datetime(df['DATA_INICIO'], format='%d/%m/%Y') >= startDate]
-            df = df[pd.to_datetime(df['DATA_FIM'], format='%d/%m/%Y') <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'], dayfirst=True)
-    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'], dayfirst=True)
-
-    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).apply(
-        lambda x: f"{x.components.hours}h {x.components.minutes}m {x.components.seconds}s"
-    )
-    
-    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
-    df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
-
-    return df
-
+# Gerando dados a partir de um dataframe
 def get_report_artist(df):
     df['QUANTIDADE'] = df.groupby('ARTISTA')['ARTISTA'].transform('count')
     df_grouped = df.drop_duplicates(subset=['ARTISTA'])
@@ -138,53 +58,8 @@ def get_report_by_occurrence(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
-def get_report_artist_by_week(df):
-    df['QUANTIDADE'] = df.groupby('SEMANA')['SEMANA'].transform('count')
-    df_grouped = df.drop_duplicates(subset=['SEMANA'])
-    df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
-    return df_grouped
-
-def load_data_in_session_state(id):
-    try: # Geral
-        st.session_state['generalFinances'] = GET_WEEKLY_FINANCES(id, datetime.now().year)
-    except:
-        st.error('Não foi possível carregar os dados gerais')
-
-    try: # financeiro
-        financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
-        financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-        st.session_state['financeDash'] = financeDash
-    except:
-        st.error('Não foi possível carregar os dados financeiros')
-
-    try: # Avaliações
-        st.session_state['artistRanking'] = GET_ARTIST_RANKING(id)
-        st.session_state['reviewArtitsByHouse'] = GET_REVIEW_ARTIST_BY_HOUSE(id)
-        st.session_state['averageReviewArtistByHouse'] = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-        st.session_state['reviewHouseByArtist'] = GET_REVIEW_HOUSE_BY_ARTIST(id)
-        st.session_state['averageReviewHouseByArtist'] = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
-    except:
-        st.error('Não foi possível carregar os dados de avaliação')
-
-    try: # Desempenho operacional
-        allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
-        st.session_state['allOperationalPerformaceByOccurrenceAndDate'] = allOperationalPerformaceByOccurrenceAndDate
-        st.session_state['operationalPerformace'] = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
-        st.session_state['ByOccurrence'] = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
-        st.session_state['ByWeek'] = get_report_artist_by_week(GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id, None)) #grafico de barras
-        st.session_state['checkinCheckout'] = GET_ARTIST_CHECKIN_CHECKOUT(id)
-    except:
-        st.error('Não foi possível carregar os dados de desempenho operacional')
-
-    try: # Extrato
-        showStatement = GET_PROPOSTAS_BY_ID(id) 
-        showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
-        st.session_state['showStatement'] = showStatement
-    except:
-        st.error('Não foi possível carregar os dados de extrato')
-
 # QUERIES - colocar em outro arquivo
-@st.cache_data # Extrato
+# Extrato
 def GET_PROPOSTAS_BY_ID(id):
     df =  getDfFromQuery(f"""
                     SELECT DISTINCT
@@ -229,7 +104,7 @@ def GET_USER_NAME(id):
                             GROUP BY AU.ID
                           """)
 
-@st.cache_data # Avaliações - Avaliações da casa
+# Avaliações - Avaliações da casa
 def GET_REVIEW_ARTIST_BY_HOUSE(id):
     df = getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
@@ -369,7 +244,7 @@ def GET_ARTIST_RANKING(id):
                             MEDIA_NOTAS DESC, QUANTIDADE_AVALIACOES DESC;
                         """)
 
-@st.cache_data # Financeiro
+# Financeiro
 def GET_GERAL_INFORMATION_AND_FINANCES(id): 
     df =getDfFromQuery(f"""
                         SELECT
@@ -402,7 +277,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
     
     return df
 
-@st.cache_data # Financeiro
+# Financeiro
 def GET_WEEKLY_FINANCES(id, year):
     return getDfFromQuery(f"""
                         SELECT
@@ -425,7 +300,7 @@ def GET_WEEKLY_FINANCES(id, year):
                             YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO) ASC
                           """)
 
-@st.cache_data # Desempenho Operacional
+# Desempenho Operacional
 def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
     df = getDfFromQuery(f"""
                             SELECT
@@ -477,3 +352,4 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
                             ORDER BY 
                                 TOTAL_CHECKIN_CHECKOUT DESC;
                           """)
+

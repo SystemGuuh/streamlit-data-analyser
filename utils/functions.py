@@ -137,10 +137,100 @@ def order_and_format_weekday_dataframe(df):
     # Mesclando os dados originais com todos os dias da semana
     df = pd.merge(all_weekdays, df, on='DIA_DA_SEMANA', how='left')
 
-    # Substituindo valores nulos por None
-    df = df.where(pd.notnull(df), None)
+    # Substituindo valores nulos por 0
+    df = df.where(pd.notnull(df), 0)
 
     # Ordenando o DataFrame pelo índice
     df = df.sort_index()
 
     return df
+
+# Filtros de dataframes
+def apply_filter_establishment_in_dataframe(df, establishment):
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+
+    return df
+
+def apply_filter_in_dataframe(df, date, establishment):
+    if len(date) > 1 and date[0] is not None and date[1] is not None:
+        startDate = pd.Timestamp(date[0])
+        endDate = pd.Timestamp(date[1])
+        df = df.dropna(subset=['DATA_AVALIACAO'])
+    
+        df = df[df['DATA_AVALIACAO'] >= startDate]
+        df = df[df['DATA_AVALIACAO'] <= endDate]
+
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+
+    df = df.rename(columns={'COMENTARIO': 'COMENTÁRIO', 'EMAIL_AVALIADOR':'E-MAIL DO AVALIADOR', 'DATA_PROPOSTA':'DATA DA PROPOSTA'
+                                    ,'DATA_AVALICAO':'DATA DA AVALIAÇÃO'})
+
+    return df
+
+def apply_filter_in_finance_dataframe(df, date, establishment):
+    if date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA_INICIO'])
+        
+            df = df[df['DATA_INICIO'] >= startDate]
+            df = df[df['DATA_FIM'] <= endDate]
+
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+
+    return df
+
+def apply_filter_in_report_dataframe(df, date, establishment):
+    if  date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA'])
+        
+            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
+            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
+
+        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
+        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
+
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+  
+    return df
+
+def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
+    if date is not None:
+        if len(date) > 1 and date[0] is not None and date[1] is not None:
+            startDate = pd.Timestamp(date[0])
+            endDate = pd.Timestamp(date[1])
+            df = df.dropna(subset=['DATA_INICIO', 'DATA_FIM'])
+        
+            df = df[pd.to_datetime(df['DATA_INICIO'], format='%d/%m/%Y') >= startDate]
+            df = df[pd.to_datetime(df['DATA_FIM'], format='%d/%m/%Y') <= endDate]
+
+    if establishment is not None:
+        df = df[df['ESTABELECIMENTO'] == establishment]
+
+    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'], dayfirst=True)
+    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'], dayfirst=True)
+
+    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).apply(
+        lambda x: f"{x.components.hours}h {x.components.minutes}m {x.components.seconds}s"
+    )
+    
+    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
+    df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
+
+    return df
+
+def get_report_artist_by_week(df):
+    df['QUANTIDADE'] = df.groupby('SEMANA')['SEMANA'].transform('count')
+    df_grouped = df.drop_duplicates(subset=['SEMANA'])
+    df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
+    return df_grouped
+
+
