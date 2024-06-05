@@ -342,20 +342,33 @@ def plotGeneralFinanceArtist(df):
     grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
 
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio de artistas</h5>", unsafe_allow_html=True)
-    st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
-        column_config={
-        "TICKET MÉDIO": st.column_config.ProgressColumn(
-            "TICKET MÉDIO",
-            help="O Valor Líquido da Venda do produto em reais",
-            format="R$%.2f",
-            min_value=0,
-            max_value=grouped_financeDash['TICKET MÉDIO'].max(),
-        )},hide_index=True, use_container_width=True, height=310)
+
+    if grouped_financeDash.empty:
+        st.write('')
+        st.info('Não há dados de artistas nesse estabelecimento.')
+    else:
+        st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
+            column_config={
+            "TICKET MÉDIO": st.column_config.ProgressColumn(
+                "TICKET MÉDIO",
+                help="O Valor Líquido da Venda do produto em reais",
+                format="R$%.2f",
+                min_value=0,
+                max_value=grouped_financeDash['TICKET MÉDIO'].max(),
+            )},hide_index=True, use_container_width=True, height=310)
 
 def printFinanceData(df):
     row2 = st.columns(4)
     tile = row2[0].container(border=True)
+    
+    # caso dataframe seja vazio
+    if df.empty:
+        df = pd.DataFrame({'VALOR_BRUTO': [0], 'VALOR_LIQUIDO': [0], 'STATUS_PROPOSTA': ['']})
 
+    # Converte as colunas para Decimal
+    df['VALOR_BRUTO'] = df['VALOR_BRUTO'].apply(lambda x: Decimal(x))
+    df['VALOR_LIQUIDO'] = df['VALOR_LIQUIDO'].apply(lambda x: Decimal(x))
+    
     total_brute = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
     total_liquid = format_brazilian(sum(df['VALOR_LIQUIDO']).quantize(Decimal('0.00')))
     
@@ -388,7 +401,6 @@ def plotFinanceCharts(df, financeDash):
     with st.expander("Valor investido por mês", expanded=False):
         plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor investido por mês')
     with st.expander("Investimento por dia da semana", expanded=False):
-        st.write(order_and_format_weekday_dataframe(grouped_byWek_financeDash))
         plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
   
 def buttonDowloadDash(df, name):
@@ -402,26 +414,29 @@ def buttonDowloadDash(df, name):
     )
 
 def plotFinanceArtist(financeDash):
-    financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
-    
-    grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),QUANTIDADE_SHOWS=('VALOR_BRUTO', 'count')).reset_index()
-    grouped_financeDash['TICKET_MEDIO'] = (grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']).round(2)
-    grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS', ascending=False)
-    col1, col2 = st.columns([4,2])
-    with col1:
-        plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'TOP 20 - Quantidade de shows e ticket médio por artista')
-    grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
-    with col2:
-        st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio de artistas</h5>", unsafe_allow_html=True)
-        st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
-            column_config={
-            "TICKET MÉDIO": st.column_config.ProgressColumn(
-                "TICKET MÉDIO",
-                help="O Valor Líquido da Venda do produto em reais",
-                format="R$%.2f",
-                min_value=0,
-                max_value=grouped_financeDash['TICKET MÉDIO'].max(),
-            )},hide_index=True, use_container_width=True, height=310)
+    if financeDash.empty:
+        st.info('Não há registros existentes nesse estabelecimento.')
+    else:
+        financeDash['VALOR_BRUTO'] = financeDash['VALOR_BRUTO'].astype(float)
+        
+        grouped_financeDash = financeDash.groupby('ARTISTA').agg(SOMA_VALOR_BRUTO=('VALOR_BRUTO', 'sum'),QUANTIDADE_SHOWS=('VALOR_BRUTO', 'count')).reset_index()
+        grouped_financeDash['TICKET_MEDIO'] = (grouped_financeDash['SOMA_VALOR_BRUTO'] / grouped_financeDash['QUANTIDADE_SHOWS']).round(2)
+        grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS', ascending=False)
+        col1, col2 = st.columns([4,2])
+        with col1:
+            plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'TOP 20 - Quantidade de shows e ticket médio por artista')
+        grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO'})
+        with col2:
+            st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio de artistas</h5>", unsafe_allow_html=True)
+            st.dataframe(grouped_financeDash[['ARTISTA','TICKET MÉDIO']].sort_values(by='TICKET MÉDIO', ascending=False),
+                column_config={
+                "TICKET MÉDIO": st.column_config.ProgressColumn(
+                    "TICKET MÉDIO",
+                    help="O Valor Líquido da Venda do produto em reais",
+                    format="R$%.2f",
+                    min_value=0,
+                    max_value=grouped_financeDash['TICKET MÉDIO'].max(),
+                )},hide_index=True, use_container_width=True, height=310)
 
 
 

@@ -90,6 +90,7 @@ def GET_PROPOSTAS_BY_ID(id):
                         AND P.FK_CONTRANTE IS NOT NULL 
                         AND P.FK_CONTRATADO IS NOT NULL 
                         AND P.DATA_INICIO IS NOT NULL 
+                        AND A.ID NOT IN (12166)
                         AND GU.FK_USUARIO = {id}
                         """)
     return df
@@ -131,6 +132,7 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id):
                             WHERE
                             GU.STATUS = 1
                             AND GU.FK_USUARIO = {id}
+                            AND A.ID NOT IN (12166)
                         """)
     
     return df
@@ -156,6 +158,7 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
                         GU.STATUS = 1
                         AND GU.FK_USUARIO = {id}
                         AND AC.NOTA > 0
+                        AND A.ID NOT IN (12166)
                         """)  
 
     return df
@@ -182,6 +185,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
                         GU.STATUS = 1
                         AND GU.FK_USUARIO = 31582
                         AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                        AND A.ID NOT IN (12166)
                         GROUP BY
                         A.ID, A.NOME
                         ORDER BY 'MÉDIA DE NOTAS' DESC, 'QUANTIDADE DE AVALIAÇÕES' DESC;
@@ -193,6 +197,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
                             IFNULL(ROUND(AVG(AC.NOTA), 2),'0') AS 'MÉDIA NOTAS',
+                            SUM(AC.NOTA) AS 'Total notal',
                             COUNT(DISTINCT AC.ID) AS 'QUANTIDADE DE AVALIAÇÕES',
                             COUNT(P.FK_CONTRANTE) AS 'NÚMERO DE SHOWS'
 
@@ -208,6 +213,8 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
                             GU.STATUS = 1
                             AND GU.FK_USUARIO = {id}
                             AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                            AND A.ID NOT IN (12166)
+
                             GROUP BY
                             C.ID, C.NAME
                             ORDER BY
@@ -241,10 +248,13 @@ def GET_ARTIST_RANKING(id):
                             T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
                             LEFT JOIN 
                             T_ESTILOS_MUSICAIS EM ON A.FK_ESTILO_PRINCIPAL = EM.ID
+
                             WHERE
                             GU.STATUS = 1
                             AND GU.FK_USUARIO = {id}
                             AND A.ID NOT IN (12166)
+                            AND A.ID NOT IN (12166)
+
                             GROUP BY
                             A.ID, A.NOME
                             ORDER BY
@@ -281,6 +291,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
                         WHERE 
                         P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                         AND GU.FK_USUARIO = {id}
+                        AND A.ID NOT IN (12166)
                         """)
     
     return df
@@ -320,6 +331,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
                             TIPO.TIPO AS TIPO,
                             EM.DESCRICAO AS ESTILO,
                             C.NAME AS ESTABELECIMENTO
+                            
                             FROM 
                             T_OCORRENCIAS_AUTOMATICAS OA
                             LEFT JOIN T_PROPOSTAS P ON P.ID = OA.TABLE_ID AND OA.TABLE_NAME = 'T_PROPOSTAS'
@@ -331,9 +343,11 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
                             LEFT JOIN T_PROPOSTAS P2 ON P2.ID = NF2.FK_PROPOSTA
                             LEFT JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE OR C.ID = F.FK_CONTRATANTE OR C.ID = P2.FK_CONTRANTE)
                             LEFT JOIN T_ESTILOS_MUSICAIS EM ON A.FK_ESTILO_PRINCIPAL = EM.ID
+                            
                             WHERE 
                             C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
                             AND C.ID NOT IN (102,343,632,633)
+                            AND A.ID NOT IN (12166)
                     """)
 
     return df
@@ -346,6 +360,7 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
                             COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) AS QUANTIDADE_CHECKIN,
                             COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END) AS QUANTIDADE_CHECKOUT,
                             (COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) + COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END)) AS TOTAL_CHECKIN_CHECKOUT
+                            
                             FROM T_PROPOSTAS P
                             LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
                             LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
@@ -353,11 +368,14 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
                             INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO 
                             AND GU.STATUS = 1
                             AND GU.FK_PERFIL IN (100,101)
+                            
                             WHERE P.TESTE = 0 
                             AND P.FK_CONTRANTE IS NOT NULL 
                             AND P.FK_CONTRATADO IS NOT NULL 
                             AND P.DATA_INICIO IS NOT NULL 
                             AND P.FK_USUARIO = {id}
+                            AND A.ID NOT IN (12166)
+
                             GROUP BY 
                                 A.NOME
                             ORDER BY 

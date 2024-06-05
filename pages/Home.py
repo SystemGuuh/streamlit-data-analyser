@@ -7,8 +7,8 @@ from utils.user import logout
 from datetime import datetime
 
 st.set_page_config(
-            page_title="Eshows-Data Analytics",
-            page_icon="🎤",
+            page_title="Relatórios Eshows",
+            page_icon="./assets/imgs/eshows-logo100x100.png",
             layout="wide",
         )
 
@@ -42,10 +42,10 @@ if st.session_state['loggedIn']:
     
     # Nav
     st.divider()
-    col4, col5, col6 = st.columns([1, 3, 1])
+    col4, empty, col5, col6 = st.columns([1, 1, 3, 2])
     with col4:
         inputDate = filterCalendarComponent()
-    col5.markdown("<h3 style='text-align: center;'>Dash Empresa - Resumo</h3>", unsafe_allow_html=True)
+    col5.markdown("<h3 style='text-align: center;'>Relatórios do Estabelecimento</h3>", unsafe_allow_html=True)
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
     

@@ -32,8 +32,8 @@ def main():
     
 if __name__ == '__main__':
     st.set_page_config(
-    page_title="Eshows: Dashboard",
-    page_icon="🎤",
+    page_title="Relatórios Eshows",
+    page_icon="./assets/imgs/eshows-logo100x100.png",
     layout="centered",
     )
     hide_sidebar()
