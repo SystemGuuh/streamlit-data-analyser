@@ -60,6 +60,7 @@ def get_report_by_occurrence(df):
 
 # QUERIES - colocar em outro arquivo
 # Extrato
+@st.cache_data
 def GET_PROPOSTAS_BY_ID(id):
     df =  getDfFromQuery(f"""
                     SELECT DISTINCT
@@ -93,6 +94,7 @@ def GET_PROPOSTAS_BY_ID(id):
                         """)
     return df
 
+@st.cache_data
 def GET_USER_NAME(id):
     return getDfFromQuery(f"""SELECT 
                             TGU.FK_USUARIO,
@@ -105,6 +107,7 @@ def GET_USER_NAME(id):
                           """)
 
 # Avaliações - Avaliações da casa
+@st.cache_data
 def GET_REVIEW_ARTIST_BY_HOUSE(id):
     df = getDfFromQuery(f"""SELECT
                             A.NOME AS ARTISTA,
@@ -133,6 +136,7 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id):
     return df
 
 # Avaliações - Avaliações da casa
+@st.cache_data
 def GET_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                         C.NAME AS ESTABELECIMENTO,
@@ -157,6 +161,7 @@ def GET_REVIEW_HOUSE_BY_ARTIST(id):
     return df
 
 # Avaliações - Avaliações de artista
+@st.cache_data
 def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     return getDfFromQuery(f"""
                         SELECT
@@ -183,6 +188,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
     """)
 
 # Avaliações - Avaliações da casa
+@st.cache_data
 def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
@@ -211,6 +217,7 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     return df
 
 # Avaliações - Rancking
+@st.cache_data
 def GET_ARTIST_RANKING(id):
     return  getDfFromQuery(f"""
                             SELECT
@@ -245,6 +252,7 @@ def GET_ARTIST_RANKING(id):
                         """)
 
 # Financeiro
+@st.cache_data
 def GET_GERAL_INFORMATION_AND_FINANCES(id): 
     df =getDfFromQuery(f"""
                         SELECT
@@ -278,6 +286,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
     return df
 
 # Financeiro
+@st.cache_data
 def GET_WEEKLY_FINANCES(id, year):
     return getDfFromQuery(f"""
                         SELECT
@@ -301,6 +310,7 @@ def GET_WEEKLY_FINANCES(id, year):
                           """)
 
 # Desempenho Operacional
+@st.cache_data
 def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
     df = getDfFromQuery(f"""
                             SELECT
@@ -328,6 +338,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
 
     return df
 
+@st.cache_data
 def GET_ARTIST_CHECKIN_CHECKOUT(id):
     return getDfFromQuery(f"""
                             SELECT
