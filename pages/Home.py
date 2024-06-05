@@ -49,24 +49,27 @@ if st.session_state['loggedIn']:
     with col6:
         inputEstablishment = filterEstablishmentComponent(id)
     
-    # Geral
-    generalFinances = GET_WEEKLY_FINANCES(id, datetime.now().year)
-    # financeiro
-    financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
-    financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-    artistRanking = GET_ARTIST_RANKING(id)
-    reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id)
-    averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-    reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
-    averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
-    allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
-    allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate
-    operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
-    ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
-    ByWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate) #grafico de barras
-    checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
-    showStatement = GET_PROPOSTAS_BY_ID(id) 
-    showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+    # Pegando dados das querys
+    with st.spinner('Carregando dados, por favor aguarde.'):
+        try:
+            generalFinances = GET_WEEKLY_FINANCES(id, datetime.now().year)
+            financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
+            financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
+            artistRanking = GET_ARTIST_RANKING(id)
+            reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id)
+            averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
+            reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
+            averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
+            allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
+            allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate
+            operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
+            ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
+            ByWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate) #grafico de barras
+            checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
+            showStatement = GET_PROPOSTAS_BY_ID(id) 
+            showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+        except:
+            st.error('Não foi possível carregar os dados, verifique a conexão.')
 
     # Aplicando filtros
     showStatement = apply_filter_in_geral_dataframe(showStatement, inputDate, inputEstablishment)
