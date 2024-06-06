@@ -20,57 +20,50 @@ def buildGeneralDash(monthlyFinances, financeDash, averageReviewHouseByArtist, p
     row1 = st.columns(6)
 
     tile = row1[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Artistas:</br>{artists}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Artistas</br>{artists}</p>", unsafe_allow_html=True)
 
     tile = row1[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Estabelecimentos:</br>{stablishment}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Estabelecimentos</br>{stablishment}</p>", unsafe_allow_html=True)
 
     tile = row1[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{total}</p>", unsafe_allow_html=True)
 
     tile = row1[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Horas em shows:</br>{total_hours}h {total_minutes}m {total_seconds}s</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Horas em Shows</br>{total_hours}h {total_minutes}m {total_seconds}s</p>", unsafe_allow_html=True)
 
     tile = row1[4].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado:</br>R$ {value}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Valor Transacionado</br>R$ {value}</p>", unsafe_allow_html=True)
 
     tile = row1[5].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Ticket Médio</br>R$ {ticket}</p>", unsafe_allow_html=True)
     
     container = st.container(border=True)
     with container:
         row2 = st.columns([3,2])
         with row2[0]:
-            plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Resumo de ocorrêcias por tipo")
+            plotGeneralFinanceChart(monthlyFinances)
+            #plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Resumo de ocorrêcias por tipo")
         with row2[1]:
             plotGeneralFinanceArtist(financeDash)
-        plotGeneralFinanceChart(monthlyFinances)
-        plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
+        plotDataframe(averageReviewHouseByArtist, "Satisfação do Estabelecimento")
         
 # Financeiro        
 def buildFinances(financeDash,id):
     year = 2024
 
-    # Compenentes de filtragem
-    row1 = st.columns([2,1,1,1,1,1])
-    with row1[0]:
-        proposal = filterProposalComponent()
-    with row1[1]:
-        status = filterFinanceStatus(financeDash)
-    with row1[2]:
-        year = filterYearChartFinances()
-    with row1[5]:
-        st.write("")
+    # Componentes de filtragem
+    # row1 = st.columns([2,1,1,1,1,1])
+    # with row1[0]:
+    #    proposal = filterProposalComponent()
+    # with row1[1]:
+    #    status = filterFinanceStatus(financeDash)
+    # with row1[2]:
+    #    year = filterYearChartFinances()
     
-    st.header("DASH FINANCEIRO")
     container = st.container(border=True)
 
     # Plotagem dos gráficos
     with container:
-        if status is not None:
-            financeDash = financeDash[financeDash['STATUS_FINANCEIRO'] == status]
-        if proposal is not None:
-            financeDash = financeDash[financeDash['STATUS_PROPOSTA'].str.contains('|'.join(proposal))]
 
         printFinanceData(financeDash)
 
@@ -189,16 +182,16 @@ def buildShowStatement(df):
     row1 = st.columns(4)
 
     tile = row1[0].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de Shows:</br>{total}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{total}</p>", unsafe_allow_html=True)
 
     tile = row1[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Total de horas em shows:</br>{total_hours}h {total_minutes}m {total_seconds}s</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Total de Horas em Shows</br>{total_hours}h {total_minutes}m {total_seconds}s</p>", unsafe_allow_html=True)
 
     tile = row1[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Transacionado:</br>R$ {value}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Valor Transacionado</br>R$ {value}</p>", unsafe_allow_html=True)
 
     tile = row1[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Ticket Médio:</br>R$ {ticket}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Ticket Médio</br>R$ {ticket}</p>", unsafe_allow_html=True)
     
     
 
