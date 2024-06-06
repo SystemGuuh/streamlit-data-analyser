@@ -73,7 +73,7 @@ if st.session_state['loggedIn']:
 
     # Aplicando filtros
     showStatement = apply_filter_in_geral_dataframe(showStatement, inputDate, inputEstablishment)
-    reviewArtitsByHouse = apply_filter_in_dataframe(reviewArtitsByHouse, inputDate, inputEstablishment)
+    reviewArtitsByHouse = apply_filter_in_artitsbyHouse_dataframe(reviewArtitsByHouse, inputDate, inputEstablishment)
     reviewHouseByArtist = apply_filter_establishment_in_dataframe(reviewHouseByArtist, inputEstablishment) 
     averageReviewHouseByArtist = apply_filter_establishment_in_dataframe(averageReviewHouseByArtist, inputEstablishment)
     financeDash = apply_filter_in_finance_dataframe(financeDash, inputDate, inputEstablishment)

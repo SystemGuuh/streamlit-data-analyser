@@ -23,7 +23,7 @@ def formatFinancesDataframe(df):
     df['VALOR_LIQUIDO'] = 'R$ ' + df['VALOR_LIQUIDO'].astype(str)
     
     df = df.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA', 'HORARIO_INICIO': 'HORÁRIO', 'DIA_DA_SEMANA': 'DIA DA SEMANA',
-                     'VALOR_LIQUIDO': 'VALOR LÍQUIDO', 'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
+                     'VALOR_LIQUIDO': 'VALOR LÍQUIDO', 'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANCEIRO'})
 
     return df
 
@@ -96,8 +96,8 @@ def format_finances_dash(financeDash):
 
     # Renomeando e removendo colunas
     financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
-                    'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANÇEIRO'})
-    new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANÇEIRO']
+                    'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANCEIRO'})
+    new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANCEIRO']
     financeDash_renamed = financeDash_renamed[new_order]
 
     return financeDash_renamed
@@ -152,7 +152,7 @@ def apply_filter_establishment_in_dataframe(df, establishment):
 
     return df
 
-def apply_filter_in_dataframe(df, date, establishment):
+def apply_filter_in_artitsbyHouse_dataframe(df, date, establishment):
     if len(date) > 1 and date[0] is not None and date[1] is not None:
         startDate = pd.Timestamp(date[0])
         endDate = pd.Timestamp(date[1])
@@ -227,6 +227,7 @@ def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
 
     return df
 
+# agrupa dataframe pr semana e cria um campo quantidade para colocar valores
 def get_report_artist_by_week(df):
     df['QUANTIDADE'] = df.groupby('SEMANA')['SEMANA'].transform('count')
     df_grouped = df.drop_duplicates(subset=['SEMANA'])

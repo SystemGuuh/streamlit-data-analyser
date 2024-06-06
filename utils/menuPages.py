@@ -3,6 +3,7 @@ from utils.components import *
 from utils.functions import *
 from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
+from datetime import date
 
 #arrumar login
 
@@ -49,9 +50,9 @@ def buildGeneralDash(monthlyFinances, financeDash, averageReviewHouseByArtist, p
         
 # Financeiro        
 def buildFinances(financeDash,id):
-    year = 2024
+    year = date.today().year
 
-    # Componentes de filtragem
+    # Componentes de filtragem [REMOVIDOS]
     # row1 = st.columns([2,1,1,1,1,1])
     # with row1[0]:
     #    proposal = filterProposalComponent()
@@ -60,13 +61,10 @@ def buildFinances(financeDash,id):
     # with row1[2]:
     #    year = filterYearChartFinances()
     
-    container = st.container(border=True)
-
     # Plotagem dos gráficos
+    printFinanceData(financeDash)
+    container = st.container(border=True)
     with container:
-
-        printFinanceData(financeDash)
-
         tab1, tab2 = st.tabs(["Por período", "Por artistas"])
         weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:

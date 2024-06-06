@@ -358,7 +358,7 @@ def plotGeneralFinanceArtist(df):
             )},hide_index=True, use_container_width=True, height=310)
 
 def printFinanceData(df):
-    row2 = st.columns(4)
+    row2 = st.columns(3)
     tile = row2[0].container(border=True)
     
     # caso dataframe seja vazio
@@ -367,21 +367,18 @@ def printFinanceData(df):
 
     # Converte as colunas para Decimal
     df['VALOR_BRUTO'] = df['VALOR_BRUTO'].apply(lambda x: Decimal(x))
-    df['VALOR_LIQUIDO'] = df['VALOR_LIQUIDO'].apply(lambda x: Decimal(x))
+    ticket = 0 if df.shape[0] == 0 else  format_brazilian((sum(df['VALOR_BRUTO']) / df.shape[0]).quantize(Decimal('0.00')))
     
     total_brute = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
     total_liquid = format_brazilian(sum(df['VALOR_LIQUIDO']).quantize(Decimal('0.00')))
     
-    tile.markdown(f"<h6 style='text-align: center;'>Shows Aceitos</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</p>", unsafe_allow_html=True)
 
     tile = row2[1].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Shows Cancelados</br>{(df['STATUS_PROPOSTA'] == 'Cancelada').sum()}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Valor Total</br>R$ {total_brute}</p>", unsafe_allow_html=True)
 
     tile = row2[2].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Bruto Total</br>R$ {total_brute}</h6>", unsafe_allow_html=True)
-
-    tile = row2[3].container(border=True)
-    tile.markdown(f"<h6 style='text-align: center;'>Valor Líquido Total</br>R$ {total_liquid}</h6>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Ticket Médio</br>R$ {ticket}</p>", unsafe_allow_html=True)
 
 def filterFinanceStatus(df):
     option = st.selectbox("Status Financeiro:",(df['STATUS_FINANCEIRO'].unique()),
@@ -424,7 +421,7 @@ def plotFinanceArtist(financeDash):
         grouped_financeDash = grouped_financeDash.sort_values(by='QUANTIDADE_SHOWS', ascending=False)
         col1, col2 = st.columns([4,2])
         with col1:
-            plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'TOP 20 - Quantidade de shows e ticket médio por artista')
+            plotBarChart2(grouped_financeDash.head(20), 'ARTISTA', 'TICKET_MEDIO', 'QUANTIDADE_SHOWS', 'Ranking de mais shows realizados vs. ticket médio')
         grouped_financeDash = grouped_financeDash.rename(columns={'TICKET_MEDIO': 'TICKET MÉDIO', 'QUANTIDADE_SHOWS': 'QUANTIDADE DE SHOWS'})
         with col2:
             st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ticket médio por artista</h5>", unsafe_allow_html=True)
