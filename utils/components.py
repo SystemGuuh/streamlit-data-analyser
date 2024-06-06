@@ -121,7 +121,10 @@ def plotPizzaChart(labels, sizes, name):
     data = [{"value": size, "name": label} for size, label in zip(sizes, labels)]
     
     options = {
-        "tooltip": {"trigger": "item"},
+        "tooltip": {
+            "trigger": "item",
+            "formatter": "{b}: {c} ({d}%)" 
+        },
         "legend": {
             "orient": "vertical",
             "left": "left",
@@ -370,7 +373,6 @@ def printFinanceData(df):
     ticket = 0 if df.shape[0] == 0 else  format_brazilian((sum(df['VALOR_BRUTO']) / df.shape[0]).quantize(Decimal('0.00')))
     
     total_brute = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
-    total_liquid = format_brazilian(sum(df['VALOR_LIQUIDO']).quantize(Decimal('0.00')))
     
     tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</p>", unsafe_allow_html=True)
 

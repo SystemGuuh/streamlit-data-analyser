@@ -1,9 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.functions import *
-from utils.dbconnect import GET_WEEKLY_FINANCES
 from decimal import Decimal
-from datetime import date
 
 #arrumar login
 
@@ -49,8 +47,7 @@ def buildGeneralDash(monthlyFinances, financeDash, averageReviewHouseByArtist, p
         plotDataframe(averageReviewHouseByArtist, "Satisfação do Estabelecimento")
         
 # Financeiro        
-def buildFinances(financeDash,id):
-    year = date.today().year
+def buildFinances(financeDash, weeklyFinances,id):
 
     # Componentes de filtragem [REMOVIDOS]
     # row1 = st.columns([2,1,1,1,1,1])
@@ -66,7 +63,6 @@ def buildFinances(financeDash,id):
     container = st.container(border=True)
     with container:
         tab1, tab2 = st.tabs(["Por período", "Por artistas"])
-        weeklyFinances = GET_WEEKLY_FINANCES(id, year)
         with tab1:
             plotFinanceCharts(weeklyFinances, financeDash)
         with tab2:
@@ -133,22 +129,26 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
         with container1: 
             row1 = st.columns(2)
             with row1[0]:
-                plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Quantidade de ocorrêcias por tipo")
+                plotPizzaChart(pizzaChart['TIPO'], pizzaChart['QUANTIDADE'], "Tipos de Ocorrências")
                 plotBarChart(ByWeek, 'SEMANA', 'QUANTIDADE', "Quantidade de ocorrêcias por semana")
             with row1[1]:
                 st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>Ranking de artistas com mais ocorrências</h5>", unsafe_allow_html=True)
                 st.dataframe(operationalPerformace[['RANKING','ARTISTA', 'ESTILO','QUANTIDADE']].reset_index(drop=True), hide_index=True,use_container_width=True, height=735)
 
         with container2:    
-            artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKING', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
-                                'TOTAL_CHECKIN_CHECKOUT': 'TOTAL'})
+            artistCheckinCheckout = artistCheckinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKIN', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
+                                'TOTAL_SHOWS': 'NÚMERO DE SHOWS'})
             
-            artistCheckinCheckout['PORCENTAGEM DE CHECKING(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKING'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
-            artistCheckinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKOUT'] * 100) / artistCheckinCheckout['TOTAL']).map("{:.2f}%".format)
+            artistCheckinCheckout['PORCENTAGEM DE CHECKIN(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKIN'] * 100) / artistCheckinCheckout['NÚMERO DE SHOWS']).map("{:.2f}%".format)
+            artistCheckinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = ((artistCheckinCheckout['QUANTIDADE DE CHECKOUT'] * 100) / artistCheckinCheckout['NÚMERO DE SHOWS']).map("{:.2f}%".format)
             
-            plotDataframe(artistCheckinCheckout[['ARTISTA', 'TOTAL', 'PORCENTAGEM DE CHECKING(%)', 'PORCENTAGEM DE CHECKOUT(%)']], "Quantidade de checkin e checkout por artista")
+            plotDataframe(artistCheckinCheckout[['ARTISTA', 'NÚMERO DE SHOWS', 'PORCENTAGEM DE CHECKIN(%)', 'PORCENTAGEM DE CHECKOUT(%)']], "Quantidade de checkin e checkout por artista")
     
     with tab2:
+        # removendo valores e reodernando o dataset
+        extract.drop(columns=['SEMANA'], inplace=True)
+        extract = extract[['ARTISTA', 'ESTILO','ESTABELECIMENTO','DATA','TIPO']]
+        
         row1 = st.columns(6)
         with row1[0]:
             type = filterReportType(extract)
@@ -165,33 +165,33 @@ def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artist
 
 # Extrato de show
 def buildShowStatement(df):
-    # pegando valores
-    total = df.shape[0]
-    total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(df)
-    ticket = 0 if total == 0 else  format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
-    value = format_brazilian(Decimal(sum(df['VALOR_BRUTO'])).quantize(Decimal('0.00')))
+        # pegando valores
+        total = df.shape[0]
+        total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(df)
+        ticket = 0 if total == 0 else  format_brazilian((sum(df['VALOR_BRUTO']) / total).quantize(Decimal('0.00')))
+        value = format_brazilian(Decimal(sum(df['VALOR_BRUTO'])).quantize(Decimal('0.00')))
 
-    # formatando df
-    df_renamed = format_finances_dash(df)
-    
-    buttonDowloadDash(df, "Extrato-de-Shows")
-    row1 = st.columns(4)
+        # formatando df
+        df_renamed = format_finances_dash(df)
+        
+        buttonDowloadDash(df, "Extrato-de-Shows")
+        row1 = st.columns(4)
 
-    tile = row1[0].container(border=True)
-    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{total}</p>", unsafe_allow_html=True)
+        tile = row1[0].container(border=True)
+        tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{total}</p>", unsafe_allow_html=True)
 
-    tile = row1[1].container(border=True)
-    tile.markdown(f"<p style='text-align: center;'>Total de Horas em Shows</br>{total_hours}h {total_minutes}m {total_seconds}s</p>", unsafe_allow_html=True)
+        tile = row1[1].container(border=True)
+        tile.markdown(f"<p style='text-align: center;'>Total de Horas em Shows</br>{total_hours}h {total_minutes}m {total_seconds}s</p>", unsafe_allow_html=True)
 
-    tile = row1[2].container(border=True)
-    tile.markdown(f"<p style='text-align: center;'>Valor Transacionado</br>R$ {value}</p>", unsafe_allow_html=True)
+        tile = row1[2].container(border=True)
+        tile.markdown(f"<p style='text-align: center;'>Valor Transacionado</br>R$ {value}</p>", unsafe_allow_html=True)
 
-    tile = row1[3].container(border=True)
-    tile.markdown(f"<p style='text-align: center;'>Ticket Médio</br>R$ {ticket}</p>", unsafe_allow_html=True)
-    
-    
+        tile = row1[3].container(border=True)
+        tile.markdown(f"<p style='text-align: center;'>Ticket Médio</br>R$ {ticket}</p>", unsafe_allow_html=True)
+        
+        
 
-    container = st.container(border=True)
-    with container:
-        plotDataframe(df_renamed, "Extrato de propostas e shows")
+        container = st.container(border=True)
+        with container:
+            plotDataframe(df_renamed, "Extrato de propostas e shows")
              

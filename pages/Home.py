@@ -4,7 +4,6 @@ from utils.menuPages import *
 from utils.functions import *
 from utils.dbconnect import *
 from utils.user import logout
-from datetime import datetime
 
 st.set_page_config(
             page_title="Relatórios Eshows",
@@ -52,7 +51,7 @@ if st.session_state['loggedIn']:
     # Pegando dados das querys
     with st.spinner('Carregando dados, por favor aguarde.'):
         try:
-            generalFinances = GET_WEEKLY_FINANCES(id, datetime.now().year)
+            generalFinances = GET_WEEKLY_FINANCES(id)
             financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
             financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
             artistRanking = GET_ARTIST_RANKING(id)
@@ -61,13 +60,13 @@ if st.session_state['loggedIn']:
             reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
             averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
             allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
-            allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate
-            operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate) # ranking
-            ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate) #gráfico de pizza
-            ByWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate) #grafico de barras
+            operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()) # ranking
+            ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()) #gráfico de pizza
+            ByWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()) #grafico de barras
             checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
             showStatement = GET_PROPOSTAS_BY_ID(id) 
             showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
+            weeklyFinances = GET_WEEKLY_FINANCES(id)
         except:
             st.error('Não foi possível carregar os dados, verifique a conexão.')
 
@@ -84,7 +83,7 @@ if st.session_state['loggedIn']:
     with tab1:
         buildGeneralDash(generalFinances.copy(), financeDash.copy(), averageReviewHouseByArtist.copy(), ByOccurrence.copy(), showStatement.copy())
     with tab2:
-        buildFinances(financeDash.copy(), id)
+        buildFinances(financeDash.copy(), weeklyFinances.copy(), id)
     with tab3:
         buildReview(artistRanking.copy(), reviewArtitsByHouse.copy(), averageReviewArtistByHouse.copy(), reviewHouseByArtist.copy(), averageReviewHouseByArtist.copy())
     with tab4:

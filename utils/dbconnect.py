@@ -298,7 +298,7 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
 
 # Financeiro
 @st.cache_data
-def GET_WEEKLY_FINANCES(id, year):
+def GET_WEEKLY_FINANCES(id):
     return getDfFromQuery(f"""
                         SELECT
                             MONTHNAME(P.DATA_INICIO) AS MES,
@@ -313,7 +313,7 @@ def GET_WEEKLY_FINANCES(id, year):
                         WHERE 
                             P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                             AND GU.FK_USUARIO = {id}
-                            AND YEAR(P.DATA_INICIO) = {year}
+                            AND YEAR(P.DATA_INICIO) = YEAR(CURDATE())
                         GROUP BY 
                             YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO)
                         ORDER BY
@@ -348,6 +348,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
                             C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
                             AND C.ID NOT IN (102,343,632,633)
                             AND A.ID NOT IN (12166)
+                            #AND OA.DATA_OCORRENCIA >= '2024-06-06'
                     """)
 
     return df
@@ -357,10 +358,10 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
     return getDfFromQuery(f"""
                             SELECT
                             A.NOME AS ARTISTA,
-                            COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) AS QUANTIDADE_CHECKIN,
-                            COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END) AS QUANTIDADE_CHECKOUT,
-                            (COUNT(CASE WHEN S.DESCRICAO = 'Checkin Realizado' THEN 1 END) + COUNT(CASE WHEN S.DESCRICAO = 'Checkout Realizado' THEN 1 END)) AS TOTAL_CHECKIN_CHECKOUT
-                            
+                            SUM(S.DESCRICAO = 'Checkin Realizado' OR S.DESCRICAO = 'Checkout Realizado') AS QUANTIDADE_CHECKIN,
+                            SUM(S.DESCRICAO = 'Checkout Realizado') AS QUANTIDADE_CHECKOUT,
+                            COUNT(*) AS TOTAL_SHOWS
+
                             FROM T_PROPOSTAS P
                             LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
                             LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
@@ -379,6 +380,6 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
                             GROUP BY 
                                 A.NOME
                             ORDER BY 
-                                TOTAL_CHECKIN_CHECKOUT DESC;
+                                TOTAL_SHOWS DESC;
                           """)
 
