@@ -55,15 +55,28 @@ def parse_duration(duration_str):
 
 # Função para somar coluna DURACAO e devolver o valor total de horas, minutos e segundos 
 def sum_duration_from_dataframe(df):
+    # Remover linhas com valores NaN na coluna 'DURACAO'
+    df = df.dropna(subset=['DURACAO'])
+    
+    # Aplicar parse_duration apenas nas linhas restantes
     temp = df['DURACAO'].apply(parse_duration)
-    total_duration = temp.sum()
-    total_seconds = int(total_duration.total_seconds())
     
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-    seconds = total_seconds % 60
-    
-    return hours, minutes, seconds
+    if not temp.empty:
+        # Calcular a soma da duração
+        total_duration = temp.sum()
+        
+        # Calcular o total de segundos da duração
+        total_seconds = total_duration.total_seconds()
+        
+        # Converter para horas, minutos e segundos
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        seconds = int(total_seconds % 60)
+        
+        return hours, minutes, seconds
+    else:
+        # Retorna 0 se não houver valores na coluna 'DURACAO'
+        return 0, 0, 0
 
 # Função de tradução de horas
 def translate_duration(duration):
@@ -145,86 +158,50 @@ def order_and_format_weekday_dataframe(df):
 
     return df
 
-# Filtros de dataframes
+# Filtro de estabelecimento dataframes
 def apply_filter_establishment_in_dataframe(df, establishment):
     if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
+        try:
+            df = df[df['ESTABELECIMENTO'] == establishment]
+        except:
+            return df
     return df
 
-def apply_filter_in_artitsbyHouse_dataframe(df, date, establishment):
-    if len(date) > 1 and date[0] is not None and date[1] is not None:
-        startDate = pd.Timestamp(date[0])
-        endDate = pd.Timestamp(date[1])
-        df = df.dropna(subset=['DATA_AVALIACAO'])
-    
-        df = df[df['DATA_AVALIACAO'] >= startDate]
-        df = df[df['DATA_AVALIACAO'] <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    df = df.rename(columns={'COMENTARIO': 'COMENTÁRIO', 'EMAIL_AVALIADOR':'E-MAIL DO AVALIADOR', 'DATA_PROPOSTA':'DATA DA PROPOSTA'
-                                    ,'DATA_AVALICAO':'DATA DA AVALIAÇÃO'})
-
-    return df
-
-def apply_filter_in_finance_dataframe(df, date, establishment):
+# Filtros de data
+def apply_filter_data_in_dataframe(df, date):
     if date is not None:
         if len(date) > 1 and date[0] is not None and date[1] is not None:
             startDate = pd.Timestamp(date[0])
             endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA_INICIO'])
-        
-            df = df[df['DATA_INICIO'] >= startDate]
-            df = df[df['DATA_FIM'] <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
+            try:
+                df = df.dropna(subset=['DATA_AVALIACAO'])
+                df = df[df['DATA_AVALIACAO'] >= startDate]
+                df = df[df['DATA_AVALIACAO'] <= endDate]
+            except:
+                try:
+                    df = df.dropna(subset=['DATA_INICIO'])
+                    df = df[df['DATA_INICIO'] >= startDate]
+                    df = df[df['DATA_FIM'] <= endDate]
+                    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'], dayfirst=True)
+                    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'], dayfirst=True)
+                    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
+                    df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
+                except:
+                    try:
+                        df = df.dropna(subset=['DATA'])
+                        df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
+                        df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
+                        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
+                        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
+                    except:
+                        return df
+            return df
     return df
 
-def apply_filter_in_report_dataframe(df, date, establishment):
-    if  date is not None:
-        if len(date) > 1 and date[0] is not None and date[1] is not None:
-            startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA'])
-        
-            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
-            df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
-
-        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
-        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-  
-    return df
-
-def apply_filter_in_geral_dataframe(df, date=None, establishment=None):
-    if date is not None:
-        if len(date) > 1 and date[0] is not None and date[1] is not None:
-            startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
-            df = df.dropna(subset=['DATA_INICIO', 'DATA_FIM'])
-        
-            df = df[pd.to_datetime(df['DATA_INICIO'], format='%d/%m/%Y') >= startDate]
-            df = df[pd.to_datetime(df['DATA_FIM'], format='%d/%m/%Y') <= endDate]
-
-    if establishment is not None:
-        df = df[df['ESTABELECIMENTO'] == establishment]
-
-    df['DATA_INICIO'] = pd.to_datetime(df['DATA_INICIO'], dayfirst=True)
-    df['DATA_FIM'] = pd.to_datetime(df['DATA_FIM'], dayfirst=True)
-
-    df['DURACAO'] = (df['DATA_FIM'] - df['DATA_INICIO']).apply(
-        lambda x: f"{x.components.hours}h {x.components.minutes}m {x.components.seconds}s"
-    )
-    
-    df['DATA_INICIO'] = df['DATA_INICIO'].dt.strftime('%d/%m/%Y')
-    df['DATA_FIM'] = df['DATA_FIM'].dt.strftime('%d/%m/%Y')
-
+# Chamas as funções de filtro
+def apply_filter_in_dataframe(df, date, establishment):
+    df = apply_filter_establishment_in_dataframe(df, establishment)
+    df = apply_filter_data_in_dataframe(df, date)
     return df
 
 # agrupa dataframe pr semana e cria um campo quantidade para colocar valores

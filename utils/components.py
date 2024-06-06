@@ -29,9 +29,9 @@ def fix_tab_echarts():
 
 def filterCalendarComponent():
     today = datetime.date.today()
-    thirty_days_ago = today - datetime.timedelta(days=90)
+    month_ago = today - datetime.timedelta(days=90)
 
-    d = st.date_input("Filtro de data:", (thirty_days_ago, today),
+    d = st.date_input("Filtro de data:", (month_ago, today),
                       format="DD/MM/YYYY")
     return d
 
@@ -264,7 +264,7 @@ def plotBarChart2(df, xValue, yValue, zValue, name):
 
 def plotSideBarChart(df, xValue, yValue1, yValue2, name):
     st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
-    temp = df.head(10)
+    temp = df.head(15)
     temp = temp.iloc[::-1].reset_index(drop=True)
     options = {
         "tooltip": {

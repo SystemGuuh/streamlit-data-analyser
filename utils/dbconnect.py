@@ -75,7 +75,12 @@ def GET_PROPOSTAS_BY_ID(id):
                         DATA_FIM AS DATA_FIM,
                         DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
-                        SF.DESCRICAO AS STATUS_FINANCEIRO
+                        SF.DESCRICAO AS STATUS_FINANCEIRO,
+                        CONCAT(
+                        TIMESTAMPDIFF(HOUR, DATA_INICIO, DATA_FIM), 'h ',
+                        TIMESTAMPDIFF(MINUTE, DATA_INICIO, DATA_FIM) % 60, 'm ',
+                        TIMESTAMPDIFF(SECOND, DATA_INICIO, DATA_FIM) % 60, 's'
+                        ) AS DURACAO
                         
                     FROM T_PROPOSTAS P
                     LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
@@ -201,7 +206,6 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
                             C.NAME AS ESTABELECIMENTO,
                             IFNULL(ROUND(AVG(AC.NOTA), 2),'0') AS 'MÉDIA DE NOTAS',
-                            SUM(AC.NOTA) AS 'Total notal',
                             COUNT(DISTINCT AC.ID) AS 'AVALIAÇÕES',
                             COUNT(P.FK_CONTRANTE) AS 'NÚMERO DE SHOWS'
 
@@ -348,7 +352,7 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
                             C.ID IN (SELECT GU.FK_COMPANY FROM T_GRUPO_USUARIO GU WHERE GU.FK_USUARIO = {id} AND GU.STATUS = 1)
                             AND C.ID NOT IN (102,343,632,633)
                             AND A.ID NOT IN (12166)
-                            #AND OA.DATA_OCORRENCIA >= '2024-06-06'
+                            AND OA.DATA_OCORRENCIA >= '2024-06-06'
                     """)
 
     return df

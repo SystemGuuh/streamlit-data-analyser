@@ -82,7 +82,8 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
         with container:
             center = st.columns([2,2])
             with center[0]:
-                option = st.selectbox("Buscar artista:", artistRanking['ARTISTA'],
+                artistRanking_sorted = artistRanking.sort_values(by='ARTISTA')
+                option = st.selectbox("Buscar artista:", artistRanking_sorted['ARTISTA'],
                         index=None, placeholder="Selecione um artista") 
                 plotDataframe(artistRanking[['ARTISTA', 'MÉDIA', 'NÚMERO DE AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
             with center[1]:

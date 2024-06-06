@@ -53,30 +53,25 @@ if st.session_state['loggedIn']:
         try:
             generalFinances = GET_WEEKLY_FINANCES(id)
             financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
+            
+            artistRanking = apply_filter_in_dataframe( GET_ARTIST_RANKING(id), inputDate, inputEstablishment)
+            reviewArtitsByHouse = apply_filter_in_dataframe( GET_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
+            averageReviewArtistByHouse = apply_filter_in_dataframe( GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
+            reviewHouseByArtist = apply_filter_in_dataframe( GET_REVIEW_HOUSE_BY_ARTIST(id), None, inputEstablishment)
+            averageReviewHouseByArtist = apply_filter_in_dataframe( GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id), None, inputEstablishment)
+            allOperationalPerformaceByOccurrenceAndDate = apply_filter_in_dataframe( GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id), inputDate, inputEstablishment)
+            operationalPerformace = apply_filter_in_dataframe( get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
+            ByOccurrence = apply_filter_in_dataframe( get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
+            ByWeek = apply_filter_in_dataframe( get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
+            checkinCheckout = apply_filter_in_dataframe( GET_ARTIST_CHECKIN_CHECKOUT(id), inputDate, inputEstablishment)
+            showStatement = apply_filter_in_dataframe( GET_PROPOSTAS_BY_ID(id), inputDate, inputEstablishment) 
+            weeklyFinances = apply_filter_in_dataframe( GET_WEEKLY_FINANCES(id), inputDate, inputEstablishment)
+
             financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-            artistRanking = GET_ARTIST_RANKING(id)
-            reviewArtitsByHouse = GET_REVIEW_ARTIST_BY_HOUSE(id)
-            averageReviewArtistByHouse = GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id)
-            reviewHouseByArtist = GET_REVIEW_HOUSE_BY_ARTIST(id)
-            averageReviewHouseByArtist = GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id)
-            allOperationalPerformaceByOccurrenceAndDate = GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id)
-            operationalPerformace = get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()) # ranking
-            ByOccurrence = get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()) #gráfico de pizza
-            ByWeek = get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()) #grafico de barras
-            checkinCheckout = GET_ARTIST_CHECKIN_CHECKOUT(id)
-            showStatement = GET_PROPOSTAS_BY_ID(id) 
             showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
-            weeklyFinances = GET_WEEKLY_FINANCES(id)
+            
         except:
             st.error('Não foi possível carregar os dados, verifique a conexão.')
-
-    # Aplicando filtros
-    showStatement = apply_filter_in_geral_dataframe(showStatement, inputDate, inputEstablishment)
-    reviewArtitsByHouse = apply_filter_in_artitsbyHouse_dataframe(reviewArtitsByHouse, inputDate, inputEstablishment)
-    reviewHouseByArtist = apply_filter_establishment_in_dataframe(reviewHouseByArtist, inputEstablishment) 
-    averageReviewHouseByArtist = apply_filter_establishment_in_dataframe(averageReviewHouseByArtist, inputEstablishment)
-    financeDash = apply_filter_in_finance_dataframe(financeDash, inputDate, inputEstablishment)
-    allOperationalPerformaceByOccurrenceAndDate = apply_filter_in_report_dataframe(allOperationalPerformaceByOccurrenceAndDate, inputDate, inputEstablishment)
 
     # Body
     tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
