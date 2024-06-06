@@ -77,12 +77,10 @@ def buildFinances(financeDash,id):
 # Avaliação
 def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,reviewHouseByArtirst, averageReviewHouseByArtist):
     #formatando tabelas
-    artistRanking['MEDIA_NOTAS'] = '⭐' + artistRanking['MEDIA_NOTAS'].astype(str)
-    artistRanking = artistRanking.rename(columns={'NUM_SHOWS_ARTISTA': 'NÚMERO DE SHOWS', 'MEDIA_NOTAS': 'NOTAS', 'QUANTIDADE_AVALIACOES': 'AVALIAÇÕES'})
-    artistRanking = artistRanking.drop(columns=['ID'])
+    artistRanking = artistRanking.rename(columns={'NUM_SHOWS_ARTISTA': 'NÚMERO DE SHOWS', 'MEDIA_NOTAS': 'MÉDIA', 'QUANTIDADE_AVALIACOES': 'NÚMERO DE AVALIAÇÕES'})
 
 
-    tab1, tab2, tab3= st.tabs(["Ranking", "Avaliações de Artista para Estabelecimento", "Avaliações de Estabelecimento para Artista"])
+    tab1, tab2, tab3= st.tabs(["Ranking", "Avaliações de Estabelecimento para Artista", "Avaliações de Artista para Estabelecimento"])
     with tab1:
         container = st.container(border=True)
         with container:
@@ -90,7 +88,7 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
             with center[0]:
                 option = st.selectbox("Buscar artista:", artistRanking['ARTISTA'],
                         index=None, placeholder="Selecione um artista") 
-                plotDataframe(artistRanking[['ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
+                plotDataframe(artistRanking[['ARTISTA', 'MÉDIA', 'NÚMERO DE AVALIAÇÕES', 'NÚMERO DE SHOWS']], "Ranking")
             with center[1]:
                 if option is not None:
                     st.markdown("<p style='padding-top:0.2em'></p>", unsafe_allow_html=True)
@@ -100,31 +98,31 @@ def buildReview(artistRanking, reviewArtirtsByHouse, averageReviewArtistByHouse,
                         col1.write(f"Estilo Principal: {artistRanking['ESTILO_PRINCIPAL'].iloc[0]}")
                         col2.write(f"E-mail: {artistRanking['EMAIL'].iloc[0]}")
                         col2.write(f"Celular: {artistRanking['CELULAR'].iloc[0]}")
-                    plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
+                    plotSideBarChart(artistRanking, 'ARTISTA', 'MÉDIA', 'NÚMERO DE AVALIAÇÕES', 'Notas e Avaliações por Artista')
                 else:
                     st.markdown("<p style='padding-top:4.3em'></p>", unsafe_allow_html=True)
-                    plotSideBarChart(artistRanking, 'ARTISTA', 'NOTAS', 'AVALIAÇÕES', 'Notas e Avaliações por Artista')
+                    plotSideBarChart(artistRanking, 'ARTISTA', 'MÉDIA', 'NÚMERO DE AVALIAÇÕES', 'Notas e Avaliações por Artista')
 
     with tab2:
         container = st.container(border=True)
         with container:
             row1 = st.columns([2,2])
             with row1[0]:
-                reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','GRUPO','NOTA', 'AVALIADOR']]
-                plotDataframe(reviewArtirtsByHouse, "Avaliações das Casas")
+                reviewArtirtsByHouse = reviewArtirtsByHouse[['ARTISTA','ESTABELECIMENTO','NOTA', 'AVALIADOR']]
+                plotDataframe(reviewArtirtsByHouse, "Avaliações Recentes")
             with row1[1]:
                 averageReviewArtistByHouse_sorted = averageReviewArtistByHouse.sort_values(by='NÚMERO DE SHOWS', ascending=False)
-                plotDataframe(averageReviewArtistByHouse_sorted, "Médias de Avaliações")
+                plotDataframe(averageReviewArtistByHouse_sorted, "Satisfação média do artista")
             
     with tab3:
         container = st.container(border=True)
         with container:
             row2 = st.columns([2,2])
             with row2[0]:
-                reviewHouseByArtirst = reviewHouseByArtirst[['ESTABELECIMENTO','GRUPO','NOTA']]
-                plotDataframe(reviewHouseByArtirst, "Avaliações dos Artistas")
+                reviewHouseByArtirst = reviewHouseByArtirst[['ESTABELECIMENTO','NOTA']]
+                plotDataframe(reviewHouseByArtirst, "Avaliações Recentes")
             with row2[1]:
-                plotDataframe(averageReviewHouseByArtist, "Médias de Avaliações")
+                plotDataframe(averageReviewHouseByArtist, "Satisfação média do estabelecimento")
 
 # Desempenho Operacional
 def buildOperationalPerformace(operationalPerformace, pizzaChart, ByWeek, artistCheckinCheckout, extract):    

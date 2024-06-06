@@ -69,7 +69,7 @@ def filterReportArtist(df):
     return option
 
 def plotDataframe(df, name):
-    st.markdown(f"<h4 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h4>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: center; background-color: #ffb131; padding: 0.1em;'>{name}</h5>", unsafe_allow_html=True)
     st.dataframe(df, hide_index=True, use_container_width=True)
 
 def plotLineChart(df, xValue, yValue,name):
