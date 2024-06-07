@@ -190,7 +190,7 @@ def GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id):
 
                         WHERE
                         GU.STATUS = 1
-                        AND GU.FK_USUARIO = 31582
+                        AND GU.FK_USUARIO = {id}
                         AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                         AND A.ID NOT IN (12166)
                         GROUP BY

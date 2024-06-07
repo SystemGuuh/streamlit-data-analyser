@@ -7,9 +7,10 @@ def handle_login(userName, password):
     #user data deve conter o usuario
     if user_data := login(userName, password):
         st.session_state['loggedIn'] = True
+        st.session_state['user_data'] = user_data
     else:
         # mudar pra falso depois
-        st.session_state['loggedIn'] = True
+        st.session_state['loggedIn'] = False
         st.error("Email ou senha inválidos!!")
 
 def show_login_page():
@@ -23,6 +24,7 @@ def show_login_page():
 def main():
     if 'loggedIn' not in st.session_state:
         st.session_state['loggedIn'] = False
+        st.session_state['user_data'] = None
     
     if not st.session_state['loggedIn']:
         show_login_page()

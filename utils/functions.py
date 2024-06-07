@@ -117,25 +117,26 @@ def format_finances_dash(financeDash):
 
 # Função para traduzir e colocar na ordem os meses de um dataframe
 def order_and_format_month_dataframe(df):
-    # Definindo a ordem dos meses
-    month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    if not df.empty:
+        # Definindo a ordem dos meses
+        month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-    # Criando um DataFrame com todos os meses
-    all_months = pd.DataFrame({'MES': range(1, 13)})
-    all_months['MES'] = pd.Categorical(all_months['MES'], categories=range(1, 13), ordered=True)
-    all_months['MES'] = all_months['MES'].cat.rename_categories(month_order)
+        # Criando um DataFrame com todos os meses
+        all_months = pd.DataFrame({'MES': range(1, 13)})
+        all_months['MES'] = pd.Categorical(all_months['MES'], categories=range(1, 13), ordered=True)
+        all_months['MES'] = all_months['MES'].cat.rename_categories(month_order)
 
-    # Mesclando os dados originais com todos os meses
-    df = pd.merge(all_months, df, on='MES', how='left')
+        # Mesclando os dados originais com todos os meses
+        df = pd.merge(all_months, df, on='MES', how='left')
 
-    # Ordenar o DataFrame pelo mês(index)
-    df = df.sort_index()
+        # Ordenar o DataFrame pelo mês(index)
+        df = df.sort_index()
 
-    # Zerando os valores null
-    df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].fillna(0)
+        # Zerando os valores null
+        df['VALOR_GANHO_BRUTO'] = df['VALOR_GANHO_BRUTO'].fillna(0)
 
-    # Traduzir os meses para português
-    df['MES'] = df['MES'].replace({'January': 'Janeiro', 'February': 'Fevereiro', 'March': 'Março', 'April': 'Abril', 'May': 'Maio', 'June': 'Junho', 'July': 'Julho', 'August': 'Agosto', 'September': 'Setembro', 'October': 'Outubro', 'November': 'Novembro', 'December': 'Dezembro'})
+        # Traduzir os meses para português
+        df['MES'] = df['MES'].replace({'January': 'Janeiro', 'February': 'Fevereiro', 'March': 'Março', 'April': 'Abril', 'May': 'Maio', 'June': 'Junho', 'July': 'Julho', 'August': 'Agosto', 'September': 'Setembro', 'October': 'Outubro', 'November': 'Novembro', 'December': 'Dezembro'})
 
     return df
 

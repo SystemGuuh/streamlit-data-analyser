@@ -25,19 +25,17 @@ if 'loggedIn' not in st.session_state:
     st.switch_page("main.py")
 
 if st.session_state['loggedIn']:
-
-    # Define ID
-    id = 31582
+    user_id = st.session_state['user_data']["data"]["user_id"]
+    user_name = st.session_state['user_data']["data"]['full_name']
 
     # Header
     col1, col2, col3 = st.columns([9,0.7,1])
 
     # Caso não ache o ID de usuário
-    username = get_username(id)
-    if username.empty:
+    if user_name is None:
         col1.error('ID de usuário não encontrado')
     else:
-        col1.write(f"## Olá, {username.iloc[0]['FULL_NAME']}")
+        col1.write(f"## Olá, {user_name}")
     col2.image("./assets/imgs/eshows100x100.png")
     
     col3.write('') # serve pra alinhar o botão
@@ -52,12 +50,12 @@ if st.session_state['loggedIn']:
         inputDate = filterCalendarComponent()
     col5.markdown("<h3 style='text-align: center;'>Relatórios do Estabelecimento</h3>", unsafe_allow_html=True)
     with col6:
-        inputEstablishment = filterEstablishmentComponent(id)
+        inputEstablishment = filterEstablishmentComponent(user_id)
     
     # Pegando dados das querys
     with st.spinner('Carregando dados, por favor aguarde.'):
         try:
-            data = get_dashbords_data(id, inputDate, inputEstablishment)
+            data = get_dashbords_data(user_id, inputDate, inputEstablishment)
         except Exception as e:
             st.error(f'Não foi possível carregar os dados, verifique a conexão. Erro: {e}')
             data = None
