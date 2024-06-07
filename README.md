@@ -1,7 +1,7 @@
 
-# Streamlit Monday eShows
+# Relatório de dados  Eshows
 
-Este é um projeto para visualização e análise de dados relacionados às atividades do eShows em uma plataforma Streamlit.
+Este é um projeto para visualização e análise de dados relacionados às atividades dos clientes da Eshows em uma plataforma Streamlit.
 
 ## Pré-requisitos
 
@@ -26,7 +26,7 @@ pip install -r requirements.txt
 Execute o aplicativo Streamlit:
 
 ```
-streamlit run Hello.py
+streamlit run main.py
 ```
 
 No sistemas Linux é necessário criar um espaço virtual com dois comandos:
@@ -34,11 +34,14 @@ No sistemas Linux é necessário criar um espaço virtual com dois comandos:
 python -m venv venv
 source venv/bin/activate
 ```
+
 ## Funcionalidades
 
-- Visualização de dados do Monday
+- Visualização de dados do banco
+- Relatórios e extratos baixáveis
+- Visualização de gráficos com dados
 - Análise de campos parados
-- Notificações e alertas
+- Filtros de dados
 
 ## Contribuindo
 

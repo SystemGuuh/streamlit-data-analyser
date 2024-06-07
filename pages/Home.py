@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.components import *
 from utils.functions import *
-from data.get_data import get_dashbords_data, get_username
+from data.get_data import get_dashbords_data
 from utils.user import logout
 
 # resolver modularização
