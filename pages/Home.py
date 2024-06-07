@@ -1,9 +1,15 @@
 import streamlit as st
 from utils.components import *
-from utils.menuPages import *
 from utils.functions import *
-from utils.dbconnect import *
+from data.get_data import get_dashbords_data, get_username
 from utils.user import logout
+
+# resolver modularização
+from menu.general_dash import GeneralDashPage
+from menu.finances import FinancesPage
+from menu.reviews import ReviewPage
+from menu.operational_performance import OperationalPerformacePage
+from menu.show_statement import ShowStatementPage
 
 st.set_page_config(
             page_title="Relatórios Eshows",
@@ -27,7 +33,7 @@ if st.session_state['loggedIn']:
     col1, col2, col3 = st.columns([9,0.7,1])
 
     # Caso não ache o ID de usuário
-    username = GET_USER_NAME(id)
+    username = get_username(id)
     if username.empty:
         col1.error('ID de usuário não encontrado')
     else:
@@ -51,40 +57,43 @@ if st.session_state['loggedIn']:
     # Pegando dados das querys
     with st.spinner('Carregando dados, por favor aguarde.'):
         try:
-            generalFinances = GET_WEEKLY_FINANCES(id)
-            financeDash = GET_GERAL_INFORMATION_AND_FINANCES(id)
-            
-            artistRanking = apply_filter_in_dataframe( GET_ARTIST_RANKING(id), inputDate, inputEstablishment)
-            reviewArtitsByHouse = apply_filter_in_dataframe( GET_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
-            averageReviewArtistByHouse = apply_filter_in_dataframe( GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
-            reviewHouseByArtist = apply_filter_in_dataframe( GET_REVIEW_HOUSE_BY_ARTIST(id), None, inputEstablishment)
-            averageReviewHouseByArtist = apply_filter_in_dataframe( GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id), None, inputEstablishment)
-            allOperationalPerformaceByOccurrenceAndDate = apply_filter_in_dataframe( GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id), inputDate, inputEstablishment)
-            operationalPerformace = apply_filter_in_dataframe( get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
-            ByOccurrence = apply_filter_in_dataframe( get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
-            ByWeek = apply_filter_in_dataframe( get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
-            checkinCheckout = apply_filter_in_dataframe( GET_ARTIST_CHECKIN_CHECKOUT(id), inputDate, inputEstablishment)
-            showStatement = apply_filter_in_dataframe( GET_PROPOSTAS_BY_ID(id), inputDate, inputEstablishment) 
-            weeklyFinances = apply_filter_in_dataframe( GET_WEEKLY_FINANCES(id), inputDate, inputEstablishment)
-
-            financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
-            showStatement['DIA_DA_SEMANA'] = showStatement['DIA_DA_SEMANA'].apply(translate_day)
-            
-        except:
-            st.error('Não foi possível carregar os dados, verifique a conexão.')
+            data = get_dashbords_data(id, inputDate, inputEstablishment)
+        except Exception as e:
+            st.error(f'Não foi possível carregar os dados, verifique a conexão. Erro: {e}')
+            data = None
 
     # Body
     tab1, tab2, tab3, tab4, tab5= st.tabs(["DASH GERAL", "FINANCEIRO", "AVALIAÇÕES", "DESEMPENHO OPERACIONAL", "EXTRATO DE SHOWS"])
     with tab1:
-        buildGeneralDash(generalFinances.copy(), financeDash.copy(), averageReviewHouseByArtist.copy(), ByOccurrence.copy(), showStatement.copy())
+        try:
+            page = GeneralDashPage(data)
+            page.render()
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
     with tab2:
-        buildFinances(financeDash.copy(), weeklyFinances.copy(), id)
+        try:
+            page = FinancesPage(data)
+            page.render()
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
     with tab3:
-        buildReview(artistRanking.copy(), reviewArtitsByHouse.copy(), averageReviewArtistByHouse.copy(), reviewHouseByArtist.copy(), averageReviewHouseByArtist.copy())
+        try:
+            page = ReviewPage(data)
+            page.render()
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
     with tab4:
-        buildOperationalPerformace(operationalPerformace.copy(), ByOccurrence.copy(), ByWeek.copy(), checkinCheckout.copy(), allOperationalPerformaceByOccurrenceAndDate.copy())   
+        try:
+            page = OperationalPerformacePage(data)
+            page.render()
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
     with tab5:
-        buildShowStatement(showStatement.copy())
+        try:
+            page = ShowStatementPage(data)
+            page.render()
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
 
 else:
     st.switch_page("main.py")

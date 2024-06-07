@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.dbconnect import GET_GERAL_INFORMATION_AND_FINANCES
+from data.get_data import get_geral_information_and_finances
 import pandas as pd
 import numpy as np
 import datetime
@@ -36,7 +36,7 @@ def filterCalendarComponent():
     return d
 
 def filterEstablishmentComponent(id):
-    df = GET_GERAL_INFORMATION_AND_FINANCES(id)
+    df = get_geral_information_and_finances(id)
     df_sorted = df.sort_values(by='ESTABELECIMENTO')
     option = st.selectbox("Estabelecimentos:",(df_sorted['ESTABELECIMENTO'].unique()),
             index=None, placeholder="Escolha um")
@@ -59,13 +59,15 @@ def filterYearChartFinances():
     return option
 
 def filterReportType(df):
+    df = df.sort_values(by='TIPO')
     option = st.selectbox("Tipo de ocorrência:",(df['TIPO'].unique()),
             index=None, placeholder="Escolha um")
     return option
 
 def filterReportArtist(df):
-    option = st.selectbox("Filtro por artista:",(df['ARTISTA'].unique()),
-            index=None, placeholder="Escolha um")
+    df = df.sort_values(by='ARTISTA')
+    option = st.selectbox("Buscar artista:",(df['ARTISTA'].unique()),
+            index=None, placeholder="Selecione um artista")
     return option
 
 def plotDataframe(df, name):
