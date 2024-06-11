@@ -376,7 +376,7 @@ def printFinanceData(df):
     
     total_brute = format_brazilian(sum(df['VALOR_BRUTO']).quantize(Decimal('0.00')))
     
-    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{(df['STATUS_PROPOSTA'] == 'Aceita').sum()}</p>", unsafe_allow_html=True)
+    tile.markdown(f"<p style='text-align: center;'>Total de Shows</br>{(df.shape[0])}</p>", unsafe_allow_html=True)
 
     tile = row2[1].container(border=True)
     tile.markdown(f"<p style='text-align: center;'>Valor Total</br>R$ {total_brute}</p>", unsafe_allow_html=True)
