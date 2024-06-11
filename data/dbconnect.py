@@ -276,7 +276,11 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
                         A.NOME AS ARTISTA,
                         P.DATA_INICIO AS DATA_INICIO,
                         P.DATA_FIM AS DATA_FIM,
-                        TIMEDIFF(P.DATA_FIM, P.DATA_INICIO) AS DURACAO,
+                        CONCAT(
+                        TIMESTAMPDIFF(HOUR, P.DATA_INICIO, P.DATA_FIM), 'h ',
+                        TIMESTAMPDIFF(MINUTE, P.DATA_INICIO, P.DATA_FIM) % 60, 'm ',
+                        TIMESTAMPDIFF(SECOND, P.DATA_INICIO, P.DATA_FIM) % 60, 's'
+                        ) AS DURACAO,
                         DAYNAME(P.DATA_INICIO) AS DIA_DA_SEMANA,
                         P.VALOR_BRUTO,
                         P.VALOR_LIQUIDO,
@@ -296,6 +300,9 @@ def GET_GERAL_INFORMATION_AND_FINANCES(id):
                         P.FK_STATUS_PROPOSTA IN (100,101,103,104)
                         AND GU.FK_USUARIO = {id}
                         AND A.ID NOT IN (12166)
+
+                        ORDER BY
+                            P.DATA_INICIO ASC
                         """)
     
     return df

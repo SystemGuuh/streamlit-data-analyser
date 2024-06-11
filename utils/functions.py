@@ -105,12 +105,12 @@ def format_finances_dash(financeDash):
     copy['DATA_FIM'] = pd.to_datetime(copy['DATA_FIM'], dayfirst=True)
     copy['DATA_INICIO'] = copy['DATA_INICIO'].dt.strftime('%d/%m/%Y')
     copy['DATA_FIM'] = copy['DATA_FIM'].dt.strftime('%d/%m/%Y')
-    copy['DURACAO'] = copy['DURACAO'].apply(translate_duration)
+    #copy['DURACAO'] = copy['DURACAO'].apply(translate_duration)
 
     # Renomeando e removendo colunas
     financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
                     'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANCEIRO'})
-    new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DATA FIM','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANCEIRO']
+    new_order = ['STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DURAÇÃO','DIA DA SEMANA','VALOR BRUTO','STATUS FINANCEIRO']
     financeDash_renamed = financeDash_renamed[new_order]
 
     return financeDash_renamed
