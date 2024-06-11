@@ -170,6 +170,10 @@ def plotBarChart(df, xValue, yValue,name):
     if yValue == 'VALOR_GANHO_BRUTO':
         df = df.rename(columns={'VALOR_GANHO_BRUTO': 'VALOR INVESTIDO'})
         yValue = 'VALOR INVESTIDO'
+
+    if yValue == 'VALOR_BRUTO':
+        df = df.rename(columns={'VALOR_BRUTO': 'VALOR INVESTIDO'})
+        yValue = 'VALOR INVESTIDO'
     
     if df[xValue].dtype == 'object':
         # Tentar converter os valores para o tipo datetime

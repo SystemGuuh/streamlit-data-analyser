@@ -309,7 +309,8 @@ def GET_WEEKLY_FINANCES(id):
                             DATE_ADD(DATE(P.DATA_INICIO), INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY) AS NUMERO_SEMANA,
                             DATE_FORMAT(DATE_ADD(P.DATA_INICIO, INTERVAL(2-DAYOFWEEK(P.DATA_INICIO)) DAY), '%d-%m-%Y') AS DIA,
                             SUM(P.VALOR_BRUTO) AS VALOR_GANHO_BRUTO,
-                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO
+                            SUM(P.VALOR_LIQUIDO) AS VALOR_GANHO_LIQUIDO,
+                            C.NAME AS ESTABELECIMENTO
                         FROM 
                             T_PROPOSTAS P
                             INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
@@ -319,7 +320,7 @@ def GET_WEEKLY_FINANCES(id):
                             AND GU.FK_USUARIO = {id}
                             AND YEAR(P.DATA_INICIO) = YEAR(CURDATE())
                         GROUP BY 
-                            YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO)
+                            C.ID, YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO)
                         ORDER BY
                             YEAR(P.DATA_INICIO), WEEK(P.DATA_INICIO) ASC
                           """)
