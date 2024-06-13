@@ -38,5 +38,4 @@ if __name__ == '__main__':
     page_icon="./assets/imgs/eshows-logo100x100.png",
     layout="centered",
     )
-    hide_sidebar()
     main()

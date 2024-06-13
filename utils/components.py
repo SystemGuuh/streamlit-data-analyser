@@ -9,15 +9,6 @@ from utils.functions import *
 from decimal import Decimal
 import calendar
 
-def hide_sidebar():
-    st.markdown("""
-    <style>
-        section[data-testid="stSidebar"][aria-expanded="true"]{
-            display: none;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
 # resolve o bug de carregamento dos gráficos de echart
 def fix_tab_echarts():
     streamlit_style = """
