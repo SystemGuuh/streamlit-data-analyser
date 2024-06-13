@@ -63,40 +63,42 @@ def get_report_by_occurrence(df):
 @st.cache_data
 def GET_PROPOSTAS_BY_ID(id):
     df =  getDfFromQuery(f"""
-                    SELECT DISTINCT
-                        P.ID AS ID_PROPOSTA,
-                        CASE 
-                            WHEN S.DESCRICAO IS NULL THEN "Cancelada"
-                            ELSE S.DESCRICAO
-                        END AS STATUS_PROPOSTA,
-                        C.NAME AS ESTABELECIMENTO,
-                        A.NOME AS ARTISTA,
-                        DATA_INICIO AS DATA_INICIO,
-                        DATA_FIM AS DATA_FIM,
-                        DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
-                        P.VALOR_BRUTO,
-                        SF.DESCRICAO AS STATUS_FINANCEIRO,
-                        CONCAT(
-                        TIMESTAMPDIFF(HOUR, DATA_INICIO, DATA_FIM), 'h ',
-                        TIMESTAMPDIFF(MINUTE, DATA_INICIO, DATA_FIM) % 60, 'm ',
-                        TIMESTAMPDIFF(SECOND, DATA_INICIO, DATA_FIM) % 60, 's'
-                        ) AS DURACAO
-                        
-                    FROM T_PROPOSTAS P
-                    LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-                    LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-                    LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                    LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
-                    INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO 
-                            AND GU.STATUS = 1
-                        AND GU.FK_PERFIL IN (100,101)
-                        
-                    WHERE P.TESTE = 0 
-                        AND P.FK_CONTRANTE IS NOT NULL 
-                        AND P.FK_CONTRATADO IS NOT NULL 
-                        AND P.DATA_INICIO IS NOT NULL 
-                        AND A.ID NOT IN (12166)
+                   SELECT
+                    P.ID AS ID_PROPOSTA,
+                    CASE 
+                        WHEN S.DESCRICAO IS NULL THEN "Cancelada"
+                        ELSE S.DESCRICAO
+                    END AS STATUS_PROPOSTA,
+                    C.NAME AS ESTABELECIMENTO,
+                    A.NOME AS ARTISTA,
+                    DATA_INICIO AS DATA_INICIO,
+                    DATA_FIM AS DATA_FIM,
+                    DAYNAME(DATA_INICIO) AS DIA_DA_SEMANA,
+                    P.VALOR_BRUTO,
+                    SF.DESCRICAO AS STATUS_FINANCEIRO,
+                    CONCAT(
+                    TIMESTAMPDIFF(HOUR, DATA_INICIO, DATA_FIM), 'h ',
+                    TIMESTAMPDIFF(MINUTE, DATA_INICIO, DATA_FIM) % 60, 'm ',
+                    TIMESTAMPDIFF(SECOND, DATA_INICIO, DATA_FIM) % 60, 's'
+                    ) AS DURACAO
+
+                FROM T_PROPOSTAS P
+                INNER JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
+                INNER JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
+                LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
+                LEFT JOIN T_PROPOSTA_STATUS_FINANCEIRO SF ON (P.FK_STATUS_FINANCEIRO = SF.ID)
+                INNER JOIN T_GRUPO_USUARIO GU ON C.ID = GU.FK_COMPANY
+                        AND GU.STATUS = 1
+                            AND GU.FK_PERFIL IN (100,101)
+
+                WHERE 
+                        P.DATA_INICIO IS NOT NULL 
+                    AND A.ID NOT IN (12166)
                         AND GU.FK_USUARIO = {id}
+                    AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
+                    
+                GROUP BY P.ID
+                ORDER BY P.DATA_INICIO ASC
                         """)
     return df
 
@@ -378,7 +380,7 @@ def GET_ARTIST_CHECKIN_CHECKOUT(id):
                             LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
                             LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
                             LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                            INNER JOIN T_GRUPO_USUARIO GU ON GU.FK_USUARIO = P.FK_USUARIO 
+                            INNER JOIN T_GRUPO_USUARIO GU ON C.ID = GU.FK_COMPANY
                             AND GU.STATUS = 1
                             AND GU.FK_PERFIL IN (100,101)
                             

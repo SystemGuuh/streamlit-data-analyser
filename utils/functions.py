@@ -51,6 +51,15 @@ def parse_duration(duration_str):
         duration_str = duration_str.split('m')[1].strip()
     if 's' in duration_str:
         seconds = int(duration_str.split('s')[0].strip())
+
+    # Verificando e corrigindo valores fora do intervalo
+    if hours > 876000: 
+        hours = 876000
+    if minutes >= 60:
+        minutes = 59
+    if seconds >= 60:
+        seconds = 59
+
     return pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
 
 # Função para somar coluna DURACAO e devolver o valor total de horas, minutos e segundos 
