@@ -66,7 +66,7 @@ def parse_duration(duration_str):
             seconds = 59
 
         return pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
-    except Exception as e:
+    except:
         return pd.Timadelta(hours=0, minutes=0, seconds=0)
 
 # Função para somar coluna DURACAO e devolver o valor total de horas, minutos e segundos 
@@ -111,17 +111,25 @@ def translate_duration(duration):
             return f'{int(days)} dia' if days == 1 else f'{int(days)} dias'
     return str(duration)
 
+# Função para converter a data com tratamento de exceção
+def safe_to_datetime(date_str):
+    try:
+        return pd.to_datetime(date_str, dayfirst=True)
+    except Exception:
+        return pd.NaT  # Retorna NaT se houver erro na conversão
+
 # Função para formatar os dados da tabela de finanças
 def format_finances_dash(financeDash):
     copy = financeDash
 
     # Colocando mascara nos valores
     copy['VALOR_BRUTO'] = 'R$ ' + copy['VALOR_BRUTO'].apply(format_brazilian).astype(str)
-    copy['DATA_INICIO'] = pd.to_datetime(copy['DATA_INICIO'], dayfirst=True)
-    copy['DATA_FIM'] = pd.to_datetime(copy['DATA_FIM'], dayfirst=True)
-    copy['DATA_INICIO'] = copy['DATA_INICIO'].dt.strftime('%d/%m/%Y')
-    copy['DATA_FIM'] = copy['DATA_FIM'].dt.strftime('%d/%m/%Y')
-    #copy['DURACAO'] = copy['DURACAO'].apply(translate_duration)
+    copy['DATA_INICIO'] = copy['DATA_INICIO'].apply(safe_to_datetime)
+    copy['DATA_FIM'] = copy['DATA_FIM'].apply(safe_to_datetime)
+
+    # Formatar datas válidas
+    copy['DATA_INICIO'] = copy['DATA_INICIO'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
+    copy['DATA_FIM'] = copy['DATA_FIM'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
 
     # Renomeando e removendo colunas
     financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',

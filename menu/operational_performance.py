@@ -46,6 +46,8 @@ def buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, chec
         row1 = st.columns(6)
         with row1[0]:
             type = filterReportType(allOperationalPerformaceByOccurrenceAndDate)
+        with row1[1]:
+            art = filterReportArtist(allOperationalPerformaceByOccurrenceAndDate)
         with row1[5]:
             st.write('') # alinhar botão
             st.write('') # alinhar botão
@@ -53,9 +55,11 @@ def buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, chec
         container = st.container(border=True)
         with container:
             if type is not None:
-                plotDataframe(allOperationalPerformaceByOccurrenceAndDate[allOperationalPerformaceByOccurrenceAndDate['TIPO']==type], "Relatório completo de ocorrências")
-            else:
-                plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Relatório completo de ocorrências")
+                allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate[allOperationalPerformaceByOccurrenceAndDate['TIPO']==type]
+            if art is not None:
+                allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate[allOperationalPerformaceByOccurrenceAndDate['ARTISTA']==art]
+
+            plotDataframe(allOperationalPerformaceByOccurrenceAndDate, "Relatório completo de ocorrências")
     pass
 
 class OperationalPerformacePage(Page):
