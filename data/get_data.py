@@ -21,7 +21,6 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
     operationalPerformace = apply_filter_in_dataframe( get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
     ByOccurrence = apply_filter_in_dataframe( get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
     ByWeek = apply_filter_in_dataframe( get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
-    checkinCheckout = apply_filter_in_dataframe( GET_ARTIST_CHECKIN_CHECKOUT(id), inputDate, inputEstablishment)
     showStatement = apply_filter_in_dataframe( GET_PROPOSTAS_BY_ID(id), inputDate, inputEstablishment) 
     weeklyFinances = apply_filter_in_dataframe( GET_WEEKLY_FINANCES(id), inputDate, inputEstablishment)
 
@@ -42,7 +41,6 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
         'reviewHouseByArtist': reviewHouseByArtist,
         'operationalPerformace': operationalPerformace,
         'ByWeek': ByWeek,
-        'checkinCheckout': checkinCheckout,
         'allOperationalPerformaceByOccurrenceAndDate': allOperationalPerformaceByOccurrenceAndDate,
         'id': id
     }

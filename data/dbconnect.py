@@ -367,33 +367,4 @@ def GET_ALL_REPORT_ARTIST_BY_OCCURRENCE_AND_DATE(id):
 
     return df
 
-@st.cache_data
-def GET_ARTIST_CHECKIN_CHECKOUT(id):
-    return getDfFromQuery(f"""
-                            SELECT
-                            A.NOME AS ARTISTA,
-                            SUM(S.DESCRICAO = 'Checkin Realizado' OR S.DESCRICAO = 'Checkout Realizado') AS QUANTIDADE_CHECKIN,
-                            SUM(S.DESCRICAO = 'Checkout Realizado') AS QUANTIDADE_CHECKOUT,
-                            COUNT(*) AS TOTAL_SHOWS
-
-                            FROM T_PROPOSTAS P
-                            LEFT JOIN T_COMPANIES C ON (P.FK_CONTRANTE = C.ID)
-                            LEFT JOIN T_ATRACOES A ON (P.FK_CONTRATADO = A.ID)
-                            LEFT JOIN T_PROPOSTA_STATUS S ON (P.FK_STATUS_PROPOSTA = S.ID)
-                            INNER JOIN T_GRUPO_USUARIO GU ON C.ID = GU.FK_COMPANY
-                            AND GU.STATUS = 1
-                            AND GU.FK_PERFIL IN (100,101)
-                            
-                            WHERE P.TESTE = 0 
-                            AND P.FK_CONTRANTE IS NOT NULL 
-                            AND P.FK_CONTRATADO IS NOT NULL 
-                            AND P.DATA_INICIO IS NOT NULL 
-                            AND P.FK_USUARIO = {id}
-                            AND A.ID NOT IN (12166)
-
-                            GROUP BY 
-                                A.NOME
-                            ORDER BY 
-                                TOTAL_SHOWS DESC;
-                          """)
 

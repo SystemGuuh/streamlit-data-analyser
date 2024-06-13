@@ -236,4 +236,34 @@ def get_report_artist_by_week(df):
     df_grouped = df_grouped.sort_values(by='QUANTIDADE', ascending=False)
     return df_grouped
 
+# conta o checkin e checkout para a tela de Desempenho Operacional
+def transform_show_statement(df):
+    # Filtrar apenas as linhas que têm "Checkout Realizado" ou "Checkin Realizado" na coluna "STATUS_PROPOSTA"
+    df_filtered = df
+    
+    # Inicializar colunas para armazenar a contagem
+    df_filtered['CHECKIN_REALIZADO'] = 0
+    df_filtered['CHECKOUT_REALIZADO'] = 0
 
+    # Atualizar as colunas com base no valor de 'STATUS_PROPOSTA'
+    df_filtered.loc[df_filtered['STATUS_PROPOSTA'] == 'Checkin Realizado', 'CHECKIN_REALIZADO'] = 1
+    df_filtered.loc[df_filtered['STATUS_PROPOSTA'] == 'Checkout Realizado', 'CHECKOUT_REALIZADO'] = 1
+
+    # Agrupar por 'ARTISTA' e contar o número de ocorrências
+    grouped = df_filtered.groupby('ARTISTA').agg({
+        'STATUS_PROPOSTA': 'size',  # Conta o número de ocorrências (número de shows)
+        'CHECKIN_REALIZADO': 'sum',
+        'CHECKOUT_REALIZADO': 'sum'
+    }).reset_index()
+
+    grouped['CHECKIN_REALIZADO'] = (((grouped['CHECKIN_REALIZADO'] + grouped['CHECKOUT_REALIZADO'])*100)/grouped['STATUS_PROPOSTA']).map("{:.2f}%".format)
+    grouped['CHECKOUT_REALIZADO'] = ((grouped['CHECKOUT_REALIZADO']*100)/grouped['STATUS_PROPOSTA']).map("{:.2f}%".format)
+    
+    # Renomear as colunas para refletir o que foi pedido
+    grouped.rename(columns={
+        'STATUS_PROPOSTA': 'NÚMERO DE SHOWS',
+        'CHECKIN_REALIZADO': 'PORCENTAGEM DE CHECKIN(%)',
+        'CHECKOUT_REALIZADO': 'PORCENTAGEM DE CHECKOUT(%)'
+    }, inplace=True)
+
+    return grouped.sort_values(by='NÚMERO DE SHOWS', ascending=False)
