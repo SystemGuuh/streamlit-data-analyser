@@ -1,6 +1,7 @@
 import pandas as pd
 from io import BytesIO
 from utils.functions import *
+import streamlit as st
 
 # Função para criar um dicionário com dias da semana
 def translate_day(dia):
@@ -42,25 +43,31 @@ def format_brazilian(num):
 
 # Função para converter o tempo no formato "Xh Ym Zs" para timedelta
 def parse_duration(duration_str):
-    hours, minutes, seconds = 0, 0, 0
-    if 'h' in duration_str:
-        hours = int(duration_str.split('h')[0].strip())
-        duration_str = duration_str.split('h')[1].strip()
-    if 'm' in duration_str:
-        minutes = int(duration_str.split('m')[0].strip())
-        duration_str = duration_str.split('m')[1].strip()
-    if 's' in duration_str:
-        seconds = int(duration_str.split('s')[0].strip())
+    try:
+        if pd.isna(duration_str):
+            return pd.Timedelta(0)  # Retorna uma duração de 0 se o valor for nula
 
-    # Verificando e corrigindo valores fora do intervalo
-    if hours > 876000: 
-        hours = 876000
-    if minutes >= 60:
-        minutes = 59
-    if seconds >= 60:
-        seconds = 59
+        hours, minutes, seconds = 0, 0, 0
+        if 'h' in duration_str:
+            hours = int(duration_str.split('h')[0].strip())
+            duration_str = duration_str.split('h')[1].strip()
+        if 'm' in duration_str:
+            minutes = int(duration_str.split('m')[0].strip())
+            duration_str = duration_str.split('m')[1].strip()
+        if 's' in duration_str:
+            seconds = int(duration_str.split('s')[0].strip())
 
-    return pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        # Verificando e corrigindo valores fora do intervalo
+        if hours > 876000: 
+            hours = 99999
+        if minutes >= 60:
+            minutes = 59
+        if seconds >= 60:
+            seconds = 59
+
+        return pd.Timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    except Exception as e:
+        return pd.Timadelta(hours=0, minutes=0, seconds=0)
 
 # Função para somar coluna DURACAO e devolver o valor total de horas, minutos e segundos 
 def sum_duration_from_dataframe(df):

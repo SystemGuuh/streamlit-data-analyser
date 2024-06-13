@@ -25,8 +25,10 @@ if 'loggedIn' not in st.session_state:
     st.switch_page("main.py")
 
 if st.session_state['loggedIn']:
-    user_id = st.session_state['user_data']["data"]["user_id"]
-    user_name = st.session_state['user_data']["data"]['full_name']
+    #user_id = st.session_state['user_data']["data"]["user_id"]
+    #user_name = st.session_state['user_data']["data"]['full_name']
+    user_id = 25666
+    user_name = "FigersGameplas666"
 
     # Header
     col1, col2, col3 = st.columns([9,0.7,1])
