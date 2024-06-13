@@ -7,7 +7,7 @@ Este documento descreve sucintamente o propósito de cada parte do código no pr
 Verificar se o login já foi feito ou crido, se sim, manda pra `Home.py`, senão chama `show_login_page()`
 
 ### Função `show_login_page()`
-Monta a pagina de login com os componentes necessáiros e chama`handle_login() ` ao clicar em logar.
+Monta a pagina de login com os componentes necessários e chama`handle_login() ` ao clicar em logar.
 
 ### Função `handle_login()`
 Chama a função `login(userName, password)` em `utils.user` para fazer a requisição do login.
