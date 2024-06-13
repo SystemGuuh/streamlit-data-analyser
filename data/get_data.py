@@ -5,7 +5,7 @@ def get_username(id):
     return GET_USER_NAME(id)
     
 def get_geral_information_and_finances(id):
-    return GET_GERAL_INFORMATION_AND_FINANCES(id)
+    return GET_PROPOSTAS_BY_ID(id)
 
 # Retorna os dados de cada dataframe num dicionário
 def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
