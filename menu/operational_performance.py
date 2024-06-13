@@ -24,12 +24,15 @@ def buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, chec
             checkinCheckout = checkinCheckout.rename(columns={'QUANTIDADE_CHECKIN': 'QUANTIDADE DE CHECKIN', 'QUANTIDADE_CHECKOUT': 'QUANTIDADE DE CHECKOUT',
                                 'TOTAL_SHOWS': 'NÚMERO DE SHOWS'})
             
+            # Calculando porcentagens
             checkinCheckout['PORCENTAGEM DE CHECKIN(%)'] = ((checkinCheckout['QUANTIDADE DE CHECKIN'] * 100) / checkinCheckout['NÚMERO DE SHOWS'])
             checkinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = ((checkinCheckout['QUANTIDADE DE CHECKOUT'] * 100) / checkinCheckout['NÚMERO DE SHOWS'])
             
+            # transformando valores None em 0
             checkinCheckout['PORCENTAGEM DE CHECKIN(%)'] = checkinCheckout['PORCENTAGEM DE CHECKIN(%)'].fillna(0)
             checkinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = checkinCheckout['PORCENTAGEM DE CHECKOUT(%)'].fillna(0)
 
+            # Adicionando '%' nas linhas
             checkinCheckout['PORCENTAGEM DE CHECKIN(%)'] = checkinCheckout['PORCENTAGEM DE CHECKIN(%)'].map("{:.2f}%".format)
             checkinCheckout['PORCENTAGEM DE CHECKOUT(%)'] = checkinCheckout['PORCENTAGEM DE CHECKOUT(%)'].map("{:.2f}%".format)
 
