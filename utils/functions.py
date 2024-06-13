@@ -189,7 +189,7 @@ def apply_filter_data_in_dataframe(df, date):
     if date is not None:
         if len(date) > 1 and date[0] is not None and date[1] is not None:
             startDate = pd.Timestamp(date[0])
-            endDate = pd.Timestamp(date[1])
+            endDate = pd.Timestamp(date[1]) + pd.Timedelta(days=1)
             try:
                 df = df.dropna(subset=['DATA_AVALIACAO'])
                 df = df[df['DATA_AVALIACAO'] >= startDate]

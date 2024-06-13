@@ -7,6 +7,7 @@ from datetime import date
 from streamlit_echarts import st_echarts
 from utils.functions import *
 from decimal import Decimal
+import calendar
 
 def hide_sidebar():
     st.markdown("""
@@ -29,9 +30,11 @@ def fix_tab_echarts():
 
 def filterCalendarComponent():
     today = datetime.date.today()
-    month_ago = today - datetime.timedelta(days=90)
 
-    d = st.date_input("Filtro de data:", (month_ago, today),
+    first_day_of_month = today.replace(day=1)
+    last_day_of_month = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+
+    d = st.date_input("Filtro de data:", (first_day_of_month, last_day_of_month),
                       format="DD/MM/YYYY")
     return d
 
