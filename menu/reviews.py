@@ -36,7 +36,7 @@ def buildReview(artistRanking, reviewArtistByHouse, averageReviewArtistByHouse, 
         with container:
             row1 = st.columns([2,2])
             with row1[0]:
-                reviewArtistByHouse = reviewArtistByHouse[['ARTISTA','ESTABELECIMENTO','NOTA', 'AVALIADOR']]
+                reviewArtistByHouse = reviewArtistByHouse[['ARTISTA','ESTABELECIMENTO','NOTA', 'AVALIADOR', 'COMENTÁRIO', 'DATA']]
                 plotDataframe(reviewArtistByHouse, "Avaliações Recentes")
             with row1[1]:
                 averageReviewArtistByHouse_sorted = averageReviewArtistByHouse.sort_values(by='NÚMERO DE SHOWS', ascending=False)

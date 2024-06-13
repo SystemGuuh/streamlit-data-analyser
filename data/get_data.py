@@ -21,7 +21,8 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
     operationalPerformace = apply_filter_in_dataframe( get_report_artist(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
     ByOccurrence = apply_filter_in_dataframe( get_report_by_occurrence(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
     ByWeek = apply_filter_in_dataframe( get_report_artist_by_week(allOperationalPerformaceByOccurrenceAndDate.copy()), inputDate, inputEstablishment)
-    showStatement = apply_filter_in_dataframe( GET_PROPOSTAS_BY_ID(id), inputDate, inputEstablishment) 
+    downloadShowStatement = GET_PROPOSTAS_BY_ID(id)
+    showStatement = apply_filter_in_dataframe( downloadShowStatement, inputDate, inputEstablishment) 
     weeklyFinances = apply_filter_in_dataframe( GET_WEEKLY_FINANCES(id), inputDate, inputEstablishment)
 
     financeDash['DIA_DA_SEMANA'] = financeDash['DIA_DA_SEMANA'].apply(translate_day)
@@ -33,6 +34,7 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
         'financeDash': financeDash,
         'averageReviewHouseByArtist': averageReviewHouseByArtist,
         'ByOccurrence': ByOccurrence,
+        'downloadShowStatement': downloadShowStatement,
         'showStatement': showStatement,
         'weeklyFinances': weeklyFinances,
         'artistRanking': artistRanking,

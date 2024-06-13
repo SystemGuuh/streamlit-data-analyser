@@ -6,7 +6,7 @@ from decimal import Decimal
 
 from menu.page import Page
 
-def buildShowStatement(showStatement):
+def buildShowStatement(showStatement, downloadShowStatement):
     # pegando valores
     total = showStatement.shape[0]
     total_hours, total_minutes, total_seconds = sum_duration_from_dataframe(showStatement)
@@ -15,8 +15,7 @@ def buildShowStatement(showStatement):
 
     # formatando showStatement
     showStatement_renamed = format_finances_dash(showStatement)
-    
-    buttonDowloadDash(showStatement, "Extrato-de-Shows")
+    buttonDowloadDash(downloadShowStatement, "Extrato-de-Shows")
     row1 = st.columns(4)
 
     tile = row1[0].container(border=True)
@@ -40,4 +39,5 @@ def buildShowStatement(showStatement):
 
 class ShowStatementPage(Page):
     def render(self):
-        buildShowStatement(self.data['showStatement'].copy())
+        buildShowStatement(self.data['showStatement'].copy(),
+                           self.data['downloadShowStatement'].copy())

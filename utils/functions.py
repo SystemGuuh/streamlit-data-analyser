@@ -118,6 +118,28 @@ def safe_to_datetime(date_str):
     except Exception:
         return pd.NaT  # Retorna NaT se houver erro na conversão
 
+# Função para formatar os dados da tabela de download de finanças
+def format_download_finances_dash(financeDash):
+    copy = financeDash
+    # Colocando mascara nos valores
+    copy['DIA_DA_SEMANA'] = copy['DIA_DA_SEMANA'].apply(translate_day)
+    copy['VALOR_BRUTO'] = 'R$ ' + copy['VALOR_BRUTO'].apply(format_brazilian).astype(str)
+    #copy['DATA_INICIO'] = copy['DATA_INICIO'].apply(safe_to_datetime)
+    copy['DATA_FIM'] = copy['DATA_FIM'].apply(safe_to_datetime)
+
+    # Formatar datas válidas
+    copy['DATA_INICIO'] = copy['DATA_INICIO'].apply(lambda x: x.strftime('%d/%m/%Y - %H:%M:%S') if not pd.isnull(x) else None)
+    copy['DATA_FIM'] = copy['DATA_FIM'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
+
+    # Renomeando e removendo colunas
+    financeDash_renamed = copy.rename(columns={'STATUS_PROPOSTA': 'STATUS PROPOSTA', 'DATA_INICIO': 'DATA INÍCIO', 'DATA_FIM': 'DATA FIM','DURACAO' : 'DURAÇÃO','DIA_DA_SEMANA': 'DIA DA SEMANA',
+                    'VALOR_BRUTO': 'VALOR BRUTO', 'STATUS_FINANCEIRO': 'STATUS FINANCEIRO'})
+
+    new_order = ['ID_PROPOSTA','STATUS PROPOSTA','ARTISTA','ESTABELECIMENTO','DATA INÍCIO','DURAÇÃO','DATA FIM','DIA DA SEMANA','VALOR BRUTO','STATUS FINANCEIRO']
+    financeDash_renamed = financeDash_renamed[new_order]
+    
+    return financeDash_renamed
+
 # Função para formatar os dados da tabela de finanças
 def format_finances_dash(financeDash):
     copy = financeDash

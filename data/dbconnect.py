@@ -122,10 +122,10 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id):
                             C.NAME AS ESTABELECIMENTO,
                             GC.GRUPO_CLIENTES AS GRUPO,
                             AV.NOTA,
-                            AV.COMENTARIO,
+                            AV.COMENTARIO AS 'COMENTÁRIO',
                             AU.FULL_NAME AS AVALIADOR,
                             AU.LOGIN AS EMAIL_AVALIADOR,
-                            P.DATA_INICIO AS DATA_PROPOSTA,
+                            P.DATA_INICIO AS 'DATA',
                             AV.LAST_UPDATE AS DATA_AVALIACAO
 
                             FROM T_AVALIACAO_ATRACOES AV
