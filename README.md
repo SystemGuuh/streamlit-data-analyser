@@ -17,7 +17,7 @@ Clone o repositório e instale as dependências:
 
 ```
 git clone {link do repositório}
-cd streamlit-monday-eshows
+cd streamlit-data-analyser
 pip install -r requirements.txt
 ```
 
