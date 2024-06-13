@@ -408,8 +408,8 @@ def plotFinanceCharts(df, financeDash):
         plotBarChart(df, 'NUMERO_SEMANA', 'VALOR_GANHO_BRUTO', 'Valor investido por semana')
     with st.expander("Valor investido por mês", expanded=False):
         plotBarChart(order_and_format_month_dataframe(df_byMonth), 'MES', 'VALOR_GANHO_BRUTO', 'Valor investido por mês')
-    with st.expander("Valor investido por dia da semana", expanded=False):
-        plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento por dia da semana')
+    with st.expander("Valor médio investido por dia da semana", expanded=False):
+        plotBarChart(order_and_format_weekday_dataframe(grouped_byWek_financeDash), 'DIA_DA_SEMANA', 'VALOR_BRUTO', 'Investimento médio por dia da semana')
   
 def buttonDowloadDash(df, name):
     button_key = f"_{name}_"
