@@ -27,6 +27,7 @@ def buildOperationalPerformace(operationalPerformace, ByOccurrence, ByWeek, allO
         # removendo valores e reodernando o dataset
         allOperationalPerformaceByOccurrenceAndDate.drop(columns=['SEMANA'], inplace=True)
         allOperationalPerformaceByOccurrenceAndDate = allOperationalPerformaceByOccurrenceAndDate[['ARTISTA', 'ESTILO','ESTABELECIMENTO','DATA','TIPO']]
+        allOperationalPerformaceByOccurrenceAndDate['DATA'] = allOperationalPerformaceByOccurrenceAndDate['DATA'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
         
         row1 = st.columns(6)
         with row1[0]:
