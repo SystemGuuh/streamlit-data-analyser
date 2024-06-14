@@ -44,7 +44,9 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
         'operationalPerformace': operationalPerformace,
         'ByWeek': ByWeek,
         'allOperationalPerformaceByOccurrenceAndDate': allOperationalPerformaceByOccurrenceAndDate,
-        'id': id
+        'id': id,
+        'filterDate': inputDate, 
+        'filterEstablishment': inputEstablishment
     }
 
     return data

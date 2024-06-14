@@ -1,6 +1,5 @@
 import streamlit as st
 from utils.user import login
-from utils.components import hide_sidebar
 
 
 def handle_login(userName, password):
@@ -9,7 +8,6 @@ def handle_login(userName, password):
         st.session_state['loggedIn'] = True
         st.session_state['user_data'] = user_data
     else:
-        # mudar pra falso depois
         st.session_state['loggedIn'] = False
         st.error("Email ou senha inválidos!!")
 
