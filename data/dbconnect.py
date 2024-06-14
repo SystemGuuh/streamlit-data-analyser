@@ -114,7 +114,7 @@ def GET_USER_NAME(id):
                             GROUP BY AU.ID
                           """)
 
-# Avaliações - Avaliações da casa
+# Avaliações - Avaliações dada pela casa
 @st.cache_data
 def GET_REVIEW_ARTIST_BY_HOUSE(id):
     df = getDfFromQuery(f"""SELECT
@@ -140,6 +140,9 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id):
                             GU.STATUS = 1
                             AND GU.FK_USUARIO = {id}
                             AND A.ID NOT IN (12166)
+
+                            ORDER BY
+                            DATA DESC
                         """)
     
     df['NOTA'] = '⭐ ' + df['NOTA'].astype(str)
@@ -149,24 +152,30 @@ def GET_REVIEW_ARTIST_BY_HOUSE(id):
 @st.cache_data
 def GET_REVIEW_HOUSE_BY_ARTIST(id):
     df = getDfFromQuery(f"""SELECT
-                        C.NAME AS ESTABELECIMENTO,
-                        GC.GRUPO_CLIENTES AS GRUPO,
-                        AC.NOTA,
-                        AC.COMENTARIO AS 'COMENTÁRIO'
+                            C.NAME AS ESTABELECIMENTO,
+                            GC.GRUPO_CLIENTES AS GRUPO,
+                            AC.NOTA,
+                            AC.LAST_UPDATE AS DATA,
+                            P.DATA_INICIO AS DATA_PROPOSTA,
+                            AC.COMENTARIO AS 'COMENTÁRIO'
 
-                        FROM T_AVALIACAO_CASAS AC
-                        INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
-                        LEFT JOIN ADMIN_USERS AU ON (AU.ID = AC.LAST_USER)
-                        INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
-                        INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
-                        LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
-                        LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
+                            FROM T_AVALIACAO_CASAS AC
+                            INNER JOIN T_PROPOSTAS P ON (P.ID = AC.FK_PROPOSTA)
+                            LEFT JOIN ADMIN_USERS AU ON (AU.ID = AC.LAST_USER)
+                            INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
+                            INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
+                            LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
+                            LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
 
-                        WHERE 
-                        GU.STATUS = 1
-                        AND GU.FK_USUARIO = {id}
-                        AND AC.NOTA > 0
-                        AND A.ID NOT IN (12166)
+                            WHERE 
+                            GU.STATUS = 1
+                            AND GU.FK_USUARIO = {id}
+                            AND AC.NOTA > 0
+                            AND A.ID NOT IN (12166)
+                            GROUP BY AC.ID
+
+                            ORDER BY
+                            DATA DESC
                         """)  
 
     df['NOTA'] = '⭐ ' + df['NOTA'].astype(str)

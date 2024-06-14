@@ -36,21 +36,25 @@ def buildReview(artistRanking, reviewArtistByHouse, averageReviewArtistByHouse, 
         with container:
             row1 = st.columns([2,2])
             with row1[0]:
-                reviewArtistByHouse = reviewArtistByHouse[['ARTISTA','ESTABELECIMENTO','NOTA', 'AVALIADOR', 'COMENTÁRIO', 'DATA']]
-                plotDataframe(reviewArtistByHouse, "Avaliações Recentes")
+                reviewArtistByHouse = reviewArtistByHouse[['ARTISTA','ESTABELECIMENTO','NOTA', 'AVALIADOR', 'DATA', 'COMENTÁRIO']]
+                reviewArtistByHouse['COMENTÁRIO'] = reviewArtistByHouse['COMENTÁRIO'].fillna("")
+                reviewArtistByHouse['DATA'] = reviewArtistByHouse['DATA'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
+                plotDataframe(reviewArtistByHouse, "Avaliações dadas recentemente")
             with row1[1]:
                 averageReviewArtistByHouse_sorted = averageReviewArtistByHouse.sort_values(by='NÚMERO DE SHOWS', ascending=False)
-                plotDataframe(averageReviewArtistByHouse_sorted, "Satisfação média do artista")
+                plotDataframe(averageReviewArtistByHouse_sorted, "Satisfação média do estabelecimento")
             
     with tab3:
         container = st.container(border=True)
         with container:
             row2 = st.columns([2,2])
             with row2[0]:
-                reviewHouseByArtist = reviewHouseByArtist[['ESTABELECIMENTO','NOTA']]
-                plotDataframe(reviewHouseByArtist, "Avaliações Recentes")
+                reviewHouseByArtist['COMENTÁRIO'] = reviewHouseByArtist['COMENTÁRIO'].fillna("") 
+                reviewHouseByArtist['DATA'] = reviewHouseByArtist['DATA'].apply(lambda x: x.strftime('%d/%m/%Y') if not pd.isnull(x) else None)
+                reviewHouseByArtist = reviewHouseByArtist[['GRUPO', 'ESTABELECIMENTO','NOTA', 'DATA', 'COMENTÁRIO']]
+                plotDataframe(reviewHouseByArtist, "Avaliações recebidas recentemente")
             with row2[1]:
-                plotDataframe(averageReviewHouseByArtist, "Satisfação média do estabelecimento")
+                plotDataframe(averageReviewHouseByArtist, "Satisfação média do artista")
     pass
 
 class ReviewPage(Page):

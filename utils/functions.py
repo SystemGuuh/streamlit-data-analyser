@@ -257,8 +257,7 @@ def apply_filter_data_in_dataframe(df, date):
                         df = df.dropna(subset=['DATA'])
                         df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') >= startDate]
                         df = df[pd.to_datetime(df['DATA'], format='%d/%m/%Y') <= endDate]
-                        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y') 
-                        df['DATA'] = df['DATA'].dt.strftime('%d/%m/%Y')
+                        df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y')
                     except:
                         return df
             return df
