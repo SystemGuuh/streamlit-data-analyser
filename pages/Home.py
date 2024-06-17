@@ -17,7 +17,7 @@ st.set_page_config(
             layout="wide",
         )
 
-
+hide_sidebar()
 fix_tab_echarts()
 
 

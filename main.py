@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.user import login
+from utils.components import hide_sidebar
 
 
 def handle_login(userName, password):
@@ -36,4 +37,6 @@ if __name__ == '__main__':
     page_icon="./assets/imgs/eshows-logo100x100.png",
     layout="centered",
     )
+    
+    hide_sidebar()
     main()

@@ -3,6 +3,16 @@ from io import BytesIO
 from utils.functions import *
 import streamlit as st
 
+# Esconde a sidebar caso de problema no config
+def hide_sidebar():
+    st.markdown("""
+    <style>
+        section[data-testid="stSidebar"][aria-expanded="true"]{
+            display: none;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Função para criar um dicionário com dias da semana
 def translate_day(dia):
     dias_da_semana = {
