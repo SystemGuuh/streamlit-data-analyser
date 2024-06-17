@@ -3,3 +3,6 @@
 
 # Except for the config.toml file
 !.streamlit/config.toml
+
+# Ignore venv
+venv/*
