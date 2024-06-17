@@ -1,7 +1,6 @@
 import streamlit as st
 from utils.user import login
 from utils.components import hide_sidebar
-from pages import Home
 
 
 def handle_login(userName, password):
@@ -30,7 +29,7 @@ def main():
         show_login_page()
         st.stop()
     else:
-        Home.app()
+        st.switch_page("pages/Home.py")
     
 if __name__ == '__main__':
     st.set_page_config(
