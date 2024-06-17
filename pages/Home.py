@@ -87,11 +87,11 @@ if st.session_state['loggedIn']:
         except Exception as e:
             st.error(f'Não foi possível carregar a página. Erro: {e}')
     with tab5:
-        #try:
+        try:
             page = ShowStatementPage(data)
             page.render()
-        #except Exception as e:
-        #    st.error(f'Não foi possível carregar a página. Erro: {e}')
+        except Exception as e:
+            st.error(f'Não foi possível carregar a página. Erro: {e}')
 
 else:
     st.switch_page("main.py")

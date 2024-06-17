@@ -20,7 +20,7 @@ def translate_day(dia):
     except:
         return dia
 
-# Função para formartar datafram de finanças
+# Função para formartar dataframe de finanças
 def formatFinancesDataframe(df):
     df['DIA_DA_SEMANA'] = df['DIA_DA_SEMANA'].apply(translate_day)
     df['VALOR_BRUTO'] = 'R$ ' + df['VALOR_BRUTO'].astype(str)
@@ -269,7 +269,7 @@ def apply_filter_in_dataframe(df, date, establishment):
     df = apply_filter_data_in_dataframe(df, date)
     return df
 
-# agrupa dataframe pr semana e cria um campo quantidade para colocar valores
+# agrupa dataframe por semana e cria um campo quantidade para colocar valores
 def get_report_artist_by_week(df):
     df['QUANTIDADE'] = df.groupby('SEMANA')['SEMANA'].transform('count')
     df_grouped = df.drop_duplicates(subset=['SEMANA'])
@@ -307,3 +307,38 @@ def transform_show_statement(df):
     }, inplace=True)
 
     return grouped.sort_values(by='NÚMERO DE SHOWS', ascending=False)
+
+# formatando dados do dataframe de artista
+def format_artist_ranking(df):
+    # Agrupando por nome do artista e calculando a média das notas
+    grouped_df = df.groupby('ARTISTA').agg({
+        'ESTABELECIMENTO': 'first',
+        'DATA_INICIO': 'first',
+        'DATA_FIM': 'first',
+        'NOTA': ['mean', 'count'],  # Média das notas e contagem de avaliações
+        'NUM_SHOWS_ARTISTA': 'first',
+        'ESTILO_PRINCIPAL': 'first',
+        'EMAIL': 'first',
+        'CELULAR': 'first'
+    }).reset_index()
+
+    # Flattening the MultiIndex columns
+    grouped_df.columns = ['ARTISTA', 'ESTABELECIMENTO', 'DATA_INICIO', 'DATA_FIM', 'NOTA', 'QUANTIDADE_AVALIACOES', 'NUM_SHOWS_ARTISTA' ,'ESTILO_PRINCIPAL', 'EMAIL', 'CELULAR']
+
+    # Renomeando a coluna de média das notas para refletir a agregação
+    grouped_df.rename(columns={'NOTA': 'MEDIA_NOTAS'}, inplace=True)
+
+    # Substituir médias nulas por 0
+    grouped_df['MEDIA_NOTAS'] = grouped_df['MEDIA_NOTAS'].fillna(0)
+
+    # Ordenar por MEDIA_NOTA em ordem decrescente
+    grouped_df = grouped_df.sort_values(by=['MEDIA_NOTAS', 'QUANTIDADE_AVALIACOES','NUM_SHOWS_ARTISTA'], ascending=False)
+
+    # Adicionando estrelas nas notas
+    grouped_df['MEDIA_NOTAS'] = '⭐ ' + grouped_df['MEDIA_NOTAS'].astype(str)
+
+    return grouped_df
+
+
+
+

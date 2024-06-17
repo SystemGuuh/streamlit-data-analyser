@@ -7,6 +7,7 @@ from decimal import Decimal
 from menu.page import Page
 
 def buildReview(artistRanking, reviewArtistByHouse, averageReviewArtistByHouse, reviewHouseByArtist, averageReviewHouseByArtist):
+    artistRanking = format_artist_ranking(artistRanking)
     artistRanking = artistRanking.rename(columns={'NUM_SHOWS_ARTISTA': 'NÚMERO DE SHOWS', 'MEDIA_NOTAS': 'MÉDIA', 'QUANTIDADE_AVALIACOES': 'NÚMERO DE AVALIAÇÕES'})
 
     tab1, tab2, tab3= st.tabs(["Ranking", "Avaliações de Estabelecimento para Artista", "Avaliações de Artista para Estabelecimento"])

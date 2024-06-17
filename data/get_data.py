@@ -12,7 +12,7 @@ def get_dashbords_data(id, inputDate=None, inputEstablishment=None):
     # pega dados e já aplica filtro se tiver
     generalFinances = apply_filter_in_dataframe(GET_WEEKLY_FINANCES(id), inputDate, inputEstablishment)
     financeDash = apply_filter_in_dataframe(GET_GERAL_INFORMATION_AND_FINANCES(id), inputDate, inputEstablishment)
-    artistRanking = apply_filter_in_dataframe( GET_ARTIST_RANKING(id), inputDate, inputEstablishment)
+    artistRanking = apply_filter_in_dataframe( GET_ARTIST_RANKING2(id), inputDate, inputEstablishment)
     reviewArtistByHouse = apply_filter_in_dataframe( GET_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
     averageReviewArtistByHouse = apply_filter_in_dataframe( GET_AVAREGE_REVIEW_ARTIST_BY_HOUSE(id), inputDate, inputEstablishment)
     reviewHouseByArtist = apply_filter_in_dataframe( GET_REVIEW_HOUSE_BY_ARTIST(id), inputDate, inputEstablishment)
