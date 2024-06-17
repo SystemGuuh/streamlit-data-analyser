@@ -331,6 +331,9 @@ def format_artist_ranking(df):
     # Substituir médias nulas por 0
     grouped_df['MEDIA_NOTAS'] = grouped_df['MEDIA_NOTAS'].fillna(0)
 
+    # Formatando MEDIA_NOTAS para ter duas casas decimais
+    grouped_df['MEDIA_NOTAS'] = grouped_df['MEDIA_NOTAS'].apply(lambda x: f"{x:.2f}")
+
     # Ordenar por MEDIA_NOTA em ordem decrescente
     grouped_df = grouped_df.sort_values(by=['MEDIA_NOTAS', 'QUANTIDADE_AVALIACOES','NUM_SHOWS_ARTISTA'], ascending=False)
 

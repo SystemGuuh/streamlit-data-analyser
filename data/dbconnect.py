@@ -246,40 +246,6 @@ def GET_AVAREGE_REVIEW_HOUSE_BY_ARTIST(id):
 @st.cache_data
 def GET_ARTIST_RANKING(id):
     df =  getDfFromQuery(f"""
-                            SELECT
-                            A.NOME AS ARTISTA,
-                            IFNULL(ROUND(AVG(AV.NOTA), 2),'0') AS MEDIA_NOTAS,
-                            COUNT(DISTINCT AV.ID) AS QUANTIDADE_AVALIACOES,
-                            COUNT(P.FK_CONTRATADO) AS NUM_SHOWS_ARTISTA,
-                            EM.DESCRICAO AS ESTILO_PRINCIPAL,
-                            A.EMAIL AS EMAIL,
-                            A.CELULAR AS CELULAR
-
-                            FROM T_PROPOSTAS P
-                            LEFT JOIN T_AVALIACAO_ATRACOES AV ON (P.ID = AV.FK_PROPOSTA)
-                            LEFT JOIN ADMIN_USERS AU ON (AU.ID = AV.LAST_USER)
-                            INNER JOIN T_COMPANIES C ON (C.ID = P.FK_CONTRANTE)
-                            INNER JOIN T_ATRACOES A ON (A.ID = P.FK_CONTRATADO)
-                            LEFT JOIN T_GRUPOS_DE_CLIENTES GC ON (GC.ID = C.FK_GRUPO)
-                            LEFT JOIN T_GRUPO_USUARIO GU ON GU.FK_COMPANY = C.ID
-                            LEFT JOIN T_ESTILOS_MUSICAIS EM ON A.FK_ESTILO_PRINCIPAL = EM.ID
-
-                            WHERE
-                            GU.STATUS = 1
-                            AND GU.FK_USUARIO = {id}
-                            AND A.ID NOT IN (12166)
-                            AND P.FK_STATUS_PROPOSTA IN (100,101,103,104)
-                            GROUP BY
-                            A.ID, A.NOME
-                            ORDER BY MEDIA_NOTAS DESC, NUM_SHOWS_ARTISTA DESC;
-                        """)
-    df['MEDIA_NOTAS'] = '⭐ ' + df['MEDIA_NOTAS'].astype(str)
-    return df
-
-# Avaliações - Rancking
-@st.cache_data
-def GET_ARTIST_RANKING2(id):
-    df =  getDfFromQuery(f"""
 SELECT
 A.NOME AS ARTISTA,
 C.NAME AS ESTABELECIMENTO,
